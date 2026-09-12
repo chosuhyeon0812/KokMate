@@ -1,0 +1,16 @@
+{
+  "name": "배드민턴 매칭",
+  "short_name": "배드민턴매칭",
+  "description": "소규모 배드민턴 모임 경기 운영 도우미",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f4f9fa",
+  "theme_color": "#0b5566",
+  "lang": "ko",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

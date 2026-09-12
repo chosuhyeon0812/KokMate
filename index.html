@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>배드민턴 매칭</title>
+<meta name="theme-color" content="#0b5566">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="배드민턴매칭">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <img src="logo.jpg" alt="로고" class="brand-logo">
+    <div class="brand-text">
+      <strong>배드민턴 매칭</strong>
+      <span>소규모 모임 경기 운영 도우미</span>
+    </div>
+  </div>
+  <div class="topbar-meta">
+    <span id="todayDate"></span>
+  </div>
+</header>
+
+<nav class="tabbar" id="tabbar">
+  <button class="tab-btn active" data-view="home">🏠 홈</button>
+  <button class="tab-btn" data-view="players">👥 참가자</button>
+  <button class="tab-btn" data-view="courts">🏟 코트 현황</button>
+  <button class="tab-btn" data-view="shuttles">🏸 콕 관리</button>
+  <button class="tab-btn" data-view="history">📋 경기 기록</button>
+  <button class="tab-btn" data-view="stats">📊 통계</button>
+  <button class="tab-btn" data-view="help">❓ 사용법</button>
+</nav>
+
+<main id="app"></main>
+
+<div id="modalRoot" class="modal-root hidden"></div>
+<div id="toast" class="toast hidden"></div>
+
+<script src="app.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('service-worker.js').catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>

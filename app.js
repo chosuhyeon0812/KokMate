@@ -26,7 +26,10 @@ function loadState() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return defaultState();
     const parsed = JSON.parse(raw);
-    return Object.assign(defaultState(), parsed);
+    const merged = Object.assign(defaultState(), parsed);
+    // 기존 저장 데이터에는 restSince가 없을 수 있으므로, 대기 중인데 기록이 없으면 지금부터 카운트 시작
+    merged.players.forEach(p => { if (p.active && !p.resting && !p.restSince) p.restSince = Date.now(); });
+    return merged;
   } catch (e) {
     return defaultState();
   }
@@ -431,9 +434,9 @@ function renderRecCard(r, idx) {
       </div>
     </div>
     <div class="team-line">
-      <span class="team-name">${r.teamA.map(playerName).join(' + ')}</span>
+      <span class="team-name">${r.teamA.map(playerNameWithWait).join(' + ')}</span>
       <span class="vs">VS</span>
-      <span class="team-name">${r.teamB.map(playerName).join(' + ')}</span>
+      <span class="team-name">${r.teamB.map(playerNameWithWait).join(' + ')}</span>
     </div>
     <div class="rec-score">
       추천 기준 · 경기수균형 ${starStr(5)} · 등급균형 ${starStr(st.level)} · 파트너중복방지 ${starStr(st.partner)} · 상대중복방지 ${starStr(st.opponent)}
@@ -476,7 +479,7 @@ function renderCourts() {
 
 function renderWaitingCard(w) {
   const playing = playingPlayerIds();
-  const label = id => playerName(id) + (playing.has(id) ? ' 🔴' : '');
+  const label = id => playing.has(id) ? playerName(id) + ' 🔴' : playerNameWithWait(id);
   const hasPlaying = w.teamA.concat(w.teamB).some(id => playing.has(id));
   return `
   <div class="court-card">
@@ -593,12 +596,29 @@ function renderPlayers() {
   </div>`;
 }
 
+function waitingDuration(p) {
+  // 마지막으로 경기를 마쳤거나(또는 대기/휴식 상태로 바뀐) 시점부터 현재까지 얼마나 쉬고 있는지
+  if (!p.restSince) return '';
+  return durationStr(p.restSince, Date.now());
+}
+
+function playerNameWithWait(id) {
+  const p = playerById(id);
+  if (!p) return playerName(id);
+  const dur = !playingPlayerIds().has(id) ? waitingDuration(p) : '';
+  return dur ? `${p.name} (${dur})` : p.name;
+}
+
 function statusBadge(p) {
   if (!p.active) return `<span class="badge badge-rest">당일 제외</span>`;
-  if (p.resting) return `<span class="badge badge-rest">휴식</span>`;
+  if (p.resting) {
+    const dur = waitingDuration(p);
+    return `<span class="badge badge-rest">휴식${dur ? ' · ' + dur : ''}</span>`;
+  }
   const playing = state.games.some(g => g.status === 'progress' && (g.teamA.includes(p.id) || g.teamB.includes(p.id)));
   if (playing) return `<span class="badge badge-playing">경기 중</span>`;
-  return `<span class="badge badge-active">대기</span>`;
+  const dur = waitingDuration(p);
+  return `<span class="badge badge-active">대기${dur ? ' · ' + dur : ''}</span>`;
 }
 
 function renderHistory() {
@@ -731,29 +751,121 @@ function renderHelp() {
 
 /* ================= 모달 ================= */
 
-function openModal(html) {
+function openModal(html, opts) {
   const root = document.getElementById('modalRoot');
-  root.innerHTML = `<div class="modal-box">${html}</div>`;
+  root.innerHTML = `<div class="modal-box${opts && opts.wide ? ' wide' : ''}">${html}</div>`;
   root.classList.remove('hidden');
 }
 function closeModal() {
+  picker = null;
   document.getElementById('modalRoot').classList.add('hidden');
   document.getElementById('modalRoot').innerHTML = '';
 }
 
-function bindExclusiveSelects(selectIds) {
-  const refresh = () => {
-    const values = selectIds.map(id => document.getElementById(id).value);
-    selectIds.forEach((id, idx) => {
-      const sel = document.getElementById(id);
-      Array.from(sel.options).forEach(opt => {
-        if (!opt.value) { opt.disabled = false; return; }
-        opt.disabled = values.some((v, i) => i !== idx && v === opt.value);
-      });
+function updateModalBody(html) {
+  // 모달 박스 자체를 새로 만들지 않고 내용만 갈아끼워서, 매번 등장 애니메이션이 재생되며
+  // "새로고침되는 것처럼" 보이는 깜빡임을 없앤다.
+  const box = document.querySelector('#modalRoot .modal-box');
+  if (box) box.innerHTML = html;
+  else openModal(html);
+}
+
+/* ================= 선수 선택 (바둑판 그리드) ================= */
+
+let picker = null; // { mode:'manual'|'waiting'|'edit', selection:[ids...], court, idx }
+
+function fairnessCompare(a, b) {
+  // 매칭 알고리즘과 같은 우선순위: 경기 수가 적을수록, 그 다음 오래 쉰 사람일수록 앞에 오도록
+  if (a.totalGames !== b.totalGames) return a.totalGames - b.totalGames;
+  const aRest = a.restSince || Infinity, bRest = b.restSince || Infinity;
+  if (aRest !== bRest) return aRest - bRest;
+  return a.name.localeCompare(b.name, 'ko');
+}
+
+function pickerPool() {
+  if (!picker) return [];
+  let pool;
+  if (picker.mode === 'waiting') {
+    const playing = playingPlayerIds();
+    pool = waitingModalPlayers().slice().sort((a, b) => {
+      const ap = playing.has(a.id) ? 1 : 0, bp = playing.has(b.id) ? 1 : 0;
+      return ap !== bp ? ap - bp : fairnessCompare(a, b);
     });
+  } else {
+    pool = availablePlayers().slice().sort(fairnessCompare);
+  }
+  picker.selection.forEach(id => {
+    if (id && !pool.find(p => p.id === id)) {
+      const p = playerById(id);
+      if (p) pool.push(p);
+    }
+  });
+  return pool;
+}
+
+function renderPickerSlots() {
+  const chip = (i, tag) => {
+    const id = picker.selection[i];
+    return `<div class="slot-chip ${id ? 'filled' : ''}" data-action="removeSlot" data-idx="${i}"><span class="slot-tag">${tag}</span>${id ? playerName(id) : '선택 안 됨'}</div>`;
   };
-  selectIds.forEach(id => document.getElementById(id).addEventListener('change', refresh));
-  refresh();
+  return `<div class="picker-slots">${chip(0, 'A1')}${chip(1, 'A2')}<span class="slot-vs">VS</span>${chip(2, 'B1')}${chip(3, 'B2')}</div>
+  ${picker.selection.length ? `<div class="center" style="margin:2px 0 10px"><button type="button" class="btn btn-ghost btn-sm" data-action="clearPicker">선택 초기화</button></div>` : ''}`;
+}
+
+function renderPickerGrid() {
+  const pool = pickerPool();
+  if (pool.length === 0) return `<div class="empty-hint">선택 가능한 참가자가 없습니다.</div>`;
+  const playing = playingPlayerIds();
+  const full = picker.selection.length >= 4;
+  return `<div class="player-grid">${pool.map(p => {
+    const idx = picker.selection.indexOf(p.id);
+    const team = idx === -1 ? '' : (idx < 2 ? 'a' : 'b');
+    const isPlaying = playing.has(p.id);
+    const waitPart = isPlaying ? '🔴 경기 중' : waitingDuration(p);
+    const disabled = full && idx === -1;
+    return `<button type="button" class="player-tile ${idx !== -1 ? 'selected team-' + team : ''}${disabled ? ' disabled' : ''}" data-action="pickPlayer" data-id="${p.id}">
+      ${idx !== -1 ? `<span class="tile-badge">팀${team.toUpperCase()} · ${idx % 2 + 1}</span>` : ''}
+      <span class="tile-name">${p.name}</span>
+      <span class="tile-meta">${p.gender === 'M' ? '남' : '여'}/${p.level} · ${p.totalGames}경기${waitPart ? ' · ' + waitPart : ''}</span>
+    </button>`;
+  }).join('')}</div>`;
+}
+
+function reopenPickerModal() {
+  if (!picker) return;
+  const grid = document.querySelector('.player-grid');
+  const scrollTop = grid ? grid.scrollTop : 0;
+  const html = picker.mode === 'manual' ? manualMatchModalHtml()
+    : picker.mode === 'waiting' ? waitingMatchModalHtml()
+    : editRecModalHtml();
+  updateModalBody(html);
+  const newGrid = document.querySelector('.player-grid');
+  if (newGrid) newGrid.scrollTop = scrollTop;
+}
+
+function pickPlayer(id) {
+  if (!picker) return;
+  if (picker.mode === 'manual') {
+    const courtEl = document.getElementById('mCourt');
+    if (courtEl) picker.court = Number(courtEl.value) || null;
+  }
+  const i = picker.selection.indexOf(id);
+  if (i !== -1) picker.selection.splice(i, 1);
+  else if (picker.selection.length < 4) picker.selection.push(id);
+  else { toast('이미 4명이 선택되었습니다. 먼저 선택을 해제하세요.'); return; }
+  reopenPickerModal();
+}
+
+function removePickerSlot(idx) {
+  if (!picker || picker.selection[idx] === undefined) return;
+  picker.selection.splice(idx, 1);
+  reopenPickerModal();
+}
+
+function clearPicker() {
+  if (!picker) return;
+  picker.selection = [];
+  reopenPickerModal();
 }
 
 function openAddPlayer(existing) {
@@ -794,7 +906,7 @@ function savePlayerFromModal(id) {
     const p = playerById(id);
     Object.assign(p, { name, gender, level, memo });
   } else {
-    state.players.push({ id: uid('p'), name, gender, level, memo, active: true, resting: false, totalGames: 0, wins: 0, losses: 0, shuttleDone: false });
+    state.players.push({ id: uid('p'), name, gender, level, memo, active: true, resting: false, totalGames: 0, wins: 0, losses: 0, shuttleDone: false, restSince: Date.now() });
   }
   saveState();
   closeModal();
@@ -807,11 +919,15 @@ function openRestManager() {
   openModal(`
     <h3>😴 휴식 관리</h3>
     <div class="checklist">
-      ${rows.length === 0 ? '<div class="empty-hint">당일 참여 중인 참가자가 없습니다.</div>' : rows.map(p => `
+      ${rows.length === 0 ? '<div class="empty-hint">당일 참여 중인 참가자가 없습니다.</div>' : rows.map(p => {
+        const dur = waitingDuration(p);
+        const durLabel = dur ? ` · ${p.resting ? '휴식' : '대기'} ${dur}` : '';
+        return `
       <div class="crow">
-        <span>${p.name} <span class="muted">(${p.totalGames}경기)</span></span>
+        <span>${p.name} <span class="muted">(${p.totalGames}경기${durLabel})</span></span>
         <button class="btn btn-sm ${p.resting ? 'btn-primary' : 'btn-ghost'}" data-action="toggleRestInModal" data-id="${p.id}">${p.resting ? '휴식 중' : '휴식 지정'}</button>
-      </div>`).join('')}
+      </div>`;
+      }).join('')}
     </div>
     <div class="modal-actions"><button class="btn btn-ghost" data-action="closeModal">닫기</button></div>
   `);
@@ -842,7 +958,9 @@ function openAttendanceModal() {
 function saveAttendanceFromModal() {
   const checked = new Set(Array.from(document.querySelectorAll('.attendChk:checked')).map(el => el.value));
   state.players.forEach(p => {
+    const wasActive = p.active;
     p.active = checked.has(p.id);
+    if (p.active && !wasActive) p.restSince = Date.now(); // 오늘 새로 합류 -> 지금부터 대기 시간 카운트
     if (!p.active) p.resting = false;
   });
   saveState();
@@ -852,39 +970,38 @@ function saveAttendanceFromModal() {
 }
 
 function openManualMatch(presetCourt) {
-  const eligible = sortByName(availablePlayers());
-  const options = eligible.map(p => `<option value="${p.id}">${p.name} · ${p.totalGames}경기 (${p.gender === 'M' ? '남' : '여'}/${p.level})</option>`).join('');
+  picker = { mode: 'manual', selection: [], court: presetCourt || null };
+  openModal(manualMatchModalHtml(), { wide: true });
+}
+
+function manualMatchModalHtml() {
   const courtOptions = Array.from({ length: state.settings.courtCount }, (_, i) => i + 1)
     .filter(c => !activeGameOnCourt(c))
-    .map(c => `<option value="${c}" ${c === presetCourt ? 'selected' : ''}>${c}번 코트</option>`).join('');
+    .map(c => `<option value="${c}" ${c === picker.court ? 'selected' : ''}>${c}번 코트</option>`).join('');
 
-  openModal(`
+  return `
     <h3>🛠 직접 경기 만들기</h3>
-    <div class="form-grid">
-      <label>코트
-        <select id="mCourt">${courtOptions || '<option value="">사용 가능한 코트 없음</option>'}</select>
-      </label>
-      <label>팀 A - 선수 1 <select id="mA1"><option value="">선택</option>${options}</select></label>
-      <label>팀 A - 선수 2 <select id="mA2"><option value="">선택</option>${options}</select></label>
-      <label>팀 B - 선수 1 <select id="mB1"><option value="">선택</option>${options}</select></label>
-      <label>팀 B - 선수 2 <select id="mB2"><option value="">선택</option>${options}</select></label>
+    <div class="field" style="margin-bottom:12px">
+      <label>코트</label>
+      <select id="mCourt">${courtOptions || '<option value="">사용 가능한 코트 없음</option>'}</select>
     </div>
+    ${renderPickerSlots()}
+    <p class="muted" style="font-size:.78rem;margin:8px 0">선수를 누른 순서대로 팀 A 2명 → 팀 B 2명에 배정됩니다. 다시 누르면 선택이 취소돼요.</p>
+    ${renderPickerGrid()}
     <div class="modal-actions">
       <button class="btn btn-ghost" data-action="closeModal">취소</button>
       <button class="btn btn-primary" data-action="startManualMatch">경기 시작</button>
     </div>
-  `);
-  bindExclusiveSelects(['mA1', 'mA2', 'mB1', 'mB2']);
+  `;
 }
 
 function startManualMatchFromModal() {
   const court = Number(document.getElementById('mCourt').value);
-  const ids = ['mA1', 'mA2', 'mB1', 'mB2'].map(id => document.getElementById(id).value);
   if (!court) { toast('코트를 선택하세요.'); return; }
-  if (ids.some(v => !v)) { toast('4명 모두 선택하세요.'); return; }
-  if (new Set(ids).size !== 4) { toast('같은 선수를 중복 선택할 수 없습니다.'); return; }
+  if (picker.selection.length !== 4) { toast('4명 모두 선택하세요.'); return; }
 
-  startGame(court, [ids[0], ids[1]], [ids[2], ids[3]], deriveGameType([ids[0], ids[1]], [ids[2], ids[3]]));
+  const teamA = picker.selection.slice(0, 2), teamB = picker.selection.slice(2, 4);
+  startGame(court, teamA, teamB, deriveGameType(teamA, teamB));
   closeModal();
   toast('경기를 시작했습니다.');
   switchView('home');
@@ -901,33 +1018,27 @@ function waitingModalPlayers() {
 }
 
 function openWaitingMatch() {
-  const playing = playingPlayerIds();
-  const eligible = waitingModalPlayers();
-  const options = eligible.map(p => `<option value="${p.id}">${p.name} · ${p.totalGames}경기 (${p.gender === 'M' ? '남' : '여'}/${p.level})${playing.has(p.id) ? ' · 🔴 경기 중' : ''}</option>`).join('');
+  picker = { mode: 'waiting', selection: [] };
+  openModal(waitingMatchModalHtml(), { wide: true });
+}
 
-  openModal(`
+function waitingMatchModalHtml() {
+  return `
     <h3>🕒 대기 코트 추가</h3>
-    <p class="muted" style="margin-top:-6px;font-size:.82rem">코트를 아직 정하지 않고 다음 경기 멤버만 먼저 정해둡니다. 코트가 비면 나중에 배정해서 바로 시작할 수 있어요. 지금 경기 중인 선수도 다음 경기 멤버로 미리 넣어둘 수 있습니다 (목록에 "🔴 경기 중"으로 표시).</p>
-    <div class="form-grid">
-      <label>팀 A - 선수 1 <select id="wA1"><option value="">선택</option>${options}</select></label>
-      <label>팀 A - 선수 2 <select id="wA2"><option value="">선택</option>${options}</select></label>
-      <label>팀 B - 선수 1 <select id="wB1"><option value="">선택</option>${options}</select></label>
-      <label>팀 B - 선수 2 <select id="wB2"><option value="">선택</option>${options}</select></label>
-    </div>
+    <p class="muted" style="margin-top:-6px;font-size:.82rem">코트를 아직 정하지 않고 다음 경기 멤버만 먼저 정해둡니다. 코트가 비면 나중에 배정해서 바로 시작할 수 있어요. 지금 경기 중인 선수도 다음 경기 멤버로 미리 넣어둘 수 있습니다 (🔴 표시).</p>
+    ${renderPickerSlots()}
+    ${renderPickerGrid()}
     <div class="modal-actions">
       <button class="btn btn-ghost" data-action="closeModal">취소</button>
       <button class="btn btn-primary" data-action="submitWaitingMatch">대기 코트에 추가</button>
     </div>
-  `);
-  bindExclusiveSelects(['wA1', 'wA2', 'wB1', 'wB2']);
+  `;
 }
 
 function submitWaitingMatchFromModal() {
-  const ids = ['wA1', 'wA2', 'wB1', 'wB2'].map(id => document.getElementById(id).value);
-  if (ids.some(v => !v)) { toast('4명 모두 선택하세요.'); return; }
-  if (new Set(ids).size !== 4) { toast('같은 선수를 중복 선택할 수 없습니다.'); return; }
+  if (picker.selection.length !== 4) { toast('4명 모두 선택하세요.'); return; }
 
-  const teamA = [ids[0], ids[1]], teamB = [ids[2], ids[3]];
+  const teamA = picker.selection.slice(0, 2), teamB = picker.selection.slice(2, 4);
   state.waitingMatches.push({ id: uid('w'), teamA, teamB, gameType: deriveGameType(teamA, teamB) });
   saveState();
   closeModal();
@@ -1003,7 +1114,7 @@ function submitEndGameFromModal(gameId) {
   g.memo = memo;
   g.status = 'done';
 
-  g.teamA.concat(g.teamB).forEach(id => { const p = playerById(id); if (p) p.totalGames++; });
+  g.teamA.concat(g.teamB).forEach(id => { const p = playerById(id); if (p) { p.totalGames++; p.restSince = g.endTime; } });
   if (hasScore) {
     const winners = winner === 'A' ? g.teamA : g.teamB;
     const losers = winner === 'A' ? g.teamB : g.teamA;
@@ -1019,38 +1130,28 @@ function submitEndGameFromModal(gameId) {
 
 function openEditRecModal(idx) {
   const r = state.pendingRecs[idx];
-  const eligible = sortByName(availablePlayers());
-  const optionsFor = (currentId) => {
-    const list = eligible.slice();
-    if (currentId && !list.find(p => p.id === currentId)) {
-      const cp = playerById(currentId);
-      if (cp) list.push(cp);
-    }
-    return list.map(p => `<option value="${p.id}" ${p.id === currentId ? 'selected' : ''}>${p.name} · ${p.totalGames}경기 (${p.gender === 'M' ? '남' : '여'}/${p.level})</option>`).join('');
-  };
-  openModal(`
-    <h3>✏️ 추천 조합 수정 - ${r.court}번 코트</h3>
-    <div class="form-grid">
-      <label>팀 A - 선수 1 <select id="eA1">${optionsFor(r.teamA[0])}</select></label>
-      <label>팀 A - 선수 2 <select id="eA2">${optionsFor(r.teamA[1])}</select></label>
-      <label>팀 B - 선수 1 <select id="eB1">${optionsFor(r.teamB[0])}</select></label>
-      <label>팀 B - 선수 2 <select id="eB2">${optionsFor(r.teamB[1])}</select></label>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" data-action="closeModal">취소</button>
-      <button class="btn btn-primary" data-action="saveEditRec" data-idx="${idx}">저장</button>
-    </div>
-  `);
-  bindExclusiveSelects(['eA1', 'eA2', 'eB1', 'eB2']);
+  picker = { mode: 'edit', idx, selection: r.teamA.concat(r.teamB) };
+  openModal(editRecModalHtml(), { wide: true });
 }
 
-function saveEditRecFromModal(idx) {
-  const ids = ['eA1', 'eA2', 'eB1', 'eB2'].map(id => document.getElementById(id).value);
-  if (ids.some(v => !v)) { toast('4명 모두 선택하세요.'); return; }
-  if (new Set(ids).size !== 4) { toast('같은 선수를 중복 선택할 수 없습니다.'); return; }
-  const r = state.pendingRecs[idx];
-  r.teamA = [ids[0], ids[1]];
-  r.teamB = [ids[2], ids[3]];
+function editRecModalHtml() {
+  const r = state.pendingRecs[picker.idx];
+  return `
+    <h3>✏️ 추천 조합 수정 - ${r.court}번 코트</h3>
+    ${renderPickerSlots()}
+    ${renderPickerGrid()}
+    <div class="modal-actions">
+      <button class="btn btn-ghost" data-action="closeModal">취소</button>
+      <button class="btn btn-primary" data-action="saveEditRec">저장</button>
+    </div>
+  `;
+}
+
+function saveEditRecFromModal() {
+  if (picker.selection.length !== 4) { toast('4명 모두 선택하세요.'); return; }
+  const r = state.pendingRecs[picker.idx];
+  r.teamA = picker.selection.slice(0, 2);
+  r.teamB = picker.selection.slice(2, 4);
   r.score = scoreSplit(r.teamA, r.teamB);
   r.gameType = deriveGameType(r.teamA, r.teamB);
   saveState();
@@ -1080,7 +1181,7 @@ function startRecommendation(idx) {
 }
 
 function clearSessionData() {
-  state.players.forEach(p => { p.totalGames = 0; p.wins = 0; p.losses = 0; p.resting = false; });
+  state.players.forEach(p => { p.totalGames = 0; p.wins = 0; p.losses = 0; p.resting = false; p.restSince = p.active ? Date.now() : null; });
   state.games = [];
   state.pendingRecs = [];
   state.waitingMatches = [];
@@ -1144,7 +1245,10 @@ document.addEventListener('click', (e) => {
       render();
       break;
     case 'editRec': openEditRecModal(idx); break;
-    case 'saveEditRec': saveEditRecFromModal(idx); break;
+    case 'saveEditRec': saveEditRecFromModal(); break;
+    case 'pickPlayer': pickPlayer(id); break;
+    case 'removeSlot': removePickerSlot(idx); break;
+    case 'clearPicker': clearPicker(); break;
     case 'startRec': startRecommendation(idx); break;
     case 'endGame': openEndGameModal(id); break;
     case 'submitEndGame': submitEndGameFromModal(id); break;
@@ -1168,7 +1272,7 @@ document.addEventListener('click', (e) => {
       break;
     }
     case 'toggleRestInModal': {
-      const p = playerById(id); p.resting = !p.resting; saveState(); openRestManager(); break;
+      const p = playerById(id); p.resting = !p.resting; p.restSince = Date.now(); saveState(); openRestManager(); break;
     }
     case 'openAddPlayer': openAddPlayer(null); break;
     case 'editPlayer': openAddPlayer(playerById(id)); break;
@@ -1180,8 +1284,14 @@ document.addEventListener('click', (e) => {
       }
       break;
     }
-    case 'toggleRest': { const p = playerById(id); p.resting = !p.resting; saveState(); render(); break; }
-    case 'toggleActive': { const p = playerById(id); p.active = !p.active; if (!p.active) p.resting = false; saveState(); render(); break; }
+    case 'toggleRest': { const p = playerById(id); p.resting = !p.resting; p.restSince = Date.now(); saveState(); render(); break; }
+    case 'toggleActive': {
+      const p = playerById(id);
+      p.active = !p.active;
+      if (!p.active) p.resting = false;
+      else p.restSince = Date.now();
+      saveState(); render(); break;
+    }
     case 'toggleShuttle': { const p = playerById(id); p.shuttleDone = !p.shuttleDone; saveState(); render(); break; }
     case 'resetShuttles': {
       if (confirm('모든 참가자의 콕 제출 상태를 미제출로 초기화할까요?')) {
@@ -1209,3 +1319,8 @@ document.getElementById('modalRoot').addEventListener('click', (e) => {
 
 /* ================= 초기화 ================= */
 render();
+
+// 대기/휴식 시간이 화면에 실시간으로 반영되도록 주기적으로 다시 그린다 (입력 중인 모달은 건드리지 않음).
+setInterval(() => {
+  if (document.getElementById('modalRoot').classList.contains('hidden')) render();
+}, 30000);

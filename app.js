@@ -1278,8 +1278,11 @@ document.addEventListener('click', (e) => {
     case 'editPlayer': openAddPlayer(playerById(id)); break;
     case 'savePlayer': savePlayerFromModal(id || null); break;
     case 'deletePlayer': {
+      if (playingPlayerIds().has(id)) { toast('지금 경기 중인 선수는 삭제할 수 없습니다. 경기 종료 후 삭제하세요.'); break; }
+      if (waitingPlayerIds().has(id)) { toast('대기 코트에 들어가 있는 선수는 삭제할 수 없습니다. 대기 코트에서 먼저 빼주세요.'); break; }
       if (confirm('참가자를 삭제할까요? 관련 경기 기록의 이름 표시는 유지됩니다.')) {
         state.players = state.players.filter(p => p.id !== id);
+        state.pendingRecs = state.pendingRecs.filter(r => !r.teamA.concat(r.teamB).includes(id));
         saveState(); render();
       }
       break;

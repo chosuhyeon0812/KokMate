@@ -96,11 +96,11 @@ export default function History() {
             </div>
             <div className="team-line">
               <span className={`team-name ${g.winner === 'A' ? 'badge-win' : ''}`}>{names(g.teamA).join(' + ')}</span>
-              <span className="history-score">{g.winner ? `${g.scoreA} : ${g.scoreB}` : 'VS'}</span>
+              <span className="history-score">{g.scoreA != null ? `${g.scoreA} : ${g.scoreB}` : 'VS'}</span>
               <span className={`team-name ${g.winner === 'B' ? 'badge-win' : ''}`}>{names(g.teamB).join(' + ')}</span>
             </div>
             <div className="center muted" style={{ fontSize: '.75rem', marginTop: 4 }}>
-              {g.winner ? `승리 · ${names(g.winner === 'A' ? g.teamA : g.teamB).join(', ')}` : '점수 미입력'}
+              {g.winner ? `승리 · ${names(g.winner === 'A' ? g.teamA : g.teamB).join(', ')}${g.scoreA == null ? ' (점수 미입력)' : ''}` : '승패 미입력'}
             </div>
             {g.memo && <div className="history-memo">{g.memo}</div>}
             <div className="card-actions">

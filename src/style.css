@@ -410,3 +410,27 @@ tr:last-child td{border-bottom:none}
   padding:5px 12px;border-radius:20px;cursor:pointer;white-space:nowrap;transition:background-color .15s ease;
 }
 .toast-action:hover{background:rgba(255,255,255,.36)}
+
+.field-label{font-size:.78rem;color:var(--muted);margin:4px 0 6px}
+.winner-pick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.winner-btn{
+  border:1.5px solid var(--border);border-radius:12px;background:#fff;padding:12px 8px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:4px;font-family:inherit;
+  transition:border-color .2s ease, background-color .2s ease, transform .15s var(--ease);
+}
+.winner-btn:hover{border-color:var(--primary-light)}
+.winner-btn:active{transform:scale(.97)}
+.winner-btn .winner-tag{font-size:.68rem;font-weight:800;color:var(--muted);letter-spacing:.03em}
+.winner-btn .winner-names{font-size:.9rem;font-weight:800;color:var(--text)}
+.winner-btn.on{border-color:var(--success);background:var(--success-pale)}
+.winner-btn.on .winner-tag{color:var(--success)}
+.score-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.score-chip{
+  border:1px solid var(--border);background:#fff;border-radius:20px;padding:7px 12px;
+  font-size:.8rem;font-weight:700;color:var(--primary-dark);cursor:pointer;font-family:inherit;
+  transition:background-color .15s ease, border-color .15s ease;
+}
+.score-chip:hover{border-color:var(--primary-light);background:var(--primary-pale)}
+.score-chip.on{background:var(--grad-primary-soft);color:#fff;border-color:transparent}
+.score-inputs{display:grid;grid-template-columns:1fr 1fr}
+.score-inputs label:last-child{grid-column:1 / -1}

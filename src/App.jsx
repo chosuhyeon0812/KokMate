@@ -32,16 +32,21 @@ export default function App() {
     return () => clearInterval(t);
   }, []);
 
-  const ui = useMemo(() => ({
-    toast(msg) {
-      setToastMsg({ msg, id: Date.now() });
+  const ui = useMemo(() => {
+    const show = (msg, type, ms) => {
+      setToastMsg({ msg, type, id: Date.now() });
       clearTimeout(toastTimer.current);
-      toastTimer.current = setTimeout(() => setToastMsg(null), 2200);
-    },
-    openModal(content, opts) { setModal({ content, wide: !!(opts && opts.wide) }); },
-    closeModal() { setModal(null); },
-    switchView: setView,
-  }), []);
+      toastTimer.current = setTimeout(() => setToastMsg(null), ms);
+    };
+    return {
+      // 성공 안내(✓) / 경고(⚠, 읽을 시간이 필요해 조금 더 오래 표시)
+      toast(msg) { show(msg, 'success', 2200); },
+      warn(msg) { show(msg, 'warn', 3200); },
+      openModal(content, opts) { setModal({ content, wide: !!(opts && opts.wide) }); },
+      closeModal() { setModal(null); },
+      switchView: setView,
+    };
+  }, []);
 
   const { View } = TABS.find(t => t.key === view);
   const today = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' });
@@ -72,7 +77,7 @@ export default function App() {
           <div className={`modal-box${modal.wide ? ' wide' : ''}`}>{modal.content}</div>
         </div>
       )}
-      {toastMsg && <div key={toastMsg.id} className="toast">{toastMsg.msg}</div>}
+      {toastMsg && <div key={toastMsg.id} className={`toast toast-${toastMsg.type}`} role={toastMsg.type === 'warn' ? 'alert' : 'status'}>{toastMsg.msg}</div>}
     </UIContext.Provider>
   );
 }

@@ -13,7 +13,7 @@ let savedFilter = EMPTY_FILTER;
 
 export default function Players() {
   const state = useAppState();
-  const { toast, openModal } = useUI();
+  const { warn, openModal } = useUI();
   const [filter, setFilterState] = useState(savedFilter);
   const setFilter = f => { savedFilter = f; setFilterState(f); };
 
@@ -25,8 +25,8 @@ export default function Players() {
   const filterActive = filter.gender || filter.level || filter.active;
 
   const remove = id => {
-    if (playingPlayerIds(state).has(id)) { toast('지금 경기 중인 선수는 삭제할 수 없습니다. 경기 종료 후 삭제하세요.'); return; }
-    if (waitingPlayerIds(state).has(id)) { toast('대기 코트에 들어가 있는 선수는 삭제할 수 없습니다. 대기 코트에서 먼저 빼주세요.'); return; }
+    if (playingPlayerIds(state).has(id)) { warn('지금 경기 중인 선수는 삭제할 수 없습니다. 경기 종료 후 삭제하세요.'); return; }
+    if (waitingPlayerIds(state).has(id)) { warn('대기 코트에 들어가 있는 선수는 삭제할 수 없습니다. 대기 코트에서 먼저 빼주세요.'); return; }
     if (confirm('참가자를 삭제할까요? 관련 경기 기록의 이름 표시는 유지됩니다.')) actions.deletePlayer(id);
   };
 

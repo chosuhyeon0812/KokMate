@@ -7,7 +7,7 @@ import { TeamLine } from '../components/cards';
 
 export default function EndGameModal({ gameId }) {
   const state = useAppState();
-  const { toast, closeModal } = useUI();
+  const { toast, warn, closeModal } = useUI();
   const [rawA, setRawA] = useState('');
   const [rawB, setRawB] = useState('');
   const [memo, setMemo] = useState('');
@@ -16,13 +16,13 @@ export default function EndGameModal({ gameId }) {
 
   const submit = () => {
     const a = rawA.trim(), b = rawB.trim();
-    if ((a === '') !== (b === '')) { toast('점수는 두 팀 모두 입력하거나, 둘 다 비워두세요.'); return; }
+    if ((a === '') !== (b === '')) { warn('점수는 두 팀 모두 입력하거나, 둘 다 비워두세요.'); return; }
 
     let scoreA = null, scoreB = null, winner = null;
     if (a !== '') {
       scoreA = Number(a); scoreB = Number(b);
-      if (isNaN(scoreA) || isNaN(scoreB)) { toast('점수를 올바르게 입력하세요.'); return; }
-      if (scoreA === scoreB) { toast('무승부는 입력할 수 없습니다.'); return; }
+      if (isNaN(scoreA) || isNaN(scoreB)) { warn('점수를 올바르게 입력하세요.'); return; }
+      if (scoreA === scoreB) { warn('무승부는 입력할 수 없습니다.'); return; }
       winner = scoreA > scoreB ? 'A' : 'B';
     }
 

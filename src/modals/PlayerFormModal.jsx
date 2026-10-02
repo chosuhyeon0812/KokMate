@@ -4,14 +4,14 @@ import * as actions from '../actions';
 import { LEVEL_OPTIONS } from '../lib/utils';
 
 export default function PlayerFormModal({ player }) {
-  const { toast, closeModal } = useUI();
+  const { toast, warn, closeModal } = useUI();
   const [name, setName] = useState(player ? player.name : '');
   const [gender, setGender] = useState(player ? player.gender : 'M');
   const [level, setLevel] = useState(player ? player.level : 'A');
   const [memo, setMemo] = useState(player && player.memo ? player.memo : '');
 
   const save = () => {
-    if (!name.trim()) { toast('이름을 입력하세요.'); return; }
+    if (!name.trim()) { warn('이름을 입력하세요.'); return; }
     actions.savePlayer(player ? player.id : null, { name: name.trim(), gender, level, memo: memo.trim() });
     closeModal();
     toast('저장되었습니다.');

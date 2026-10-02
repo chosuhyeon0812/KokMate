@@ -12,7 +12,7 @@ import { EmptyHint } from '../components/cards';
 
 export default function PlayerPicker({ mode, presetCourt, idx }) {
   const state = useAppState();
-  const { toast, closeModal, switchView } = useUI();
+  const { toast, warn, closeModal, switchView } = useUI();
   const rec = mode === 'edit' ? state.pendingRecs[idx] : null;
   const [selection, setSelection] = useState(() => rec ? rec.teamA.concat(rec.teamB) : []);
   const [courtChoice, setCourtChoice] = useState(presetCourt || null);
@@ -40,13 +40,13 @@ export default function PlayerPicker({ mode, presetCourt, idx }) {
   });
 
   const pick = id => {
-    if (!selection.includes(id) && selection.length >= 4) { toast('이미 4명이 선택되었습니다. 먼저 선택을 해제하세요.'); return; }
+    if (!selection.includes(id) && selection.length >= 4) { warn('이미 4명이 선택되었습니다. 먼저 선택을 해제하세요.'); return; }
     setSelection(prev => prev.includes(id) ? prev.filter(x => x !== id) : prev.length < 4 ? [...prev, id] : prev);
   };
 
   const submit = () => {
-    if (mode === 'manual' && !court) { toast('코트를 선택하세요.'); return; }
-    if (selection.length !== 4) { toast('4명 모두 선택하세요.'); return; }
+    if (mode === 'manual' && !court) { warn('코트를 선택하세요.'); return; }
+    if (selection.length !== 4) { warn('4명 모두 선택하세요.'); return; }
     if (mode === 'manual') {
       actions.startGame(court, selection);
       closeModal();

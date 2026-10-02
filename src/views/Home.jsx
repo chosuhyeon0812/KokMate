@@ -9,7 +9,7 @@ import PlayerPicker from '../modals/PlayerPicker';
 
 export default function Home() {
   const state = useAppState();
-  const { toast, openModal } = useUI();
+  const { toast, warn, openModal } = useUI();
   const [courtInput, setCourtInput] = useState(String(state.settings.courtCount));
   const progressGames = state.games.filter(g => g.status === 'progress');
 
@@ -20,7 +20,7 @@ export default function Home() {
   };
 
   const endSession = () => {
-    if (actions.todaysDoneGames(state).length === 0) { toast('저장할 경기 기록이 없습니다.'); return; }
+    if (actions.todaysDoneGames(state).length === 0) { warn('저장할 경기 기록이 없습니다.'); return; }
     if (!confirm('모임을 종료할까요? 오늘 기록이 "경기 기록" 탭의 지난 모임 목록에 저장되고, 경기 기록과 참가자 경기 수는 초기화됩니다.')) return;
     actions.endSession();
     toast('모임 기록이 저장되었습니다.');

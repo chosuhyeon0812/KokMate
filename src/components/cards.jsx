@@ -37,11 +37,11 @@ export function LiveCourtCard({ game: g }) {
 
 export function RecCard({ rec: r, idx }) {
   const state = useAppState();
-  const { openModal, toast } = useUI();
+  const { openModal, toast, warn } = useUI();
   const st = starsFor(r.score);
 
   const start = () => {
-    if (activeGameOnCourt(state, r.court)) { toast('해당 코트에 이미 진행 중인 경기가 있습니다.'); return; }
+    if (activeGameOnCourt(state, r.court)) { warn('해당 코트에 이미 진행 중인 경기가 있습니다.'); return; }
     actions.startRecommendation(idx);
     toast(`${r.court}번 코트 경기를 시작했습니다.`);
   };
@@ -65,18 +65,18 @@ export function RecCard({ rec: r, idx }) {
 
 export function WaitingCard({ match: w }) {
   const state = useAppState();
-  const { toast } = useUI();
+  const { toast, warn } = useUI();
   const playing = playingPlayerIds(state);
   const label = id => playing.has(id) ? playerName(state, id) + ' 🔴' : playerNameWithWait(state, id);
   const hasPlaying = w.teamA.concat(w.teamB).some(id => playing.has(id));
 
   const start = () => {
     const stillPlaying = w.teamA.concat(w.teamB).filter(pid => playing.has(pid));
-    if (stillPlaying.length) { toast(`아직 경기 중인 선수가 있어 시작할 수 없어요: ${stillPlaying.map(id => playerName(state, id)).join(', ')}`); return; }
+    if (stillPlaying.length) { warn(`아직 경기 중인 선수가 있어 시작할 수 없어요: ${stillPlaying.map(id => playerName(state, id)).join(', ')}`); return; }
     const busy = occupiedCourts(state);
     let court = null;
     for (let c = 1; c <= state.settings.courtCount; c++) { if (!busy.has(c)) { court = c; break; } }
-    if (!court) { toast('비어있는 코트가 없습니다.'); return; }
+    if (!court) { warn('비어있는 코트가 없습니다.'); return; }
     actions.startWaitingMatch(w.id, court);
     toast(`${court}번 코트에서 경기를 시작했습니다.`);
   };

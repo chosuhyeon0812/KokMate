@@ -701,3 +701,20 @@ MVP가 안정화된 이후 다음 기능을 추가할 수 있다.
 > "다음에는 누구랑 치지?"
 
 를 앱에서 바로 확인할 수 있도록 하는 것을 목표로 한다
+---
+
+# 개발 / 실행 방법
+
+React + Vite 프로젝트입니다. (Node.js 필요)
+
+```bash
+npm install      # 처음 한 번
+npm run dev      # 개발 서버 실행 → http://localhost:5173
+npm run build    # 배포용 빌드 → dist/ 폴더
+npm run preview  # 빌드 결과 미리보기
+```
+
+* `src/lib/` — 매칭 알고리즘, 계산 함수 (화면과 무관한 순수 로직)
+* `src/actions.js` — 상태를 바꾸는 동작 (경기 시작/종료, 참가자 추가 등)
+* `src/store.js` — 상태 저장소 (localStorage `bm-matcher-state-v1`에 저장, 예전 버전 데이터 그대로 사용)
+* `src/views/` — 탭별 화면, `src/modals/` — 팝업 창, `src/components/` — 공용 카드/배지

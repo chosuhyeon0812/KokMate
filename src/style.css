@@ -403,3 +403,10 @@ tr:last-child td{border-bottom:none}
   .brand-text span{display:none}
   th,td{padding:8px 6px;font-size:.78rem}
 }
+
+.toast{display:flex;align-items:center;gap:12px}
+.toast-action{
+  border:none;background:rgba(255,255,255,.22);color:#fff;font-weight:800;font-size:.78rem;
+  padding:5px 12px;border-radius:20px;cursor:pointer;white-space:nowrap;transition:background-color .15s ease;
+}
+.toast-action:hover{background:rgba(255,255,255,.36)}

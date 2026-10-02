@@ -58,17 +58,48 @@ export function startGame(court, selection) {
   update(d => startGameIn(d, court, selection.slice(0, 2), selection.slice(2, 4)));
 }
 
+// 끝난 경기 결과를 참가자 경기 수/승패에 반영(sign=1)하거나 취소(sign=-1)한다.
+function applyResult(d, g, sign) {
+  const bump = (ids, key) => ids.forEach(id => { const p = playerById(d, id); if (p) p[key] = Math.max(0, p[key] + sign); });
+  bump(g.teamA.concat(g.teamB), 'totalGames');
+  if (g.winner) {
+    bump(g.winner === 'A' ? g.teamA : g.teamB, 'wins');
+    bump(g.winner === 'A' ? g.teamB : g.teamA, 'losses');
+  }
+}
+
 export function endGame(gameId, { scoreA, scoreB, winner, memo }) {
   update(d => {
     const g = d.games.find(x => x.id === gameId);
     Object.assign(g, { scoreA, scoreB, winner, memo, endTime: Date.now(), status: 'done' });
-    g.teamA.concat(g.teamB).forEach(id => { const p = playerById(d, id); if (p) { p.totalGames++; p.restSince = g.endTime; } });
-    if (winner) {
-      const winners = winner === 'A' ? g.teamA : g.teamB;
-      const losers = winner === 'A' ? g.teamB : g.teamA;
-      winners.forEach(id => { const p = playerById(d, id); if (p) p.wins++; });
-      losers.forEach(id => { const p = playerById(d, id); if (p) p.losses++; });
-    }
+    applyResult(d, g, 1);
+    g.teamA.concat(g.teamB).forEach(id => { const p = playerById(d, id); if (p) p.restSince = g.endTime; });
+  });
+}
+
+// 경기 종료 되돌리기: 결과를 취소하고 다시 진행 중 상태로
+export function undoEndGame(gameId) {
+  update(d => {
+    const g = d.games.find(x => x.id === gameId);
+    applyResult(d, g, -1);
+    Object.assign(g, { scoreA: null, scoreB: null, winner: null, memo: '', endTime: null, status: 'progress' });
+  });
+}
+
+export function editGameResult(gameId, { scoreA, scoreB, winner, memo }) {
+  update(d => {
+    const g = d.games.find(x => x.id === gameId);
+    applyResult(d, g, -1);
+    Object.assign(g, { scoreA, scoreB, winner, memo });
+    applyResult(d, g, 1);
+  });
+}
+
+export function deleteGame(gameId) {
+  update(d => {
+    const g = d.games.find(x => x.id === gameId);
+    if (g.status === 'done') applyResult(d, g, -1);
+    d.games = d.games.filter(x => x.id !== gameId);
   });
 }
 

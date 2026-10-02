@@ -33,14 +33,15 @@ export default function App() {
   }, []);
 
   const ui = useMemo(() => {
-    const show = (msg, type, ms) => {
-      setToastMsg({ msg, type, id: Date.now() });
+    const show = (msg, type, ms, action) => {
+      setToastMsg({ msg, type, action, id: Date.now() });
       clearTimeout(toastTimer.current);
       toastTimer.current = setTimeout(() => setToastMsg(null), ms);
     };
     return {
       // 성공 안내(✓) / 경고(⚠, 읽을 시간이 필요해 조금 더 오래 표시)
-      toast(msg) { show(msg, 'success', 2200); },
+      // opts.action = { label, onClick } 이면 토스트에 버튼(예: 되돌리기)을 달고 누를 시간을 넉넉히 준다.
+      toast(msg, opts) { show(msg, 'success', opts && opts.action ? 6000 : 2200, opts && opts.action); },
       warn(msg) { show(msg, 'warn', 3200); },
       openModal(content, opts) { setModal({ content, wide: !!(opts && opts.wide) }); },
       closeModal() { setModal(null); },
@@ -77,7 +78,14 @@ export default function App() {
           <div className={`modal-box${modal.wide ? ' wide' : ''}`}>{modal.content}</div>
         </div>
       )}
-      {toastMsg && <div key={toastMsg.id} className={`toast toast-${toastMsg.type}`} role={toastMsg.type === 'warn' ? 'alert' : 'status'}>{toastMsg.msg}</div>}
+      {toastMsg && (
+        <div key={toastMsg.id} className={`toast toast-${toastMsg.type}`} role={toastMsg.type === 'warn' ? 'alert' : 'status'}>
+          {toastMsg.msg}
+          {toastMsg.action && (
+            <button className="toast-action" onClick={() => { setToastMsg(null); toastMsg.action.onClick(); }}>{toastMsg.action.label}</button>
+          )}
+        </div>
+      )}
     </UIContext.Provider>
   );
 }

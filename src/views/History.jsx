@@ -1,8 +1,10 @@
 import { useAppState } from '../store';
+import { useUI } from '../ui';
 import * as actions from '../actions';
 import { todayStr, timeStr, durationStr } from '../lib/utils';
 import { playerName } from '../lib/selectors';
 import { EmptyHint } from '../components/cards';
+import EndGameModal from '../modals/EndGameModal';
 
 function Memos({ memos }) {
   if (!memos.length) return null;
@@ -62,6 +64,7 @@ function SessionHistoryCard() {
 
 export default function History() {
   const state = useAppState();
+  const { toast, openModal } = useUI();
   const today = todayStr();
   const todays = actions.todaysDoneGames(state).sort((a, b) => b.endTime - a.endTime);
   const usedCourts = new Set(state.games.filter(g => g.date === today).map(g => g.court)).size;
@@ -69,6 +72,12 @@ export default function History() {
   todays.forEach(g => g.teamA.concat(g.teamB).forEach(id => players.add(id)));
   const memos = todays.filter(g => g.memo).map(g => `코트${g.court} · ${g.memo}`);
   const names = ids => ids.map(id => playerName(state, id));
+
+  const removeGame = g => {
+    if (!confirm(`${g.court}번 코트 ${timeStr(g.startTime)} 경기 기록을 삭제할까요? 참가자 경기 수와 승패에서도 빠집니다.`)) return;
+    actions.deleteGame(g.id);
+    toast('경기 기록을 삭제했습니다.');
+  };
 
   return (
     <>
@@ -94,6 +103,10 @@ export default function History() {
               {g.winner ? `승리 · ${names(g.winner === 'A' ? g.teamA : g.teamB).join(', ')}` : '점수 미입력'}
             </div>
             {g.memo && <div className="history-memo">{g.memo}</div>}
+            <div className="card-actions">
+              <button className="btn btn-outline btn-sm" onClick={() => openModal(<EndGameModal gameId={g.id} edit />)}>결과 수정</button>
+              <button className="btn btn-danger btn-sm" onClick={() => removeGame(g)}>삭제</button>
+            </div>
           </div>
         ))}
       </div>

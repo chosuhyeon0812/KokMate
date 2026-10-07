@@ -26,7 +26,7 @@ function SessionHistoryCard() {
   if (state.sessionHistory.length === 0) {
     return (
       <div className="card">
-        <h2>🗓 지난 모임 기록</h2>
+        <h2>지난 모임 기록</h2>
         <EmptyHint>아직 저장된 모임이 없습니다. 모임이 끝나면 "코트" 탭의 "모임 종료"를 눌러 저장하세요.</EmptyHint>
       </div>
     );
@@ -36,7 +36,7 @@ function SessionHistoryCard() {
 
   return (
     <div className="card">
-      <h2>🗓 지난 모임 기록</h2>
+      <h2>지난 모임 기록</h2>
       {state.sessionHistory.map(s => (
         <div className="history-item" key={s.id}>
           <div className="history-head"><span>{s.date}</span><span>{timeStr(s.endedAt)} 종료</span></div>
@@ -82,12 +82,12 @@ export default function History() {
   return (
     <>
       <div className="card">
-        <h2>📅 오늘의 기록</h2>
+        <h2>오늘 요약</h2>
         <SummaryGrid totalGames={todays.length} usedCourts={usedCourts} participants={players.size} />
         <Memos memos={memos} />
       </div>
       <div className="card">
-        <h2>📋 경기 기록</h2>
+        <h2>경기 기록</h2>
         {todays.length === 0 ? <EmptyHint>오늘 종료된 경기가 없습니다.</EmptyHint> : todays.map(g => (
           <div className="history-item" key={g.id}>
             <div className="history-head">

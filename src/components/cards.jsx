@@ -111,7 +111,3 @@ export function GenderBadge({ gender }) {
 export function EmptyHint({ children, style }) {
   return <div className="empty-hint" style={style}>{children}</div>;
 }
-
-export function Lead({ children, style }) {
-  return <p className="muted" style={{ margin: '-6px 0 12px', fontSize: '.82rem', ...style }}>{children}</p>;
-}

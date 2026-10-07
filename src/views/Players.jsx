@@ -43,7 +43,7 @@ export default function Players() {
   return (
     <div className="card">
       <div className="section-row">
-        <h2 className="mb0">👥 참가자 관리 ({filterActive ? `${filtered.length}/${state.players.length}` : state.players.length}명)</h2>
+        <h2 className="mb0">참가자 ({filterActive ? `${filtered.length}/${state.players.length}` : state.players.length}명)</h2>
         <div className="row-actions">
           <button className="btn btn-primary btn-sm" onClick={() => openModal(<PlayerFormModal />)}>참가자 추가</button>
         </div>

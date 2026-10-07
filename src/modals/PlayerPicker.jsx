@@ -170,7 +170,7 @@ export default function PlayerPicker({ mode, presetCourt, idx, waitingId }) {
   if (mode === 'manual') {
     return (
       <>
-        <h3>🛠 직접 경기 만들기</h3>
+        <h3>경기 만들기</h3>
         <div className="field" style={{ marginBottom: 12 }}>
           <label>코트</label>
           <select value={court || ''} onChange={e => setCourtChoice(Number(e.target.value) || null)}>
@@ -180,7 +180,6 @@ export default function PlayerPicker({ mode, presetCourt, idx, waitingId }) {
           </select>
         </div>
         {slots}
-        <p className="muted" style={{ fontSize: '.78rem', margin: '8px 0' }}>선수를 누른 순서대로 팀 A 2명 → 팀 B 2명에 배정됩니다. 다시 누르면 선택이 취소돼요.</p>
         {grid}
         {actionsRow('경기 시작')}
       </>
@@ -190,8 +189,8 @@ export default function PlayerPicker({ mode, presetCourt, idx, waitingId }) {
   if (mode === 'waiting') {
     return (
       <>
-        <h3>🕒 대기 코트 추가</h3>
-        <p className="muted" style={{ marginTop: -6, fontSize: '.82rem' }}>코트를 아직 정하지 않고 다음 경기 멤버만 먼저 정해둡니다. 코트가 비면 나중에 배정해서 바로 시작할 수 있어요. 지금 경기 중인 선수도 다음 경기 멤버로 미리 넣어둘 수 있습니다 (🔴 표시).</p>
+        <h3>대기 코트 추가</h3>
+        <p className="muted" style={{ marginTop: -6, fontSize: '.82rem' }}>다음 경기 멤버를 미리 정해둬요. 지금 경기 중인 선수도 넣을 수 있어요.</p>
         {slots}
         {grid}
         {actionsRow('대기 코트에 추가')}
@@ -202,8 +201,7 @@ export default function PlayerPicker({ mode, presetCourt, idx, waitingId }) {
   if (mode === 'editWaiting') {
     return (
       <>
-        <h3>✏️ 대기 코트 수정</h3>
-        <p className="muted" style={{ marginTop: -6, fontSize: '.82rem' }}>선택칸의 이름을 누르면 빠지고, 아래에서 다른 선수를 누르면 그 자리에 들어갑니다.</p>
+        <h3>대기 코트 수정</h3>
         {slots}
         {grid}
         {actionsRow('저장')}
@@ -213,7 +211,7 @@ export default function PlayerPicker({ mode, presetCourt, idx, waitingId }) {
 
   return (
     <>
-      <h3>✏️ 추천 조합 수정 - {rec.court}번 코트</h3>
+      <h3>추천 조합 수정 · {rec.court}번 코트</h3>
       {slots}
       {grid}
       {actionsRow('저장')}

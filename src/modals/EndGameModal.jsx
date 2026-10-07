@@ -74,7 +74,7 @@ export default function EndGameModal({ gameId, edit }) {
 
   return (
     <>
-      <h3>{edit ? '✏️ 경기 결과 수정' : '🏁 경기 종료'} - {g.court}번 코트</h3>
+      <h3>{edit ? '경기 결과 수정' : '경기 종료'} · {g.court}번 코트</h3>
       <div className="field-label">이긴 팀 (선택)</div>
       <div className="winner-pick">
         {['A', 'B'].map(side => (

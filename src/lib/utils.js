@@ -29,10 +29,6 @@ export function sortByName(players) {
   return players.slice().sort((a, b) => a.name.localeCompare(b.name, 'ko'));
 }
 
-export function shuttleQuota(p) {
-  return p.gender === 'M' ? 3 : 2;
-}
-
 export function starStr(n) {
   return '★'.repeat(n) + '☆'.repeat(5 - n);
 }

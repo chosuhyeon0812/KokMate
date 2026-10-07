@@ -14,7 +14,7 @@ function startGameIn(d, court, teamA, teamB, gameType) {
 }
 
 function clearSessionData(d) {
-  d.players.forEach(p => { p.totalGames = 0; p.wins = 0; p.losses = 0; p.resting = false; p.restSince = p.active ? Date.now() : null; });
+  d.players.forEach(p => { p.totalGames = 0; p.wins = 0; p.losses = 0; p.resting = false; p.shuttleDone = false; p.shuttleNote = ''; p.restSince = p.active ? Date.now() : null; });
   d.games = [];
   d.pendingRecs = [];
   d.waitingMatches = [];
@@ -177,8 +177,13 @@ export function toggleShuttle(id) {
   update(d => { const p = playerById(d, id); p.shuttleDone = !p.shuttleDone; });
 }
 
+// 콕 비고 (예: 게스트라 현금으로 냄, 콕이 없어 계좌 입금)
+export function setShuttleNote(id, note) {
+  update(d => { playerById(d, id).shuttleNote = note; });
+}
+
 export function resetShuttles() {
-  update(d => { d.players.forEach(p => { p.shuttleDone = false; }); });
+  update(d => { d.players.forEach(p => { p.shuttleDone = false; p.shuttleNote = ''; }); });
 }
 
 /* ---------- 모임 / 기록 ---------- */

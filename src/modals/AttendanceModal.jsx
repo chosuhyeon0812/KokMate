@@ -25,8 +25,8 @@ export default function AttendanceModal() {
 
   return (
     <>
-      <h3>👋 오늘 참석자 선택</h3>
-      <p className="muted" style={{ marginTop: -6, fontSize: '.82rem' }}>체크한 사람만 오늘 매칭 대상(당일 참여)이 됩니다. 하나씩 누를 필요 없이 여기서 한 번에 정하세요.</p>
+      <h3>오늘 참석자 선택</h3>
+      <p className="muted" style={{ marginTop: -6, fontSize: '.82rem' }}>체크한 사람만 오늘 경기에 들어가요.</p>
       <div className="row-actions" style={{ marginBottom: 10 }}>
         <button className="btn btn-outline btn-sm" onClick={() => setChecked(new Set(state.players.map(p => p.id)))}>전체 선택</button>
         <button className="btn btn-outline btn-sm" onClick={() => setChecked(new Set())}>전체 해제</button>

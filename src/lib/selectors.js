@@ -34,9 +34,10 @@ export function playingPlayerIds(state) {
   return ids;
 }
 
-export function waitingPlayerIds(state) {
+export function waitingPlayerIds(state, exceptId) {
   const ids = new Set();
   state.waitingMatches.forEach(w => {
+    if (w.id === exceptId) return;
     w.teamA.forEach(id => ids.add(id));
     w.teamB.forEach(id => ids.add(id));
   });
@@ -68,13 +69,6 @@ export function waitingDuration(p, now = Date.now()) {
   return durationStr(p.restSince, now);
 }
 
-export function playerNameWithWait(state, id) {
-  const p = playerById(state, id);
-  if (!p) return playerName(state, id);
-  const dur = !playingPlayerIds(state).has(id) ? waitingDuration(p) : '';
-  return dur ? `${p.name} (${dur})` : p.name;
-}
-
 export function fairnessCompare(a, b) {
   // 매칭 알고리즘과 같은 우선순위: 경기 수가 적을수록, 그 다음 오래 쉰 사람일수록 앞에 오도록
   if (a.totalGames !== b.totalGames) return a.totalGames - b.totalGames;
@@ -83,9 +77,9 @@ export function fairnessCompare(a, b) {
   return a.name.localeCompare(b.name, 'ko');
 }
 
-export function waitingModalPlayers(state) {
+export function waitingModalPlayers(state, exceptId) {
   // 대기 코트는 다음 경기를 미리 준비하는 용도라, 지금 경기 중인 선수도 선택할 수 있게 한다.
-  // 단, 이미 다른 대기 코트에 들어간 선수는 중복 배정을 막기 위해 제외한다.
-  const waiting = waitingPlayerIds(state);
+  // 단, 이미 다른 대기 코트에 들어간 선수는 중복 배정을 막기 위해 제외한다. (수정 중인 대기 코트 자신은 빼고 계산)
+  const waiting = waitingPlayerIds(state, exceptId);
   return eligiblePlayers(state).filter(p => !waiting.has(p.id));
 }

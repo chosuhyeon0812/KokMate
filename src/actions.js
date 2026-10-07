@@ -110,6 +110,15 @@ export function addWaitingMatch(selection) {
   });
 }
 
+export function updateWaitingMatch(id, selection) {
+  update(d => {
+    const w = d.waitingMatches.find(x => x.id === id);
+    w.teamA = selection.slice(0, 2);
+    w.teamB = selection.slice(2, 4);
+    w.gameType = deriveGameType(d, w.teamA, w.teamB);
+  });
+}
+
 export function startWaitingMatch(id, court) {
   update(d => {
     const w = d.waitingMatches.find(x => x.id === id);

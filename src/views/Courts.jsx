@@ -1,6 +1,7 @@
 import { useAppState } from '../store';
 import { useUI } from '../ui';
 import { activeGameOnCourt } from '../lib/selectors';
+import { MAX_WAITING } from '../lib/utils';
 import { LiveCourtCard, WaitingCard, EmptyHint, Lead } from '../components/cards';
 import RestManagerModal from '../modals/RestManagerModal';
 import PlayerPicker from '../modals/PlayerPicker';
@@ -33,8 +34,8 @@ export default function Courts() {
       </div>
       <div className="card">
         <div className="section-row">
-          <h2 className="mb0">🕒 대기 코트</h2>
-          <button className="btn btn-outline btn-sm" onClick={() => openModal(<PlayerPicker mode="waiting" />, { wide: true })}>대기 코트 추가</button>
+          <h2 className="mb0">🕒 대기 코트 <span className="muted" style={{ fontSize: '.8rem', fontWeight: 600 }}>{state.waitingMatches.length}/{MAX_WAITING}</span></h2>
+          <button className="btn btn-outline btn-sm" disabled={state.waitingMatches.length >= MAX_WAITING} onClick={() => openModal(<PlayerPicker mode="waiting" />, { wide: true })}>대기 코트 추가</button>
         </div>
         <Lead>코트가 아직 비지 않았어도 다음 경기 멤버를 미리 정해둘 수 있습니다. 코트가 비면 "코트 배정하고 시작"을 누르세요.</Lead>
         {state.waitingMatches.length === 0 ? <EmptyHint>대기 중인 다음 경기가 없습니다.</EmptyHint> : (

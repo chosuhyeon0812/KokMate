@@ -2,7 +2,7 @@ import { useAppState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
 import { timeStr, starStr } from '../lib/utils';
-import { playerName, playerNameWithWait, playingPlayerIds, activeGameOnCourt, waitingDuration, occupiedCourts } from '../lib/selectors';
+import { playerName, playingPlayerIds, activeGameOnCourt, waitingDuration, occupiedCourts } from '../lib/selectors';
 import { starsFor } from '../lib/matching';
 import EndGameModal from '../modals/EndGameModal';
 import PlayerPicker from '../modals/PlayerPicker';
@@ -55,7 +55,7 @@ export function RecCard({ rec: r, idx }) {
           <button className="btn btn-primary btn-sm" onClick={start}>이 조합으로 경기 시작</button>
         </div>
       </div>
-      <TeamLine teamA={r.teamA} teamB={r.teamB} label={id => playerNameWithWait(state, id)} />
+      <TeamLine teamA={r.teamA} teamB={r.teamB} label={id => playerName(state, id)} />
       <div className="rec-score">
         추천 기준 · 경기수균형 {starStr(5)} · 등급균형 {starStr(st.level)} · 파트너중복방지 {starStr(st.partner)} · 상대중복방지 {starStr(st.opponent)}
       </div>
@@ -65,9 +65,9 @@ export function RecCard({ rec: r, idx }) {
 
 export function WaitingCard({ match: w }) {
   const state = useAppState();
-  const { toast, warn } = useUI();
+  const { toast, warn, openModal } = useUI();
   const playing = playingPlayerIds(state);
-  const label = id => playing.has(id) ? playerName(state, id) + ' 🔴' : playerNameWithWait(state, id);
+  const label = id => playing.has(id) ? playerName(state, id) + ' 🔴' : playerName(state, id);
   const hasPlaying = w.teamA.concat(w.teamB).some(id => playing.has(id));
 
   const start = () => {
@@ -88,6 +88,7 @@ export function WaitingCard({ match: w }) {
       {hasPlaying && <div className="muted center" style={{ fontSize: '.72rem', marginTop: 2 }}>🔴 = 아직 경기 중인 선수. 끝난 뒤 배정하세요.</div>}
       <div className="card-actions">
         <button className="btn btn-primary btn-sm" onClick={start}>코트 배정하고 시작</button>
+        <button className="btn btn-outline btn-sm" onClick={() => openModal(<PlayerPicker mode="editWaiting" waitingId={w.id} />, { wide: true })}>수정</button>
         <button className="btn btn-danger btn-sm" onClick={() => actions.deleteWaitingMatch(w.id)}>삭제</button>
       </div>
     </div>

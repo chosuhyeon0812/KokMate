@@ -3,29 +3,69 @@ import { useState } from 'react';
 import { useAppState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
-import { genderLabel } from '../lib/utils';
+import { genderLabel, MAX_WAITING } from '../lib/utils';
 import {
   playerById, playerName, availablePlayers, playingPlayerIds, waitingModalPlayers,
-  fairnessCompare, waitingDuration, freeCourts,
+  fairnessCompare, freeCourts,
 } from '../lib/selectors';
 import { EmptyHint } from '../components/cards';
 
-export default function PlayerPicker({ mode, presetCourt, idx }) {
+const EMPTY_SLOTS = [null, null, null, null];
+const LONG_REST_MS = 20 * 60000; // 이만큼 쉬었으면 타일 모서리 시간을 강조색으로
+
+// 타일 모서리에 들어갈 짧은 쉰 시간 (1시간이 넘으면 분은 생략)
+function shortWait(p) {
+  if (!p.restSince) return '';
+  const mins = Math.max(0, Math.round((Date.now() - p.restSince) / 60000));
+  return mins < 60 ? `${mins}분` : `${Math.floor(mins / 60)}시간`;
+}
+
+// 고른 팀에서 오늘 이미 같이 뛴 파트너, 직전 경기와 똑같은 4명 조합을 알려준다. (막지는 않고 안내만)
+function pickNotes(state, sel) {
+  const done = state.games.filter(g => g.status === 'done').sort((a, b) => b.endTime - a.endTime);
+  const inGame = (g, id) => g.teamA.includes(id) || g.teamB.includes(id);
+  const sameTeam = (g, x, y) => (g.teamA.includes(x) && g.teamA.includes(y)) || (g.teamB.includes(x) && g.teamB.includes(y));
+  const lastGameOf = id => done.find(g => inGame(g, id));
+  const notes = [];
+
+  if (sel.every(Boolean)) {
+    const last = sel.map(lastGameOf);
+    if (last.some(g => g && sel.every(id => inGame(g, id)))) notes.push({ warn: true, text: '직전 경기와 같은 4명이에요.' });
+  }
+  for (const [x, y] of [[sel[0], sel[1]], [sel[2], sel[3]]]) {
+    if (!x || !y) continue;
+    const count = done.filter(g => sameTeam(g, x, y)).length;
+    if (!count) continue;
+    const pair = `${playerName(state, x)} + ${playerName(state, y)}`;
+    const recent = [lastGameOf(x), lastGameOf(y)].some(g => g && sameTeam(g, x, y));
+    notes.push(recent
+      ? { warn: true, text: `${pair}: 직전 경기에서도 파트너였어요 (오늘 ${count}번)` }
+      : { warn: false, text: `${pair}: 오늘 ${count}번 파트너였어요` });
+  }
+  return notes;
+}
+
+export default function PlayerPicker({ mode, presetCourt, idx, waitingId }) {
   const state = useAppState();
   const { toast, warn, closeModal, switchView } = useUI();
   const rec = mode === 'edit' ? state.pendingRecs[idx] : null;
-  const [selection, setSelection] = useState(() => rec ? rec.teamA.concat(rec.teamB) : []);
+  const wait = mode === 'editWaiting' ? state.waitingMatches.find(w => w.id === waitingId) : null;
+  const preset = rec || wait;
+  // 자리(A1, A2, B1, B2)를 고정한 4칸 배열. 빈 자리는 null이라, 한 명을 빼고 다시 고르면 그 자리에 들어간다.
+  const [selection, setSelection] = useState(() => preset ? preset.teamA.concat(preset.teamB) : EMPTY_SLOTS);
+  const filled = selection.filter(Boolean).length;
   const [courtChoice, setCourtChoice] = useState(presetCourt || null);
 
   if (mode === 'edit' && !rec) return null;
+  if (mode === 'editWaiting' && !wait) return null;
 
   const playing = playingPlayerIds(state);
   const courts = freeCourts(state);
   const court = courts.includes(courtChoice) ? courtChoice : (courts[0] || null);
 
   let pool;
-  if (mode === 'waiting') {
-    pool = waitingModalPlayers(state).sort((a, b) => {
+  if (mode === 'waiting' || mode === 'editWaiting') {
+    pool = waitingModalPlayers(state, waitingId).sort((a, b) => {
       const ap = playing.has(a.id) ? 1 : 0, bp = playing.has(b.id) ? 1 : 0;
       return ap !== bp ? ap - bp : fairnessCompare(a, b);
     });
@@ -33,29 +73,37 @@ export default function PlayerPicker({ mode, presetCourt, idx }) {
     pool = availablePlayers(state).sort(fairnessCompare);
   }
   selection.forEach(id => {
-    if (!pool.find(p => p.id === id)) {
+    if (id && !pool.find(p => p.id === id)) {
       const p = playerById(state, id);
       if (p) pool.push(p);
     }
   });
 
   const pick = id => {
-    if (!selection.includes(id) && selection.length >= 4) { warn('이미 4명이 선택되었습니다. 먼저 선택을 해제하세요.'); return; }
-    setSelection(prev => prev.includes(id) ? prev.filter(x => x !== id) : prev.length < 4 ? [...prev, id] : prev);
+    if (selection.includes(id)) { unpick(id); return; }
+    if (filled >= 4) { warn('이미 4명이 선택되었습니다. 먼저 선택을 해제하세요.'); return; }
+    setSelection(prev => { const next = [...prev]; next[next.indexOf(null)] = id; return next; });
   };
+
+  const unpick = id => setSelection(prev => prev.map(x => (x === id ? null : x)));
 
   const submit = () => {
     if (mode === 'manual' && !court) { warn('코트를 선택하세요.'); return; }
-    if (selection.length !== 4) { warn('4명 모두 선택하세요.'); return; }
+    if (filled !== 4) { warn('4명 모두 선택하세요.'); return; }
     if (mode === 'manual') {
       actions.startGame(court, selection);
       closeModal();
       toast('경기를 시작했습니다.');
       switchView('home');
     } else if (mode === 'waiting') {
+      if (state.waitingMatches.length >= MAX_WAITING) { warn(`대기 코트는 최대 ${MAX_WAITING}개까지 만들 수 있어요.`); return; }
       actions.addWaitingMatch(selection);
       closeModal();
       toast('대기 코트에 추가되었습니다.');
+    } else if (mode === 'editWaiting') {
+      actions.updateWaitingMatch(waitingId, selection);
+      closeModal();
+      toast('대기 코트 멤버를 수정했습니다.');
     } else {
       actions.updateRec(idx, selection);
       closeModal();
@@ -63,10 +111,12 @@ export default function PlayerPicker({ mode, presetCourt, idx }) {
     }
   };
 
+  const notes = pickNotes(state, selection);
+
   const chip = (i, tag) => {
     const id = selection[i];
     return (
-      <div className={`slot-chip ${id ? 'filled' : ''}`} onClick={() => id && setSelection(prev => prev.filter(x => x !== id))}>
+      <div className={`slot-chip ${id ? 'filled' : ''}`} onClick={() => id && unpick(id)}>
         <span className="slot-tag">{tag}</span>{id ? playerName(state, id) : '선택 안 됨'}
       </div>
     );
@@ -75,27 +125,35 @@ export default function PlayerPicker({ mode, presetCourt, idx }) {
   const slots = (
     <>
       <div className="picker-slots">{chip(0, 'A1')}{chip(1, 'A2')}<span className="slot-vs">VS</span>{chip(2, 'B1')}{chip(3, 'B2')}</div>
-      {selection.length > 0 && (
+      {filled > 0 && (
         <div className="center" style={{ margin: '2px 0 10px' }}>
-          <button type="button" className="btn btn-ghost btn-sm" onClick={() => setSelection([])}>선택 초기화</button>
+          <button type="button" className="btn btn-ghost btn-sm" onClick={() => setSelection(EMPTY_SLOTS)}>선택 초기화</button>
+        </div>
+      )}
+      {notes.length > 0 && (
+        <div className="pick-notes">
+          {notes.map(n => <div key={n.text} className={n.warn ? 'warn' : ''}>{n.warn ? '⚠ ' : 'ℹ '}{n.text}</div>)}
         </div>
       )}
     </>
   );
 
-  const full = selection.length >= 4;
+  const full = filled >= 4;
   const grid = pool.length === 0 ? <EmptyHint>선택 가능한 참가자가 없습니다.</EmptyHint> : (
     <div className="player-grid">
       {pool.map(p => {
         const i = selection.indexOf(p.id);
         const team = i === -1 ? '' : (i < 2 ? 'a' : 'b');
-        const waitPart = playing.has(p.id) ? '🔴 경기 중' : waitingDuration(p);
+        const isPlaying = playing.has(p.id);
+        const longRest = !isPlaying && p.restSince && Date.now() - p.restSince >= LONG_REST_MS;
+        const corner = isPlaying ? '경기 중' : shortWait(p);
         const disabled = full && i === -1;
         return (
           <button key={p.id} type="button" className={`player-tile ${i !== -1 ? 'selected team-' + team : ''}${disabled ? ' disabled' : ''}`} onClick={() => pick(p.id)}>
-            {i !== -1 && <span className="tile-badge">팀{team.toUpperCase()} · {i % 2 + 1}</span>}
+            {i !== -1 && <span className="tile-slot">{team.toUpperCase()}{i % 2 + 1}</span>}
+            {corner && <span className={`tile-corner${isPlaying ? ' playing' : longRest ? ' long' : ''}`}>{corner}</span>}
             <span className="tile-name">{p.name}</span>
-            <span className="tile-meta">{genderLabel(p.gender)}/{p.level} · {p.totalGames}경기{waitPart ? ' · ' + waitPart : ''}</span>
+            <span className="tile-meta">{genderLabel(p.gender)} · {p.level} · {p.totalGames}경기</span>
           </button>
         );
       })}
@@ -137,6 +195,18 @@ export default function PlayerPicker({ mode, presetCourt, idx }) {
         {slots}
         {grid}
         {actionsRow('대기 코트에 추가')}
+      </>
+    );
+  }
+
+  if (mode === 'editWaiting') {
+    return (
+      <>
+        <h3>✏️ 대기 코트 수정</h3>
+        <p className="muted" style={{ marginTop: -6, fontSize: '.82rem' }}>선택칸의 이름을 누르면 빠지고, 아래에서 다른 선수를 누르면 그 자리에 들어갑니다.</p>
+        {slots}
+        {grid}
+        {actionsRow('저장')}
       </>
     );
   }

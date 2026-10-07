@@ -1,6 +1,7 @@
 export const STORAGE_KEY = 'bm-matcher-state-v1';
 export const LEVEL_ORDER = { 'A': 5, 'B': 4, 'C': 3, 'D': 2, 'E': 1, 'F': 0 };
 export const LEVEL_OPTIONS = ['A', 'B', 'C', 'D', 'E', 'F'];
+export const MAX_WAITING = 3; // 대기 코트 최대 개수
 
 export function uid(prefix) {
   return prefix + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);

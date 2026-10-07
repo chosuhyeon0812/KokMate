@@ -3,21 +3,18 @@ import { UIContext } from './ui';
 import logo from './assets/logo.jpg';
 import Home from './views/Home';
 import Players from './views/Players';
-import Courts from './views/Courts';
 import Shuttles from './views/Shuttles';
-import History from './views/History';
-import Stats from './views/Stats';
+import Records from './views/Records';
 import Help from './views/Help';
 
 const TABS = [
-  { key: 'home', label: '🏠 홈', View: Home },
+  { key: 'home', label: '🏟 코트', View: Home },
   { key: 'players', label: '👥 참가자', View: Players },
-  { key: 'courts', label: '🏟 코트 현황', View: Courts },
-  { key: 'shuttles', label: '🏸 콕 관리', View: Shuttles },
-  { key: 'history', label: '📋 경기 기록', View: History },
-  { key: 'stats', label: '📊 통계', View: Stats },
-  { key: 'help', label: '❓ 사용법', View: Help },
+  { key: 'shuttles', label: '🏸 콕', View: Shuttles },
+  { key: 'records', label: '📋 기록', View: Records },
 ];
+// 사용법은 탭 대신 오른쪽 위 ? 버튼으로 연다.
+const VIEWS = [...TABS, { key: 'help', View: Help }];
 
 export default function App() {
   const [view, setView] = useState('home');
@@ -49,7 +46,7 @@ export default function App() {
     };
   }, []);
 
-  const { View } = TABS.find(t => t.key === view);
+  const { View } = VIEWS.find(t => t.key === view);
   const today = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' });
 
   return (
@@ -62,7 +59,10 @@ export default function App() {
             <span>소규모 모임 경기 운영 도우미</span>
           </div>
         </div>
-        <div className="topbar-meta"><span>{today}</span></div>
+        <div className="topbar-right">
+          <div className="topbar-meta"><span>{today}</span></div>
+          <button className={`help-btn${view === 'help' ? ' active' : ''}`} title="사용법" aria-label="사용법" onClick={() => setView(view === 'help' ? 'home' : 'help')}>?</button>
+        </div>
       </header>
 
       <nav className="tabbar">

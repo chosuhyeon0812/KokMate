@@ -464,3 +464,8 @@ tr:last-child td{border-bottom:none}
   width:100%;min-width:160px;padding:7px 10px;border:1.5px solid var(--border);border-radius:10px;font-size:.85rem;
 }
 .shuttle-note:focus{outline:none;border-color:var(--primary-light)}
+.clickable-row{cursor:pointer;transition:background-color .15s ease}
+.clickable-row:hover{background:var(--primary-pale)}
+.row-chevron{color:var(--muted);font-size:1.2rem;text-align:right;width:24px}
+.today-status{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:14px;padding:10px 12px;background:var(--primary-pale);border-radius:12px}
+.today-status .field-label{width:100%;margin:0}

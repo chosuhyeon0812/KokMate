@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import { useAppState } from '../store';
 import { useUI } from '../ui';
-import * as actions from '../actions';
 import { sortByName, LEVEL_OPTIONS } from '../lib/utils';
-import { playerById, playingPlayerIds, waitingPlayerIds } from '../lib/selectors';
 import { StatusBadge, GenderBadge, EmptyHint } from '../components/cards';
 import PlayerFormModal from '../modals/PlayerFormModal';
 
@@ -13,7 +11,7 @@ let savedFilter = EMPTY_FILTER;
 
 export default function Players() {
   const state = useAppState();
-  const { warn, openModal } = useUI();
+  const { openModal } = useUI();
   const [filter, setFilterState] = useState(savedFilter);
   const setFilter = f => { savedFilter = f; setFilterState(f); };
 
@@ -23,12 +21,6 @@ export default function Players() {
     (!filter.active || (filter.active === 'active' ? p.active : !p.active))
   );
   const filterActive = filter.gender || filter.level || filter.active;
-
-  const remove = id => {
-    if (playingPlayerIds(state).has(id)) { warn('지금 경기 중인 선수는 삭제할 수 없습니다. 경기 종료 후 삭제하세요.'); return; }
-    if (waitingPlayerIds(state).has(id)) { warn('대기 코트에 들어가 있는 선수는 삭제할 수 없습니다. 대기 코트에서 먼저 빼주세요.'); return; }
-    if (confirm('참가자를 삭제할까요? 관련 경기 기록의 이름 표시는 유지됩니다.')) actions.deletePlayer(id);
-  };
 
   const filterSelect = (key, label, options) => (
     <div className="field">
@@ -60,21 +52,16 @@ export default function Players() {
         filtered.length === 0 ? <EmptyHint>조건에 맞는 참가자가 없습니다.</EmptyHint> : (
           <div style={{ overflowX: 'auto' }}>
             <table>
-              <thead><tr><th>이름</th><th>성별</th><th>등급</th><th>경기수</th><th>상태</th><th>관리</th></tr></thead>
+              <thead><tr><th>이름</th><th>성별</th><th>등급</th><th>경기수</th><th>상태</th><th></th></tr></thead>
               <tbody>
                 {filtered.map(p => (
-                  <tr key={p.id}>
+                  <tr key={p.id} className="clickable-row" onClick={() => openModal(<PlayerFormModal playerId={p.id} />)}>
                     <td>{p.name}</td>
                     <td><GenderBadge gender={p.gender} /></td>
                     <td><span className="badge badge-level">{p.level}</span></td>
                     <td>{p.totalGames}</td>
                     <td><StatusBadge player={p} /></td>
-                    <td className="row-actions">
-                      <button className="btn btn-outline btn-sm" onClick={() => openModal(<PlayerFormModal player={playerById(state, p.id)} />)}>수정</button>
-                      <button className={`btn ${p.resting ? 'btn-primary' : 'btn-ghost'} btn-sm`} onClick={() => actions.toggleRest(p.id)}>{p.resting ? '휴식 해제' : '휴식'}</button>
-                      <button className={`btn ${p.active ? 'btn-ghost' : 'btn-primary'} btn-sm`} onClick={() => actions.toggleActive(p.id)}>{p.active ? '당일 제외' : '당일 포함'}</button>
-                      <button className="btn btn-danger btn-sm" onClick={() => remove(p.id)}>삭제</button>
-                    </td>
+                    <td className="row-chevron">›</td>
                   </tr>
                 ))}
               </tbody>

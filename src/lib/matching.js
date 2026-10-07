@@ -36,8 +36,27 @@ function mixedSplits(males, females) {
   ];
 }
 
+// 오늘 경기 결과를 반영한 실력 보정치 (-1 ~ +1 등급).
+// 경기당 평균 점수 차 10점을 1등급으로 보고, 점수 없이 승패만 있으면 ±5점으로 친다.
+// 경기 수가 적을 때는 우연일 수 있어 보정을 약하게 (1경기 25%, 3경기 50%, 9경기 75%).
+export function formAdjust(state, id) {
+  let sum = 0, n = 0;
+  for (const g of state.games) {
+    if (g.status !== 'done') continue;
+    const side = g.teamA.includes(id) ? 'A' : g.teamB.includes(id) ? 'B' : null;
+    if (!side) continue;
+    let margin;
+    if (g.scoreA != null && g.scoreB != null) margin = side === 'A' ? g.scoreA - g.scoreB : g.scoreB - g.scoreA;
+    else if (g.winner) margin = g.winner === side ? 5 : -5;
+    else continue;
+    sum += margin; n++;
+  }
+  if (!n) return 0;
+  return Math.max(-1, Math.min(1, sum / n / 10)) * n / (n + 3);
+}
+
 function avgLevel(state, ids) {
-  const sum = ids.reduce((s, id) => s + LEVEL_ORDER[playerById(state, id).level], 0);
+  const sum = ids.reduce((s, id) => s + LEVEL_ORDER[playerById(state, id).level] + formAdjust(state, id), 0);
   return sum / ids.length;
 }
 
@@ -63,7 +82,8 @@ function pastOpponentCount(state, id1, id2) {
 }
 
 export function scoreSplit(state, teamA, teamB) {
-  const levelDiff = Math.abs(avgLevel(state, teamA) - avgLevel(state, teamB));
+  // 0.25 단위로 반올림해서, 실력 차이가 비슷하면 파트너/상대 중복을 기준으로 고르게 한다.
+  const levelDiff = Math.round(Math.abs(avgLevel(state, teamA) - avgLevel(state, teamB)) * 4) / 4;
   const partnerRepeat = pastPartnerCount(state, teamA[0], teamA[1]) + pastPartnerCount(state, teamB[0], teamB[1]);
   let opponentRepeat = 0;
   for (const x of teamA) for (const y of teamB) opponentRepeat += pastOpponentCount(state, x, y);

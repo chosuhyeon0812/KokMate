@@ -469,3 +469,49 @@ tr:last-child td{border-bottom:none}
 .row-chevron{color:var(--muted);font-size:1.2rem;text-align:right;width:24px}
 .today-status{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:14px;padding:10px 12px;background:var(--primary-pale);border-radius:12px}
 .today-status .field-label{width:100%;margin:0}
+
+/* ===== 휴대폰 화면 (체육관에서 폰으로 보는 경우) ===== */
+@media (max-width:520px){
+  /* 헤더: 제목이 줄바꿈되지 않게, 날짜는 숨기고 ? 버튼만 */
+  .topbar{padding:12px 14px}
+  .brand{gap:10px}
+  .brand-logo{width:38px;height:38px}
+  .brand-text strong{white-space:nowrap;font-size:1.05rem}
+  .topbar-meta{display:none}
+  .help-btn{width:36px;height:36px;font-size:1rem}
+
+  /* 탭: 4개를 화면 너비에 꽉 차게, 누르기 쉽게 */
+  .tabbar{padding:8px 8px 0;gap:2px}
+  .tab-btn{flex:1;padding:12px 4px;font-size:.92rem}
+
+  main{padding:12px 10px 60px}
+  .card{padding:16px 14px}
+  .card h2{font-size:1.1rem}
+
+  /* 버튼과 글씨 키우기 */
+  .btn{padding:12px 16px;font-size:.95rem}
+  .btn-sm{padding:9px 13px;font-size:.85rem;border-radius:10px}
+  .court-title{font-size:.92rem}
+  .status-dot{font-size:.8rem}
+  .team-line .team-name{font-size:.98rem;padding:10px 6px}
+  .card-actions{gap:8px}
+  .card-actions .btn{flex:1 1 auto;white-space:nowrap}
+
+  /* iOS 에서 입력칸을 누르면 화면이 확대되는 것 방지 (16px 이상) */
+  input,select,textarea{font-size:16px !important}
+
+  /* 선택 창: 화면을 거의 다 쓰고, 버튼은 항상 아래에 보이게 */
+  .modal-root{padding:8px;align-items:flex-end}
+  .modal-box,.modal-box.wide{max-width:100%;max-height:94vh;padding:16px 14px 0;border-radius:18px}
+  .modal-actions{position:sticky;bottom:0;background:#fff;margin:14px -14px 0;padding:12px 14px;border-top:1px solid var(--border)}
+  .modal-actions .btn{flex:1}
+  .player-grid{max-height:none;overflow:visible;grid-template-columns:repeat(2,1fr)}
+
+  /* 선택칸 4개 + VS 를 한 줄에 */
+  .picker-slots{flex-wrap:nowrap;gap:4px}
+  .slot-chip{min-width:0;flex:1;padding:8px 2px;font-size:.88rem}
+  .slot-vs{padding:0 1px;font-size:.78rem}
+
+  /* 콕 / 표 */
+  .shuttle-note{min-width:120px}
+}

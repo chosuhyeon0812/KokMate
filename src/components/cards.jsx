@@ -2,7 +2,7 @@ import { useAppState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
 import { timeStr, starStr } from '../lib/utils';
-import { playerName, playingPlayerIds, activeGameOnCourt, waitingDuration, occupiedCourts } from '../lib/selectors';
+import { playerName, playingPlayerIds, activeGameOnCourt, waitingDuration, freeCourts } from '../lib/selectors';
 import { starsFor } from '../lib/matching';
 import EndGameModal from '../modals/EndGameModal';
 import PlayerPicker from '../modals/PlayerPicker';
@@ -73,9 +73,7 @@ export function WaitingCard({ match: w }) {
   const start = () => {
     const stillPlaying = w.teamA.concat(w.teamB).filter(pid => playing.has(pid));
     if (stillPlaying.length) { warn(`아직 경기 중인 선수가 있어 시작할 수 없어요: ${stillPlaying.map(id => playerName(state, id)).join(', ')}`); return; }
-    const busy = occupiedCourts(state);
-    let court = null;
-    for (let c = 1; c <= state.settings.courtCount; c++) { if (!busy.has(c)) { court = c; break; } }
+    const court = freeCourts(state)[0];
     if (!court) { warn('비어있는 코트가 없습니다.'); return; }
     actions.startWaitingMatch(w.id, court);
     toast(`${court}번 코트에서 경기를 시작했습니다.`);

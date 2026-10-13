@@ -23,8 +23,16 @@ function clearSessionData(d) {
 
 /* ---------- 설정 / 추천 ---------- */
 
-export function saveSettings(courtCount) {
-  update(d => { d.settings.courtCount = Math.max(1, Number(courtCount) || 1); });
+export function addCourt(court) {
+  update(d => { d.settings.courts = d.settings.courts.concat(court).sort((a, b) => a - b); });
+}
+
+// 비어 있는 코트만 뺄 수 있다. (경기 중인 코트 카드에는 빼기 버튼이 없음)
+export function removeCourt(court) {
+  update(d => {
+    d.settings.courts = d.settings.courts.filter(c => c !== court);
+    d.pendingRecs = d.pendingRecs.filter(r => r.court !== court); // 없어진 코트의 추천은 지운다
+  });
 }
 
 export function recommend() {

@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useAppState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
@@ -10,13 +9,6 @@ import Courts from './Courts';
 export default function Home() {
   const state = useAppState();
   const { toast, warn, openModal } = useUI();
-  const [courtInput, setCourtInput] = useState(String(state.settings.courtCount));
-
-  const saveSettings = () => {
-    actions.saveSettings(courtInput);
-    setCourtInput(String(Math.max(1, Number(courtInput) || 1)));
-    toast('설정이 저장되었습니다.');
-  };
 
   const endSession = () => {
     if (actions.todaysDoneGames(state).length === 0) { warn('저장할 경기 기록이 없습니다.'); return; }
@@ -34,11 +26,6 @@ export default function Home() {
         </div>
         <div className="session-row">
           <button className="btn btn-primary" onClick={() => openModal(<AttendanceModal />)}>오늘 참석자 선택</button>
-          <div className="court-count">
-            <label htmlFor="court-count">코트 수</label>
-            <input id="court-count" type="number" min="1" max="20" value={courtInput} onChange={e => setCourtInput(e.target.value)} />
-            <button className="btn btn-ghost" onClick={saveSettings}>저장</button>
-          </div>
         </div>
       </div>
 

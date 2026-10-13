@@ -5,7 +5,7 @@ import { STORAGE_KEY } from './lib/utils';
 function defaultState() {
   return {
     players: [],
-    settings: { courtCount: 4 },
+    settings: { courts: [] }, // 오늘 쓰는 코트 번호들 (예: [3, 5, 6])
     games: [],
     pendingRecs: [], // [{court, teamA:[ids], teamB:[ids], score:{levelDiff,partnerRepeat,opponentRepeat}}]
     waitingMatches: [], // [{id, teamA:[ids], teamB:[ids], gameType}] - 코트 미배정, 다음 경기 대기용
@@ -19,6 +19,10 @@ function loadState() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return defaultState();
     const merged = Object.assign(defaultState(), JSON.parse(raw));
+    // 예전 데이터는 코트 수(courtCount)만 저장했으므로, 1번부터 그 수만큼의 코트로 바꿔준다.
+    if (!Array.isArray(merged.settings.courts)) {
+      merged.settings = { courts: Array.from({ length: merged.settings.courtCount || 0 }, (_, i) => i + 1) };
+    }
     // 기존 저장 데이터에는 restSince가 없을 수 있으므로, 대기 중인데 기록이 없으면 지금부터 카운트 시작
     merged.players.forEach(p => { if (p.active && !p.resting && !p.restSince) p.restSince = Date.now(); });
     return merged;

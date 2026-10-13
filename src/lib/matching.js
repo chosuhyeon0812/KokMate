@@ -140,20 +140,19 @@ function chooseCourtGameType(remainingMales, remainingFemales) {
 }
 
 export function generateRecommendations(state) {
-  const courtCount = state.settings.courtCount;
+  const courts = state.settings.courts;
   const eligible = availablePlayers(state);
 
   let remainingMales = eligible.filter(p => p.gender === 'M');
   let remainingFemales = eligible.filter(p => p.gender === 'F');
 
   const assignments = [];
-  let court = 1;
   let shortfall = '';
 
-  for (let i = 0; i < courtCount; i++) {
+  for (const court of courts) {
     const gameType = chooseCourtGameType(remainingMales, remainingFemales);
     if (!gameType) {
-      shortfall = `현재 참여 가능 인원으로는 ${assignments.length}개 코트만 구성할 수 있습니다. (요청: ${courtCount}개)`;
+      shortfall = `현재 참여 가능 인원으로는 ${assignments.length}개 코트만 구성할 수 있습니다. (요청: ${courts.length}개)`;
       break;
     }
 
@@ -181,7 +180,7 @@ export function generateRecommendations(state) {
     const used = best.teamA.concat(best.teamB);
     remainingMales = remainingMales.filter(p => !used.includes(p.id));
     remainingFemales = remainingFemales.filter(p => !used.includes(p.id));
-    assignments.push({ court: court++, teamA: best.teamA, teamB: best.teamB, score: best.score, gameType });
+    assignments.push({ court, teamA: best.teamA, teamB: best.teamB, score: best.score, gameType });
   }
 
   return { assignments, shortfall };

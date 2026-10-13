@@ -54,13 +54,8 @@ export function activeGameOnCourt(state, court) {
   return state.games.find(g => g.court === court && g.status === 'progress');
 }
 
-export function occupiedCourts(state) {
-  return new Set(state.games.filter(g => g.status === 'progress').map(g => g.court));
-}
-
 export function freeCourts(state) {
-  return Array.from({ length: state.settings.courtCount }, (_, i) => i + 1)
-    .filter(c => !activeGameOnCourt(state, c));
+  return state.settings.courts.filter(c => !activeGameOnCourt(state, c));
 }
 
 export function waitingDuration(p, now = Date.now()) {

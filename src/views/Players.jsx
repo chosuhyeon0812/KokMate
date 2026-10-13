@@ -4,6 +4,7 @@ import { useUI } from '../ui';
 import { sortByName, LEVEL_OPTIONS } from '../lib/utils';
 import { StatusBadge, GenderBadge, EmptyHint } from '../components/cards';
 import PlayerFormModal from '../modals/PlayerFormModal';
+import BulkAddModal from '../modals/BulkAddModal';
 
 const EMPTY_FILTER = { gender: '', level: '', active: '' };
 // 탭을 옮겨 다녀도 필터가 유지되도록 컴포넌트 밖에 기억해 둔다.
@@ -37,6 +38,7 @@ export default function Players() {
       <div className="section-row">
         <h2 className="mb0">참가자 ({filterActive ? `${filtered.length}/${state.players.length}` : state.players.length}명)</h2>
         <div className="row-actions">
+          <button className="btn btn-outline btn-sm" onClick={() => openModal(<BulkAddModal />)}>여러 명 추가</button>
           <button className="btn btn-primary btn-sm" onClick={() => openModal(<PlayerFormModal />)}>참가자 추가</button>
         </div>
       </div>

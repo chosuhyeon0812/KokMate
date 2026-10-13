@@ -140,6 +140,15 @@ export function savePlayer(id, fields) {
   });
 }
 
+// 여러 명 한 번에 등록. 회원 명단 등록용이라 오늘 참석자로는 넣지 않는다. (오늘 참석자 선택에서 체크)
+export function addPlayers(list) {
+  update(d => {
+    list.forEach(({ name, gender, level }) => {
+      d.players.push({ id: uid('p'), name, gender, level, memo: '', active: false, resting: false, totalGames: 0, wins: 0, losses: 0, shuttleDone: false, restSince: null });
+    });
+  });
+}
+
 export function deletePlayer(id) {
   update(d => {
     d.players = d.players.filter(p => p.id !== id);

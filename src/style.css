@@ -470,6 +470,15 @@ tr:last-child td{border-bottom:none}
 .today-status{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:14px;padding:10px 12px;background:var(--primary-pale);border-radius:12px}
 .today-status .field-label{width:100%;margin:0}
 
+.bulk-input{
+  width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;
+  font-family:inherit;font-size:.92rem;line-height:1.6;resize:vertical;
+}
+.bulk-input:focus{outline:none;border-color:var(--primary-light)}
+.bulk-preview{display:flex;flex-direction:column;gap:6px;margin-top:10px;font-size:.84rem}
+.bulk-ok{color:var(--success);font-weight:700}
+.bulk-errors{color:var(--danger);background:var(--danger-pale);padding:8px 10px;border-radius:10px}
+
 /* ===== 휴대폰 화면 (체육관에서 폰으로 보는 경우) ===== */
 @media (max-width:520px){
   /* 헤더: 제목이 줄바꿈되지 않게, 날짜는 숨기고 ? 버튼만 */

@@ -12,8 +12,11 @@ export default function Stats() {
   const rate = p => (p.wins + p.losses ? p.wins / (p.wins + p.losses) : null);
   // 승률순: 승패 기록이 없는 사람은 맨 뒤, 승률이 같으면 승수가 많은 사람 먼저
   const byRate = (a, b) => (rate(b) ?? -1) - (rate(a) ?? -1) || b.wins - a.wins || (diffs[b.id] ?? 0) - (diffs[a.id] ?? 0);
-  const sorted = state.players.slice().sort(sortBy === 'rate' ? byRate : (a, b) => a.totalGames - b.totalGames);
-  const minGames = Math.min(...state.players.map(p => p.totalGames));
+  // 오늘 온 사람만 보여준다. 먼저 가서 불참으로 바꾼 사람도 오늘 뛴 경기가 있으면 남긴다.
+  const todays = state.players.filter(p => p.active || p.totalGames > 0);
+  const sorted = todays.slice().sort(sortBy === 'rate' ? byRate : (a, b) => a.totalGames - b.totalGames);
+  // 다음 매칭 우선 표시는 지금 참석 중인 사람끼리만 비교한다.
+  const minGames = Math.min(...todays.filter(p => p.active).map(p => p.totalGames));
 
   const reset = () => {
     if (!confirm('오늘 경기 기록과 참가자 경기 수/승패를 초기화할까요? (참가자 명단은 유지됩니다)')) return;
@@ -24,21 +27,21 @@ export default function Stats() {
   return (
     <div className="card">
       <div className="section-row">
-        <h2 className="mb0">참가자 통계</h2>
+        <h2 className="mb0">참가자 통계 <span className="muted" style={{ fontSize: '.8rem', fontWeight: 600 }}>오늘 참석자</span></h2>
         <div className="pill-toggle">
           <button className={sortBy === 'games' ? 'on' : ''} onClick={() => setSortBy('games')}>경기 수순</button>
           <button className={sortBy === 'rate' ? 'on' : ''} onClick={() => setSortBy('rate')}>승률순</button>
         </div>
         <button className="btn btn-outline btn-sm" onClick={reset}>오늘 기록 초기화</button>
       </div>
-      {state.players.length === 0 ? <EmptyHint>참가자를 먼저 등록하세요.</EmptyHint> : (
+      {todays.length === 0 ? <EmptyHint>"코트" 탭에서 오늘 참석자를 먼저 선택하세요.</EmptyHint> : (
         <>
           <div style={{ overflowX: 'auto' }}>
             <table>
               <thead><tr><th>순위</th><th>이름</th><th>경기수</th><th>승</th><th>패</th><th>승률</th><th>득실</th><th>상태</th></tr></thead>
               <tbody>
                 {sorted.map((p, i) => {
-                  const isMin = sortBy === 'games' && p.totalGames === minGames;
+                  const isMin = sortBy === 'games' && p.active && p.totalGames === minGames;
                   return (
                     <tr key={p.id} style={isMin ? { background: 'var(--primary-pale)' } : undefined}>
                       <td>{i + 1}</td>

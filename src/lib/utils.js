@@ -7,6 +7,11 @@ export function uid(prefix) {
   return prefix + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 }
 
+// 회원 명단에만 올라간 새 참가자 (오늘 참석자는 아님)
+export function newMember({ name, gender, level }) {
+  return { id: uid('p'), name, gender, level, memo: '', active: false, resting: false, totalGames: 0, wins: 0, losses: 0, shuttleDone: false, restSince: null };
+}
+
 export function todayStr(ts) {
   const d = ts ? new Date(ts) : new Date();
   const pad = n => String(n).padStart(2, '0');

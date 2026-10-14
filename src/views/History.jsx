@@ -1,7 +1,7 @@
 import { useAppState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
-import { todayStr, timeStr, durationStr } from '../lib/utils';
+import { timeStr, durationStr } from '../lib/utils';
 import { playerName } from '../lib/selectors';
 import { EmptyHint } from '../components/cards';
 import EndGameModal from '../modals/EndGameModal';
@@ -65,9 +65,8 @@ function SessionHistoryCard() {
 export default function History() {
   const state = useAppState();
   const { toast, openModal } = useUI();
-  const today = todayStr();
-  const todays = actions.todaysDoneGames(state).sort((a, b) => b.endTime - a.endTime);
-  const usedCourts = new Set(state.games.filter(g => g.date === today).map(g => g.court)).size;
+  const todays = actions.sessionDoneGames(state).sort((a, b) => b.endTime - a.endTime);
+  const usedCourts = new Set(state.games.map(g => g.court)).size;
   const players = new Set();
   todays.forEach(g => g.teamA.concat(g.teamB).forEach(id => players.add(id)));
   const memos = todays.filter(g => g.memo).map(g => `코트${g.court} · ${g.memo}`);

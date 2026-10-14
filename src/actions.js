@@ -1,6 +1,6 @@
 /* 상태를 바꾸는 동작들. 입력 검증과 안내 메시지(toast)는 화면 쪽에서 처리한다. */
 import { update } from './store';
-import { uid, todayStr } from './lib/utils';
+import { uid, todayStr, newMember } from './lib/utils';
 import { playerById, deriveGameType } from './lib/selectors';
 import { generateRecommendations, scoreSplit } from './lib/matching';
 
@@ -151,9 +151,7 @@ export function savePlayer(id, fields) {
 // 여러 명 한 번에 등록. 회원 명단 등록용이라 오늘 참석자로는 넣지 않는다. (오늘 참석자 선택에서 체크)
 export function addPlayers(list) {
   update(d => {
-    list.forEach(({ name, gender, level }) => {
-      d.players.push({ id: uid('p'), name, gender, level, memo: '', active: false, resting: false, totalGames: 0, wins: 0, losses: 0, shuttleDone: false, restSince: null });
-    });
+    list.forEach(m => d.players.push(newMember(m)));
   });
 }
 
@@ -209,16 +207,22 @@ export function resetToday() {
   update(clearSessionData);
 }
 
-export function todaysDoneGames(state) {
-  const today = todayStr();
-  return state.games.filter(g => g.date === today && g.status === 'done');
+// 이번 모임에서 끝난 경기. "모임 종료" 전까지의 경기가 전부 이번 모임이라 날짜로 거르지 않는다.
+// (자정을 넘기거나 종료를 깜빡하고 다음 날 열어도 기록이 그대로 보이고 저장되도록)
+export function sessionDoneGames(state) {
+  return state.games.filter(g => g.status === 'done');
+}
+
+// 이번 모임을 시작한 날짜(첫 경기 날짜). 아직 경기가 없으면 null
+export function sessionDate(state) {
+  return state.games.length ? state.games[0].date : null;
 }
 
 export function endSession() {
   update(d => {
-    const todaysGames = todaysDoneGames(d);
+    const todaysGames = sessionDoneGames(d);
     d.sessionHistory.unshift({
-      id: uid('s'), date: todayStr(), endedAt: Date.now(),
+      id: uid('s'), date: sessionDate(d) || todayStr(), endedAt: Date.now(),
       totalGames: todaysGames.length,
       usedCourts: new Set(todaysGames.map(g => g.court)).size,
       participants: d.players

@@ -65,6 +65,15 @@ export function waitingDuration(p, now = Date.now()) {
   return durationStr(p.restSince, now);
 }
 
+export const LONG_REST_MS = 20 * 60000; // 이만큼 쉬었으면 쉰 시간을 강조색으로
+
+// 좁은 칸에 들어갈 짧은 쉰 시간 (1시간이 넘으면 분은 생략)
+export function shortWait(p) {
+  if (!p.restSince) return '';
+  const mins = Math.max(0, Math.round((Date.now() - p.restSince) / 60000));
+  return mins < 60 ? `${mins}분` : `${Math.floor(mins / 60)}시간`;
+}
+
 export function fairnessCompare(a, b) {
   // 매칭 알고리즘과 같은 우선순위: 경기 수가 적을수록, 그 다음 오래 쉰 사람일수록 앞에 오도록
   if (a.totalGames !== b.totalGames) return a.totalGames - b.totalGames;

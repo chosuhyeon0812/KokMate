@@ -449,6 +449,13 @@ tr:last-child td{border-bottom:none}
 .help-btn:hover,.help-btn.active{background:rgba(255,255,255,.3)}
 .sub-toggle{display:flex;justify-content:center;margin-bottom:14px}
 .session-row{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+.headcount{font-size:.8rem;color:var(--muted);margin:-4px 0 10px}
+.bench{display:flex;flex-wrap:wrap;gap:8px}
+.bench-chip{display:flex;flex-direction:column;align-items:center;min-width:64px;padding:6px 10px;border:1px solid var(--border);border-radius:10px;background:#fff}
+.bench-chip .bench-name{font-weight:700;font-size:.88rem}
+.bench-chip .bench-meta{font-size:.7rem;color:var(--muted)}
+.bench-chip.long{border-color:var(--accent-light);background:#fff8ea}
+.bench-chip.long .bench-meta{color:var(--accent-dark);font-weight:700}
 .court-add{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--muted);margin-top:13px}
 .court-remove{background:none;border:none;padding:4px 2px;font-size:.75rem;color:var(--muted);text-decoration:underline;cursor:pointer}
 .court-add input{

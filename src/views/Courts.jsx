@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAppState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
-import { activeGameOnCourt } from '../lib/selectors';
+import { activeGameOnCourt, availablePlayers, playingPlayerIds, waitingPlayerIds, fairnessCompare, shortWait, LONG_REST_MS } from '../lib/selectors';
 import { MAX_WAITING } from '../lib/utils';
 import { LiveCourtCard, WaitingCard, EmptyHint } from '../components/cards';
 import RestManagerModal from '../modals/RestManagerModal';
@@ -52,6 +52,7 @@ export default function Courts() {
           <button className="btn btn-ghost" type="submit">코트 추가</button>
         </form>
       </div>
+      <Bench />
       <div className="card">
         <div className="section-row">
           <h2 className="mb0">대기 코트 <span className="muted" style={{ fontSize: '.8rem', fontWeight: 600 }}>{state.waitingMatches.length}/{MAX_WAITING}</span></h2>
@@ -62,5 +63,40 @@ export default function Courts() {
         )}
       </div>
     </>
+  );
+}
+
+// 지금 코트에도 대기 코트에도 없는 사람들. 다음에 넣을 사람을 고르기 쉽게 경기 수가 적고 오래 쉰 순서로 보여준다.
+function Bench() {
+  const state = useAppState();
+  const attending = state.players.filter(p => p.active);
+  const bench = availablePlayers(state).sort(fairnessCompare);
+  const playing = playingPlayerIds(state).size;
+  const waiting = waitingPlayerIds(state).size;
+  const resting = attending.filter(p => p.resting).length;
+
+  return (
+    <div className="card">
+      <div className="section-row">
+        <h2 className="mb0">쉬는 사람 <span className="muted" style={{ fontSize: '.8rem', fontWeight: 600 }}>{bench.length}명 · 다음 차례 순</span></h2>
+      </div>
+      {attending.length > 0 && (
+        <div className="headcount">참석 {attending.length} · 경기 중 {playing} · 대기 코트 {waiting} · 휴식 {resting}</div>
+      )}
+      {attending.length === 0 ? <EmptyHint>"오늘 참석자 선택"에서 오늘 온 사람을 먼저 체크하세요.</EmptyHint> :
+        bench.length === 0 ? <EmptyHint>지금 쉬는 사람이 없어요.</EmptyHint> : (
+          <div className="bench">
+            {bench.map(p => {
+              const long = p.restSince && Date.now() - p.restSince >= LONG_REST_MS;
+              return (
+                <div key={p.id} className={`bench-chip${long ? ' long' : ''}`}>
+                  <span className="bench-name">{p.name}</span>
+                  <span className="bench-meta">{p.totalGames}경기{p.restSince ? ' · ' + shortWait(p) : ''}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+    </div>
   );
 }

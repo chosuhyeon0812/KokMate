@@ -1,4 +1,4 @@
-/* 선수 선택 모달 (바둑판 그리드) - 직접 경기 만들기 / 대기 코트 추가 / 추천 조합 수정에서 공통으로 사용 */
+/* 선수 선택 모달 (바둑판 그리드) - 직접 경기 만들기 / 대기 코트 추가 / 추천 조합 수정 / 진행 중 경기 선수 바꾸기에서 공통으로 사용 */
 import { useState } from 'react';
 import { useAppState } from '../store';
 import { useUI } from '../ui';
@@ -6,19 +6,11 @@ import * as actions from '../actions';
 import { genderLabel, MAX_WAITING } from '../lib/utils';
 import {
   playerById, playerName, availablePlayers, playingPlayerIds, waitingModalPlayers,
-  fairnessCompare, freeCourts,
+  fairnessCompare, freeCourts, shortWait, LONG_REST_MS,
 } from '../lib/selectors';
 import { EmptyHint } from '../components/cards';
 
 const EMPTY_SLOTS = [null, null, null, null];
-const LONG_REST_MS = 20 * 60000; // 이만큼 쉬었으면 타일 모서리 시간을 강조색으로
-
-// 타일 모서리에 들어갈 짧은 쉰 시간 (1시간이 넘으면 분은 생략)
-function shortWait(p) {
-  if (!p.restSince) return '';
-  const mins = Math.max(0, Math.round((Date.now() - p.restSince) / 60000));
-  return mins < 60 ? `${mins}분` : `${Math.floor(mins / 60)}시간`;
-}
 
 // 고른 팀에서 오늘 이미 같이 뛴 파트너, 직전 경기와 똑같은 4명 조합을 알려준다. (막지는 않고 안내만)
 function pickNotes(state, sel) {
@@ -45,12 +37,13 @@ function pickNotes(state, sel) {
   return notes;
 }
 
-export default function PlayerPicker({ mode, presetCourt, idx, waitingId }) {
+export default function PlayerPicker({ mode, presetCourt, idx, waitingId, gameId }) {
   const state = useAppState();
   const { toast, warn, closeModal, switchView } = useUI();
   const rec = mode === 'edit' ? state.pendingRecs[idx] : null;
   const wait = mode === 'editWaiting' ? state.waitingMatches.find(w => w.id === waitingId) : null;
-  const preset = rec || wait;
+  const game = mode === 'editGame' ? state.games.find(g => g.id === gameId && g.status === 'progress') : null;
+  const preset = rec || wait || game;
   // 자리(A1, A2, B1, B2)를 고정한 4칸 배열. 빈 자리는 null이라, 한 명을 빼고 다시 고르면 그 자리에 들어간다.
   const [selection, setSelection] = useState(() => preset ? preset.teamA.concat(preset.teamB) : EMPTY_SLOTS);
   const filled = selection.filter(Boolean).length;
@@ -58,6 +51,7 @@ export default function PlayerPicker({ mode, presetCourt, idx, waitingId }) {
 
   if (mode === 'edit' && !rec) return null;
   if (mode === 'editWaiting' && !wait) return null;
+  if (mode === 'editGame' && !game) return null;
 
   const playing = playingPlayerIds(state);
   const courts = freeCourts(state);
@@ -72,7 +66,8 @@ export default function PlayerPicker({ mode, presetCourt, idx, waitingId }) {
   } else {
     pool = availablePlayers(state).sort(fairnessCompare);
   }
-  selection.forEach(id => {
+  // 고른 사람은 목록에 꼭 보이게 한다. 진행 중 경기 선수 바꾸기에서는 원래 4명도 넣어서, 뺐다가 다시 고를 수 있게 한다.
+  selection.concat(game ? game.teamA.concat(game.teamB) : []).forEach(id => {
     if (id && !pool.find(p => p.id === id)) {
       const p = playerById(state, id);
       if (p) pool.push(p);
@@ -100,6 +95,10 @@ export default function PlayerPicker({ mode, presetCourt, idx, waitingId }) {
       actions.addWaitingMatch(selection);
       closeModal();
       toast('대기 코트에 추가되었습니다.');
+    } else if (mode === 'editGame') {
+      actions.updateGamePlayers(gameId, selection);
+      closeModal();
+      toast(`${game.court}번 코트 선수를 바꿨습니다.`);
     } else if (mode === 'editWaiting') {
       actions.updateWaitingMatch(waitingId, selection);
       closeModal();
@@ -194,6 +193,18 @@ export default function PlayerPicker({ mode, presetCourt, idx, waitingId }) {
         {slots}
         {grid}
         {actionsRow('대기 코트에 추가')}
+      </>
+    );
+  }
+
+  if (mode === 'editGame') {
+    return (
+      <>
+        <h3>선수 바꾸기 · {game.court}번 코트</h3>
+        <p className="muted" style={{ marginTop: -6, fontSize: '.82rem' }}>바꿀 사람을 눌러 빼고, 들어갈 사람을 고르세요.</p>
+        {slots}
+        {grid}
+        {actionsRow('저장')}
       </>
     );
   }

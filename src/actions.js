@@ -104,6 +104,17 @@ export function editGameResult(gameId, { scoreA, scoreB, winner, memo }) {
   });
 }
 
+// 진행 중인 경기의 선수를 바꾼다. (잘못 넣었을 때)
+export function updateGamePlayers(gameId, selection) {
+  update(d => {
+    const g = d.games.find(x => x.id === gameId);
+    g.teamA = selection.slice(0, 2);
+    g.teamB = selection.slice(2, 4);
+    g.gameType = deriveGameType(d, g.teamA, g.teamB);
+  });
+}
+
+// 진행 중인 경기는 결과가 반영되기 전이라 지우기만 하면 기록 없이 취소된다.
 export function deleteGame(gameId) {
   update(d => {
     const g = d.games.find(x => x.id === gameId);

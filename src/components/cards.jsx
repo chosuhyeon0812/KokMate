@@ -19,7 +19,14 @@ export function TeamLine({ teamA, teamB, label, style }) {
 
 export function LiveCourtCard({ game: g }) {
   const state = useAppState();
-  const { openModal } = useUI();
+  const { openModal, toast } = useUI();
+
+  const cancel = () => {
+    if (!confirm(`${g.court}번 코트 경기를 취소할까요? 기록에 남지 않고 경기 수도 올라가지 않습니다.`)) return;
+    actions.deleteGame(g.id);
+    toast(`${g.court}번 코트 경기를 취소했습니다.`);
+  };
+
   return (
     <div className="court-card playing">
       <div className="court-title">
@@ -30,6 +37,10 @@ export function LiveCourtCard({ game: g }) {
       <div className="muted center" style={{ fontSize: '.75rem' }}>시작 {timeStr(g.startTime)} · {g.gameType}</div>
       <div className="card-actions">
         <button className="btn btn-accent btn-sm btn-block" onClick={() => openModal(<EndGameModal gameId={g.id} />)}>경기 종료 / 점수 입력</button>
+      </div>
+      <div className="card-actions">
+        <button className="btn btn-outline btn-sm" onClick={() => openModal(<PlayerPicker mode="editGame" gameId={g.id} />, { wide: true })}>선수 바꾸기</button>
+        <button className="btn btn-danger btn-sm" onClick={cancel}>경기 취소</button>
       </div>
     </div>
   );

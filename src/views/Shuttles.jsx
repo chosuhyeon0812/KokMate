@@ -26,7 +26,7 @@ export default function Shuttles() {
       {players.length === 0 ? <EmptyHint>"코트" 탭에서 오늘 참석자를 먼저 선택하세요.</EmptyHint> : (
         <>
           <div className="summary-grid">
-            <div className="summary-box"><div className="num">{doneCount} / {players.length}</div><div className="lbl">냄</div></div>
+            <div className="summary-box"><div className="num">{doneCount} / {players.length}</div><div className="lbl">콕 제출</div></div>
           </div>
           <div style={{ overflowX: 'auto' }}>
             <table className="shuttle-table">
@@ -37,8 +37,8 @@ export default function Shuttles() {
                     <td>{p.name}</td>
                     <td><GenderBadge gender={p.gender} /></td>
                     <td>
-                      <button className={`shuttle-toggle${p.shuttleDone ? ' on' : ''}`} onClick={() => actions.toggleShuttle(p.id)}>
-                        {p.shuttleDone ? '냄' : '안 냄'}
+                      <button className={`shuttle-toggle${p.shuttleDone ? ' on' : ''}`} aria-pressed={p.shuttleDone} aria-label={`${p.name} 콕 ${p.shuttleDone ? '제출함' : '아직 안 냄'}`} onClick={() => actions.toggleShuttle(p.id)}>
+                        {p.shuttleDone ? '✓' : '−'}
                       </button>
                     </td>
                     <td>

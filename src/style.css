@@ -458,7 +458,7 @@ tr:last-child td{border-bottom:none}
 .shuttle-table td{vertical-align:middle}
 .shuttle-toggle{
   min-width:64px;padding:7px 12px;border-radius:20px;border:1.5px solid var(--border);
-  background:#fff;color:var(--muted);font-weight:700;font-size:.82rem;cursor:pointer;
+  background:#fff;color:var(--muted);font-weight:700;font-size:1.05rem;line-height:1.2;cursor:pointer;
 }
 .shuttle-toggle.on{background:var(--success-pale);border-color:var(--success);color:var(--success)}
 .shuttle-note{

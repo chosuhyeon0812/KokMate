@@ -1,7 +1,7 @@
 import { useAppState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
-import { timeStr, starStr } from '../lib/utils';
+import { timeStr, starStr, durationStr } from '../lib/utils';
 import { playerName, playingPlayerIds, activeGameOnCourt, waitingDuration, freeCourts } from '../lib/selectors';
 import { starsFor } from '../lib/matching';
 import EndGameModal from '../modals/EndGameModal';
@@ -34,7 +34,7 @@ export function LiveCourtCard({ game: g }) {
         <span className="status-dot live"><span className="dot"></span>진행 중</span>
       </div>
       <TeamLine teamA={g.teamA} teamB={g.teamB} label={id => playerName(state, id)} />
-      <div className="muted center" style={{ fontSize: '.75rem' }}>시작 {timeStr(g.startTime)} · {g.gameType}</div>
+      <div className="muted center" style={{ fontSize: '.75rem' }}>시작 {timeStr(g.startTime)} · <b className="elapsed">{durationStr(g.startTime, Date.now())}째</b> · {g.gameType}</div>
       <div className="card-actions">
         <button className="btn btn-accent btn-sm btn-block" onClick={() => openModal(<EndGameModal gameId={g.id} />)}>경기 종료 / 점수 입력</button>
       </div>

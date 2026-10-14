@@ -11,6 +11,7 @@ import {
 import { EmptyHint } from '../components/cards';
 
 const EMPTY_SLOTS = [null, null, null, null];
+const SLOT_TAGS = ['A1', 'A2', 'B1', 'B2'];
 
 // 고른 팀에서 오늘 이미 같이 뛴 파트너, 직전 경기와 똑같은 4명 조합을 알려준다. (막지는 않고 안내만)
 function pickNotes(state, sel) {
@@ -48,6 +49,8 @@ export default function PlayerPicker({ mode, presetCourt, idx, waitingId, gameId
   const [selection, setSelection] = useState(() => preset ? preset.teamA.concat(preset.teamB) : EMPTY_SLOTS);
   const filled = selection.filter(Boolean).length;
   const [courtChoice, setCourtChoice] = useState(presetCourt || null);
+  // 위쪽 자리 칸을 눌러 고른 자리. 고른 상태에서 선수를 누르면 그 자리에 들어가고, 다른 자리를 누르면 서로 바뀐다.
+  const [activeSlot, setActiveSlot] = useState(null);
 
   if (mode === 'edit' && !rec) return null;
   if (mode === 'editWaiting' && !wait) return null;
@@ -74,10 +77,33 @@ export default function PlayerPicker({ mode, presetCourt, idx, waitingId, gameId
     }
   });
 
+  const swapSlots = (i, j) => setSelection(prev => { const next = [...prev]; [next[i], next[j]] = [next[j], next[i]]; return next; });
+
   const pick = id => {
-    if (selection.includes(id)) { unpick(id); return; }
-    if (filled >= 4) { warn('이미 4명이 선택되었습니다. 먼저 선택을 해제하세요.'); return; }
+    const at = selection.indexOf(id);
+    if (activeSlot !== null) {
+      // 고른 자리에 넣는다. 이미 다른 자리에 있던 사람이면 두 자리를 맞바꾼다.
+      if (at === -1) setSelection(prev => { const next = [...prev]; next[activeSlot] = id; return next; });
+      else if (at !== activeSlot) swapSlots(at, activeSlot);
+      else unpick(id);
+      setActiveSlot(null);
+      return;
+    }
+    if (at !== -1) { unpick(id); return; }
+    if (filled >= 4) { warn('이미 4명이 선택되었습니다. 자리 칸을 누르면 그 자리 사람을 바꿀 수 있어요.'); return; }
     setSelection(prev => { const next = [...prev]; next[next.indexOf(null)] = id; return next; });
+  };
+
+  // 자리 칸 누르기: 처음 누르면 그 자리를 고르고, 같은 자리를 한 번 더 누르면 비우고, 다른 자리를 누르면 서로 바꾼다.
+  const tapSlot = i => {
+    if (activeSlot === null) { setActiveSlot(i); return; }
+    if (activeSlot === i) {
+      if (selection[i]) unpick(selection[i]);
+      else setActiveSlot(null);
+      return;
+    }
+    swapSlots(activeSlot, i);
+    setActiveSlot(null);
   };
 
   const unpick = id => setSelection(prev => prev.map(x => (x === id ? null : x)));
@@ -115,7 +141,7 @@ export default function PlayerPicker({ mode, presetCourt, idx, waitingId, gameId
   const chip = (i, tag) => {
     const id = selection[i];
     return (
-      <div className={`slot-chip ${id ? 'filled' : ''}`} onClick={() => id && unpick(id)}>
+      <div className={`slot-chip${id ? ' filled' : ''}${activeSlot === i ? ' active' : ''}`} onClick={() => tapSlot(i)}>
         <span className="slot-tag">{tag}</span>{id ? playerName(state, id) : '선택 안 됨'}
       </div>
     );
@@ -123,12 +149,17 @@ export default function PlayerPicker({ mode, presetCourt, idx, waitingId, gameId
 
   const slots = (
     <>
-      <div className="picker-slots">{chip(0, 'A1')}{chip(1, 'A2')}<span className="slot-vs">VS</span>{chip(2, 'B1')}{chip(3, 'B2')}</div>
+      <div className="picker-slots">{chip(0, SLOT_TAGS[0])}{chip(1, SLOT_TAGS[1])}<span className="slot-vs">VS</span>{chip(2, SLOT_TAGS[2])}{chip(3, SLOT_TAGS[3])}</div>
       {filled > 0 && (
         <div className="center" style={{ margin: '2px 0 10px' }}>
-          <button type="button" className="btn btn-ghost btn-sm" onClick={() => setSelection(EMPTY_SLOTS)}>선택 초기화</button>
+          <button type="button" className="btn btn-ghost btn-sm" onClick={() => { setSelection(EMPTY_SLOTS); setActiveSlot(null); }}>선택 초기화</button>
         </div>
       )}
+      <div className="slot-hint">
+        {activeSlot === null
+          ? '자리 칸을 누르면 그 자리에 넣거나, 두 자리를 서로 바꿀 수 있어요.'
+          : `${SLOT_TAGS[activeSlot]} 자리를 골랐어요. 넣을 사람을 누르거나 다른 자리를 눌러 바꾸세요.${selection[activeSlot] ? ' (한 번 더 누르면 비워요)' : ''}`}
+      </div>
       {notes.length > 0 && (
         <div className="pick-notes">
           {notes.map(n => <div key={n.text} className={n.warn ? 'warn' : ''}>{n.warn ? '⚠ ' : 'ℹ '}{n.text}</div>)}
@@ -146,7 +177,7 @@ export default function PlayerPicker({ mode, presetCourt, idx, waitingId, gameId
         const isPlaying = playing.has(p.id);
         const longRest = !isPlaying && p.restSince && Date.now() - p.restSince >= LONG_REST_MS;
         const corner = isPlaying ? '경기 중' : shortWait(p);
-        const disabled = full && i === -1;
+        const disabled = full && i === -1 && activeSlot === null;
         return (
           <button key={p.id} type="button" className={`player-tile ${i !== -1 ? 'selected team-' + team : ''}${disabled ? ' disabled' : ''}`} onClick={() => pick(p.id)}>
             {i !== -1 && <span className="tile-slot">{team.toUpperCase()}{i % 2 + 1}</span>}

@@ -351,7 +351,10 @@ tr:last-child td{border-bottom:none}
 }
 .slot-chip .slot-tag{font-size:.72rem;color:var(--primary-light);letter-spacing:.05em;font-weight:800}
 .slot-chip.filled{border-style:solid;border-color:var(--primary-light);background:var(--primary-pale);color:var(--primary-dark);cursor:pointer}
-.slot-chip.filled:hover{background:var(--danger-pale);border-color:var(--danger);color:var(--danger)}
+.slot-chip.filled:hover{border-color:var(--primary)}
+.slot-chip.active{border-style:solid;border-color:var(--accent-dark);background:#fff8ea;color:var(--accent-dark);box-shadow:0 0 0 2px var(--accent-light)}
+.slot-chip.active .slot-tag{color:var(--accent-dark)}
+.slot-hint{text-align:center;font-size:.78rem;color:var(--muted);margin:0 0 10px}
 .slot-vs{align-self:center;color:var(--muted);font-weight:800;font-size:.9rem;padding:0 4px}
 
 .player-grid{
@@ -449,6 +452,7 @@ tr:last-child td{border-bottom:none}
 .help-btn:hover,.help-btn.active{background:rgba(255,255,255,.3)}
 .sub-toggle{display:flex;justify-content:center;margin-bottom:14px}
 .session-row{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+.elapsed{color:var(--primary-dark)}
 .headcount{font-size:.8rem;color:var(--muted);margin:-4px 0 10px}
 .bench{display:flex;flex-wrap:wrap;gap:8px}
 .bench-chip{display:flex;flex-direction:column;align-items:center;min-width:64px;padding:6px 10px;border:1px solid var(--border);border-radius:10px;background:#fff}

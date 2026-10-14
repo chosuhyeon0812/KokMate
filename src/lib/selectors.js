@@ -7,7 +7,8 @@ export function playerById(state, id) {
 
 export function playerName(state, id) {
   const p = playerById(state, id);
-  return p ? p.name : '(삭제됨)';
+  if (p) return p.name;
+  return state.formerNames?.[id] || '(삭제됨)';
 }
 
 export function deriveGameType(state, teamA, teamB) {

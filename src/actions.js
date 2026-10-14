@@ -19,6 +19,7 @@ function clearSessionData(d) {
   d.pendingRecs = [];
   d.waitingMatches = [];
   d.lastShortfall = '';
+  d.formerNames = {}; // 지난 모임 기록에는 이름이 따로 저장되므로 더는 필요 없다
 }
 
 /* ---------- 설정 / 추천 ---------- */
@@ -157,6 +158,7 @@ export function addPlayers(list) {
 
 export function deletePlayer(id) {
   update(d => {
+    d.formerNames[id] = playerById(d, id).name;
     d.players = d.players.filter(p => p.id !== id);
     d.pendingRecs = d.pendingRecs.filter(r => !r.teamA.concat(r.teamB).includes(id));
   });

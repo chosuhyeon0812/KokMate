@@ -381,6 +381,14 @@ tr:last-child td{border-bottom:none}
 .player-tile.selected.team-b{border-color:var(--accent-dark);background:#fff8ea}
 .player-tile.selected.team-b .tile-slot{background:var(--accent-dark)}
 .player-tile.disabled{opacity:.4;cursor:not-allowed}
+/* 참석자 선택: 회원이 많아 타일을 조금 작게 */
+.attend-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.attend-search{flex:1 1 160px;padding:9px 11px;border:1.5px solid var(--border);border-radius:10px;font-size:.95rem}
+.attend-search:focus{outline:none;border-color:var(--primary-light)}
+.attend-grid{grid-template-columns:repeat(auto-fill,minmax(104px,1fr))}
+.attend-grid .player-tile{height:64px;padding:8px 6px}
+.attend-grid .player-tile .tile-name{font-size:1rem}
+.attend-check{position:absolute;top:4px;right:6px;font-size:.8rem;font-weight:800;color:var(--primary)}
 .player-tile.disabled:hover{transform:none;box-shadow:none;border-color:var(--border)}
 
 .toast{
@@ -527,6 +535,7 @@ tr:last-child td{border-bottom:none}
   .modal-actions{position:sticky;bottom:0;background:#fff;margin:14px -14px 0;padding:12px 14px;border-top:1px solid var(--border)}
   .modal-actions .btn{flex:1}
   .player-grid{max-height:none;overflow:visible;grid-template-columns:repeat(2,1fr)}
+  .attend-grid{grid-template-columns:repeat(3,1fr);gap:8px}
 
   /* 선택칸 4개 + VS 를 한 줄에 */
   .picker-slots{flex-wrap:nowrap;gap:4px}

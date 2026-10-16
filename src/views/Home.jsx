@@ -48,7 +48,7 @@ export default function Home() {
           </EmptyHint>
         )}
         <div className="session-row">
-          <button className="btn btn-primary" onClick={() => openModal(<AttendanceModal />)}>오늘 참석자 선택</button>
+          <button className="btn btn-primary" onClick={() => openModal(<AttendanceModal />, { wide: true })}>오늘 참석자 선택</button>
         </div>
       </div>
 

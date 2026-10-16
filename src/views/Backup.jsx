@@ -1,8 +1,10 @@
-/* 백업 탭: 전체 데이터를 파일로 저장하거나(카톡 등으로 보내기 포함), 백업 파일을 불러온다. */
+/* 공유·백업 탭: 팀 공유, 전체 데이터를 파일로 저장(카톡 등으로 보내기 포함), 백업 파일 불러오기 */
 import { useRef, useState } from 'react';
 import { useAppState, getState, replaceState, update } from '../store';
 import { useUI } from '../ui';
 import { todayStr, timeStr } from '../lib/utils';
+import { syncEnabled, useSync } from '../lib/sync';
+import TeamCard from '../components/TeamCard';
 
 const BACKUP_APP = 'badminton-matcher';
 
@@ -37,6 +39,7 @@ export default function Backup() {
   const { toast, warn } = useUI();
   const fileInput = useRef();
   const [pending, setPending] = useState(null); // 불러오기 전에 확인할 백업 내용
+  const { team } = useSync();
   const canShare = typeof navigator.canShare === 'function' && navigator.canShare({ files: [backupFile()] });
 
   const download = () => {
@@ -80,6 +83,7 @@ export default function Backup() {
   const s = pending?.state;
   return (
     <>
+      {syncEnabled && <TeamCard />}
       <div className="card">
         <h2>백업 파일 만들기</h2>
         <p className="muted backup-desc">회원 명단, 오늘 경기, 지난 모임 기록, 콕 기록이 모두 파일 하나에 담겨요. 휴대폰을 바꾸거나 브라우저 기록을 지우기 전, 다른 운영진에게 넘길 때 써주세요.</p>
@@ -94,7 +98,7 @@ export default function Backup() {
 
       <div className="card">
         <h2>백업 불러오기</h2>
-        <p className="muted backup-desc">불러오면 지금 이 기기의 데이터가 <b>모두 백업 파일 내용으로 바뀌어요.</b> 지금 데이터가 필요하면 먼저 백업 파일을 만들어 두세요.</p>
+        <p className="muted backup-desc">불러오면 지금 이 기기의 데이터가 <b>모두 백업 파일 내용으로 바뀌어요.</b> 지금 데이터가 필요하면 먼저 백업 파일을 만들어 두세요.{team && <> 지금 팀 공유 중이라 <b>팀원 모두의 데이터가</b> 함께 바뀌어요.</>}</p>
         <input ref={fileInput} type="file" accept=".json,application/json" style={{ display: 'none' }} onChange={pick} />
         {!pending ? (
           <button className="btn btn-outline" onClick={() => fileInput.current.click()}>백업 파일 고르기</button>

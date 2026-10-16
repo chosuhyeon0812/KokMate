@@ -54,15 +54,38 @@ function readSavedState() {
   }
 }
 
-// 백업 파일에서 불러온 데이터로 통째로 바꾼다.
-export function replaceState(saved) {
-  state = normalize(structuredClone(saved));
+let state = loadState();
+const listeners = new Set();
+// 이 기기에서 데이터를 바꿀 때마다 불린다. (팀 공유가 켜져 있으면 서버로 올리는 데 쓴다)
+let localChangeHook = null;
+
+export function setLocalChangeHook(fn) {
+  localChangeHook = fn;
+}
+
+function commit(next) {
+  state = next;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   listeners.forEach(l => l());
 }
 
-let state = loadState();
-const listeners = new Set();
+// 백업 파일에서 불러온 데이터로 통째로 바꾼다.
+export function replaceState(saved) {
+  commit(normalize(structuredClone(saved)));
+  if (localChangeHook) localChangeHook(null);
+}
+
+// 다른 기기에서 바뀐 팀 데이터를 받아 그대로 반영한다. (다시 서버로 올리지 않음)
+export function applyRemoteState(saved) {
+  commit(normalize(structuredClone(saved)));
+}
+
+// mutator 를 주어진 상태 사본에 적용한 결과를 돌려준다. (서버 데이터 위에 이 기기의 변경을 다시 얹을 때도 쓴다)
+export function applyMutator(base, mutator) {
+  const draft = structuredClone(base);
+  mutator(draft);
+  return draft;
+}
 
 export function getState() {
   return state;
@@ -70,11 +93,8 @@ export function getState() {
 
 // 상태 사본(draft)을 마음대로 고치면, 새 상태로 교체하고 저장한 뒤 화면을 다시 그린다.
 export function update(mutator) {
-  const draft = structuredClone(state);
-  mutator(draft);
-  state = draft;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  listeners.forEach(l => l());
+  commit(applyMutator(state, mutator));
+  if (localChangeHook) localChangeHook(mutator);
 }
 
 function subscribe(listener) {

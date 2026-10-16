@@ -32,21 +32,33 @@ function loadState() {
   return seedRoster(readSavedState());
 }
 
+// 저장돼 있던 데이터(또는 백업 파일)를 지금 버전 형식에 맞춘다.
+function normalize(saved) {
+  const merged = Object.assign(defaultState(), saved);
+  // 예전 데이터는 코트 수(courtCount)만 저장했으므로, 1번부터 그 수만큼의 코트로 바꿔준다.
+  if (!Array.isArray(merged.settings.courts)) {
+    merged.settings = { courts: Array.from({ length: merged.settings.courtCount || 0 }, (_, i) => i + 1) };
+  }
+  // 기존 저장 데이터에는 restSince가 없을 수 있으므로, 대기 중인데 기록이 없으면 지금부터 카운트 시작
+  merged.players.forEach(p => { if (p.active && !p.resting && !p.restSince) p.restSince = Date.now(); });
+  return merged;
+}
+
 function readSavedState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return defaultState();
-    const merged = Object.assign(defaultState(), JSON.parse(raw));
-    // 예전 데이터는 코트 수(courtCount)만 저장했으므로, 1번부터 그 수만큼의 코트로 바꿔준다.
-    if (!Array.isArray(merged.settings.courts)) {
-      merged.settings = { courts: Array.from({ length: merged.settings.courtCount || 0 }, (_, i) => i + 1) };
-    }
-    // 기존 저장 데이터에는 restSince가 없을 수 있으므로, 대기 중인데 기록이 없으면 지금부터 카운트 시작
-    merged.players.forEach(p => { if (p.active && !p.resting && !p.restSince) p.restSince = Date.now(); });
-    return merged;
+    return normalize(JSON.parse(raw));
   } catch (e) {
     return defaultState();
   }
+}
+
+// 백업 파일에서 불러온 데이터로 통째로 바꾼다.
+export function replaceState(saved) {
+  state = normalize(structuredClone(saved));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  listeners.forEach(l => l());
 }
 
 let state = loadState();

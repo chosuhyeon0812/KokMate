@@ -461,6 +461,12 @@ tr:last-child td{border-bottom:none}
   background:rgba(255,255,255,.14);color:#fff;font-weight:800;font-size:.95rem;cursor:pointer;
 }
 .help-btn:hover,.help-btn.active{background:rgba(255,255,255,.3)}
+.backup-desc{font-size:.84rem;margin-top:-4px;line-height:1.55}
+.backup-last{font-size:.82rem;color:var(--primary-dark);font-weight:700;margin-bottom:12px}
+.backup-confirm{border:1.5px solid var(--danger);background:var(--danger-pale);border-radius:var(--radius-sm);padding:12px 14px;font-size:.88rem;line-height:1.6}
+.backup-confirm .btn-danger{background:var(--danger);color:#fff}
+.backup-confirm .btn-ghost{background:#fff}
+.backup-confirm-title{font-weight:800;color:var(--danger);margin-bottom:2px}
 .sub-toggle{display:flex;justify-content:center;margin-bottom:14px}
 .session-row{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
 .elapsed{color:var(--primary-dark)}

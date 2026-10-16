@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useAppState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
-import { LEVEL_OPTIONS } from '../lib/utils';
+import { LEVEL_OPTIONS, ROLE_OPTIONS, roleOf } from '../lib/utils';
 import { playerById, playingPlayerIds, waitingPlayerIds } from '../lib/selectors';
 
 export default function PlayerFormModal({ playerId }) {
@@ -14,11 +14,12 @@ export default function PlayerFormModal({ playerId }) {
   const [gender, setGender] = useState(player ? player.gender : 'M');
   const [level, setLevel] = useState(player ? player.level : 'A');
   const [memo, setMemo] = useState(player && player.memo ? player.memo : '');
+  const [role, setRole] = useState(player ? roleOf(player) : 'member');
   if (playerId && !player) return null;
 
   const save = () => {
     if (!name.trim()) { warn('이름을 입력하세요.'); return; }
-    actions.savePlayer(player ? player.id : null, { name: name.trim(), gender, level, memo: memo.trim() });
+    actions.savePlayer(player ? player.id : null, { name: name.trim(), gender, level, role, memo: memo.trim() });
     closeModal();
     toast('저장되었습니다.');
   };
@@ -61,6 +62,11 @@ export default function PlayerFormModal({ playerId }) {
         <label>등급
           <select value={level} onChange={e => setLevel(e.target.value)}>
             {LEVEL_OPTIONS.map(l => <option key={l} value={l}>{l}</option>)}
+          </select>
+        </label>
+        <label>역할
+          <select value={role} onChange={e => setRole(e.target.value)}>
+            {ROLE_OPTIONS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
           </select>
         </label>
         <label>특이사항 <input type="text" value={memo} onChange={e => setMemo(e.target.value)} placeholder="예: 발목 부상 (선택)" /></label>

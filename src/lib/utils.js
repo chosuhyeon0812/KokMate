@@ -2,6 +2,14 @@ export const STORAGE_KEY = 'bm-matcher-state-v1';
 export const LEVEL_ORDER = { 'A': 5, 'B': 4, 'C': 3, 'D': 2, 'E': 1, 'F': 0 };
 export const LEVEL_OPTIONS = ['A', 'B', 'C', 'D', 'E', 'F'];
 export const MAX_WAITING = 3; // 대기 코트 최대 개수
+// 회원 역할. 예전 데이터처럼 role 이 없으면 일반 회원으로 본다.
+export const ROLE_OPTIONS = [['owner', '모임장'], ['staff', '운영진'], ['member', '일반 회원']];
+export function roleOf(p) {
+  return p.role || 'member';
+}
+export function roleLabel(role) {
+  return (ROLE_OPTIONS.find(([v]) => v === role) || ROLE_OPTIONS[2])[1];
+}
 
 export function uid(prefix) {
   return prefix + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);

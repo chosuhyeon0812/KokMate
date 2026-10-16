@@ -281,6 +281,8 @@ tr:last-child td{border-bottom:none}
 .badge-active::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--success);display:inline-block}
 .badge-playing{background:var(--primary-pale);color:var(--primary)}
 .badge-playing::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--primary);display:inline-block;animation:dotPulse 1.4s infinite}
+.badge-role-owner{background:var(--grad-accent);color:#fff}
+.badge-role-staff{background:var(--primary-pale);color:var(--primary);border:1px solid var(--primary-light)}
 .badge-level{background:linear-gradient(135deg,var(--primary-pale),#cfe9eb);color:var(--primary-dark);font-weight:800}
 .badge-male{background:#e6f0fb;color:#2563a8}
 .badge-female{background:#fbe6f0;color:#c22a72}

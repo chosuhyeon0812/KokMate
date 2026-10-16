@@ -59,7 +59,7 @@ export default function Courts() {
           <button className="btn btn-outline btn-sm" disabled={state.waitingMatches.length >= MAX_WAITING} onClick={() => openModal(<PlayerPicker mode="waiting" />, { wide: true })}>대기 코트 추가</button>
         </div>
         {state.waitingMatches.length === 0 ? <EmptyHint>코트가 다 찼을 때 다음 경기 멤버를 미리 정해둘 수 있어요.</EmptyHint> : (
-          <div className="court-grid">{state.waitingMatches.map(w => <WaitingCard key={w.id} match={w} />)}</div>
+          <div className="court-grid">{state.waitingMatches.map((w, i) => <WaitingCard key={w.id} match={w} no={i + 1} />)}</div>
         )}
       </div>
     </>

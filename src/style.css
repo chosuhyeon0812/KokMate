@@ -235,6 +235,7 @@ main{max-width:920px;margin:0 auto;padding:18px 14px 60px}
 }
 .court-card.empty{border-style:dashed;color:var(--muted)}
 .court-title{font-weight:700;font-size:.83rem;color:var(--primary-dark);margin-bottom:9px;display:flex;justify-content:space-between;align-items:center}
+.wait-no{display:inline-block;background:var(--accent-dark);color:#fff;border-radius:6px;padding:1px 7px;margin-right:4px;font-size:.78rem}
 .status-dot{display:inline-flex;align-items:center;gap:5px;font-size:.72rem;font-weight:700}
 .status-dot.live{color:var(--success)}
 .status-dot .dot{width:8px;height:8px;border-radius:50%;background:var(--success);display:inline-block;box-shadow:0 0 0 3px var(--success-pale);animation:dotPulse 1.4s infinite}

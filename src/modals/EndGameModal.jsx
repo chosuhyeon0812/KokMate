@@ -3,12 +3,13 @@ import { useState } from 'react';
 import { useAppState, getState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
-import { playerName, playingPlayerIds, activeGameOnCourt } from '../lib/selectors';
+import { playerName, playingPlayerIds, activeGameOnCourt, nextReadyWaiting } from '../lib/selectors';
+import StartWaitingModal from './StartWaitingModal';
 import { TeamLine } from '../components/cards';
 
 export default function EndGameModal({ gameId, edit }) {
   const state = useAppState();
-  const { toast, warn, closeModal } = useUI();
+  const { toast, warn, openModal, closeModal } = useUI();
   const g = state.games.find(x => x.id === gameId);
   const [rawA, setRawA] = useState(edit && g?.scoreA != null ? String(g.scoreA) : '');
   const [rawB, setRawB] = useState(edit && g?.scoreB != null ? String(g.scoreB) : '');
@@ -68,6 +69,8 @@ export default function EndGameModal({ gameId, edit }) {
       toast('경기 결과를 수정했습니다.');
     } else {
       actions.endGame(gameId, result);
+      // 코트가 비었으니 바로 시작할 수 있는 대기 코트가 있으면 이어서 물어본다.
+      if (nextReadyWaiting(getState())) openModal(<StartWaitingModal court={g.court} />);
       toast('경기 결과가 저장되었습니다.', { action: { label: '되돌리기', onClick: undo } });
     }
   };

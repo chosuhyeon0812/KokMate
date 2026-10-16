@@ -74,7 +74,7 @@ export function RecCard({ rec: r, idx }) {
   );
 }
 
-export function WaitingCard({ match: w }) {
+export function WaitingCard({ match: w, no }) {
   const state = useAppState();
   const { toast, warn, openModal } = useUI();
   const playing = playingPlayerIds(state);
@@ -92,7 +92,7 @@ export function WaitingCard({ match: w }) {
 
   return (
     <div className="court-card">
-      <div className="court-title"><span>대기 중 · {w.gameType}</span><span className="status-dot" style={{ color: 'var(--accent-dark)' }}>🕒 대기</span></div>
+      <div className="court-title"><span><span className="wait-no">대기 {no}</span> {w.gameType}</span><span className="status-dot" style={{ color: 'var(--accent-dark)' }}>🕒 대기</span></div>
       <TeamLine teamA={w.teamA} teamB={w.teamB} label={label} />
       {hasPlaying && <div className="muted center" style={{ fontSize: '.72rem', marginTop: 2 }}>🔴 = 아직 경기 중인 선수. 끝난 뒤 배정하세요.</div>}
       <div className="card-actions">

@@ -88,3 +88,10 @@ export function waitingModalPlayers(state, exceptId) {
   const waiting = waitingPlayerIds(state, exceptId);
   return eligiblePlayers(state).filter(p => !waiting.has(p.id));
 }
+
+// 지금 바로 시작할 수 있는 첫 번째 대기 코트 (아직 경기 중인 선수가 없는 것). 순번(idx)은 0부터.
+export function nextReadyWaiting(state) {
+  const playing = playingPlayerIds(state);
+  const idx = state.waitingMatches.findIndex(w => !w.teamA.concat(w.teamB).some(id => playing.has(id)));
+  return idx === -1 ? null : { match: state.waitingMatches[idx], idx };
+}

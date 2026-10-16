@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { UIContext } from './ui';
-import logo from './assets/logo.jpg';
+import logo from './assets/logo.svg';
 import Home from './views/Home';
 import Players from './views/Players';
 import Shuttles from './views/Shuttles';

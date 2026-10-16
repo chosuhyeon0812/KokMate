@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#0b5566"/>
+  <!-- 휴대폰 아이콘 모양에 따라 가장자리가 잘려도 그림이 남도록 조금 작게 -->
+  <g transform="translate(256 256) scale(.92) translate(-256 -256)">
+    <g stroke="#ffcf6e" stroke-width="14" stroke-linecap="round" opacity=".9">
+      <line x1="120" y1="372" x2="190" y2="372"/>
+      <line x1="96" y1="320" x2="176" y2="320"/>
+      <line x1="132" y1="424" x2="186" y2="424"/>
+    </g>
+    <g transform="translate(270 250) rotate(-50) scale(.95) translate(-256 -250)">
+      <path d="M210 318 L150 140 Q165 126 180 138 Q195 124 210 136 Q225 122 240 134 Q256 120 272 134 Q287 122 302 136 Q317 124 332 138 Q347 126 362 140 L302 318 Z" fill="#fff"/>
+      <g stroke="#0b5566" stroke-width="6" stroke-linecap="round">
+        <line x1="226" y1="316" x2="186" y2="146"/>
+        <line x1="241" y1="316" x2="221" y2="142"/>
+        <line x1="256" y1="316" x2="256" y2="140"/>
+        <line x1="271" y1="316" x2="291" y2="142"/>
+        <line x1="286" y1="316" x2="326" y2="146"/>
+        <line x1="186" y1="250" x2="326" y2="250" stroke-width="9"/>
+      </g>
+      <path d="M204 330 H308 V342 A52 52 0 0 1 204 342 Z" fill="#f2a63c"/>
+    </g>
+  </g>
+</svg>

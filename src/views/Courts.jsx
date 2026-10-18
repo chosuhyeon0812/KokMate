@@ -52,7 +52,6 @@ export default function Courts() {
           <button className="btn btn-ghost" type="submit">코트 추가</button>
         </form>
       </div>
-      <Bench />
       <div className="card">
         <div className="section-row">
           <h2 className="mb0">대기 코트 <span className="muted" style={{ fontSize: '.8rem', fontWeight: 600 }}>{state.waitingMatches.length}/{MAX_WAITING}</span></h2>
@@ -62,6 +61,7 @@ export default function Courts() {
           <div className="court-grid">{state.waitingMatches.map((w, i) => <WaitingCard key={w.id} match={w} no={i + 1} />)}</div>
         )}
       </div>
+      <Bench />
     </>
   );
 }
@@ -69,11 +69,13 @@ export default function Courts() {
 // 지금 코트에도 대기 코트에도 없는 사람들. 다음에 넣을 사람을 고르기 쉽게 경기 수가 적고 오래 쉰 순서로 보여준다.
 function Bench() {
   const state = useAppState();
+  const { toast } = useUI();
   const attending = state.players.filter(p => p.active);
   const bench = availablePlayers(state).sort(fairnessCompare);
   const playing = playingPlayerIds(state).size;
   const waiting = waitingPlayerIds(state).size;
-  const resting = attending.filter(p => p.resting).length;
+  const restingPlayers = attending.filter(p => p.resting);
+  const resting = restingPlayers.length;
 
   return (
     <div className="card">
@@ -89,7 +91,7 @@ function Bench() {
             {bench.map(p => {
               const long = p.restSince && Date.now() - p.restSince >= LONG_REST_MS;
               return (
-                <div key={p.id} className={`bench-chip${long ? ' long' : ''}`}>
+                <div key={p.id} className={`bench-chip ${p.gender === 'M' ? 'male' : 'female'}${long ? ' long' : ''}`}>
                   <span className="bench-name">{p.name}</span>
                   <span className="bench-meta">{p.totalGames}경기{p.restSince ? ' · ' + shortWait(p) : ''}</span>
                 </div>
@@ -97,6 +99,21 @@ function Bench() {
             })}
           </div>
         )}
+      {/* 오늘 왔지만 '휴식'으로 빼둔 사람. 경기 배정 대상은 아니라서 아래에 흐리게 따로 보여준다. */}
+      {resting > 0 && (
+        <div className="bench-resting">
+          <div className="bench-resting-title">휴식 중 {resting}명 <span style={{ fontWeight: 500 }}>· 이름을 누르면 복귀</span></div>
+          <div className="bench">
+            {restingPlayers.map(p => (
+              <button type="button" key={p.id} className={`bench-chip resting ${p.gender === 'M' ? 'male' : 'female'}`} title="눌러서 휴식 끝내기"
+                onClick={() => { actions.toggleRest(p.id); toast(`${p.name}님 휴식을 끝냈어요.`); }}>
+                <span className="bench-name">{p.name}</span>
+                <span className="bench-meta">{p.totalGames}경기</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

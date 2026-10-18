@@ -4,7 +4,6 @@ import * as actions from '../actions';
 import { todayStr } from '../lib/utils';
 import { RecCard, EmptyHint } from '../components/cards';
 import AttendanceModal from '../modals/AttendanceModal';
-import PlayerPicker from '../modals/PlayerPicker';
 import Courts from './Courts';
 
 export default function Home() {
@@ -53,11 +52,6 @@ export default function Home() {
       </div>
 
       <Courts />
-
-      <div className="card">
-        <h2>경기 만들기</h2>
-        <button className="btn btn-primary btn-block" onClick={() => openModal(<PlayerPicker mode="manual" />, { wide: true })}>직접 경기 만들기</button>
-      </div>
 
       <div className="card">
         <div className="section-row">

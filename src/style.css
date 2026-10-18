@@ -386,11 +386,43 @@ tr:last-child td{border-bottom:none}
 .player-tile.disabled{opacity:.4;cursor:not-allowed}
 /* 참석자 선택: 회원이 많아 타일을 조금 작게 */
 .attend-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
-.attend-search{flex:1 1 160px;padding:9px 11px;border:1.5px solid var(--border);border-radius:10px;font-size:.95rem}
+.attend-search{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:1rem;background:#fff;margin-bottom:10px}
 .attend-search:focus{outline:none;border-color:var(--primary-light)}
 .attend-grid{grid-template-columns:repeat(auto-fill,minmax(104px,1fr))}
 .attend-grid .player-tile{height:64px;padding:8px 6px}
 .attend-grid .player-tile .tile-name{font-size:1rem}
+/* 참석자 선택: 여자/남자 세그먼트 + 정렬 칩 */
+.gender-seg{display:flex;gap:4px;padding:4px;background:#eef4f5;border-radius:14px;margin-bottom:10px}
+.gender-seg button{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:10px 8px;border:none;border-radius:11px;background:transparent;font:inherit;font-size:1.05rem;font-weight:800;color:var(--muted);cursor:pointer;transition:background-color .2s ease,box-shadow .2s ease,color .2s ease}
+.gender-seg button.on{background:#fff;box-shadow:0 1px 4px rgba(6,40,46,.12)}
+.gender-seg button.female.on{color:#c22a72}
+.gender-seg button.male.on{color:#2563a8}
+.gender-dot{width:9px;height:9px;border-radius:50%;background:currentColor;opacity:.35}
+.gender-seg button.on .gender-dot{opacity:1}
+.gender-count{font-size:.9rem;font-weight:700;padding:1px 8px;border-radius:999px;background:rgba(0,0,0,.05)}
+.gender-count small{font-size:.78rem;font-weight:600;opacity:.65}
+.gender-seg button.female.on .gender-count{background:#fbe6f0}
+.gender-seg button.male.on .gender-count{background:#e6f0fb}
+.attend-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.sort-chips{display:flex;gap:6px;flex-wrap:wrap}
+.sort-chips button{padding:6px 12px;border:none;border-radius:999px;background:#eef4f5;font:inherit;font-size:.88rem;font-weight:700;color:var(--muted);cursor:pointer}
+.sort-chips button.on{background:var(--text);color:#fff}
+.attend-bulk{display:flex;align-items:center;gap:4px;color:var(--border)}
+.attend-bulk button{border:none;background:none;padding:6px 4px;font:inherit;font-size:.88rem;font-weight:700;color:var(--primary-light);cursor:pointer}
+.attend-bulk button:hover{text-decoration:underline}
+/* 참석자 칸: 안 고른 사람은 흰 바탕+연한 남녀색 테두리, 고른 사람은 남녀색으로 꽉 채움 */
+.attend-grid .player-tile{border-width:2px}
+.attend-grid .player-tile.female{border-color:#f2bfd7}
+.attend-grid .player-tile.male{border-color:#b7d2f0}
+.attend-grid .player-tile.female.selected{background:#d9488b;border-color:#d9488b}
+.attend-grid .player-tile.male.selected{background:#3a7bd5;border-color:#3a7bd5}
+.attend-grid .player-tile.selected .tile-name{color:#fff}
+.attend-grid .tile-level{font-weight:700;color:var(--muted)}
+.attend-grid .player-tile.selected .tile-level{color:rgba(255,255,255,.8)}
+.attend-grid .player-tile .attend-check{top:5px;right:6px;width:18px;height:18px;line-height:18px;border-radius:50%;background:#fff;font-size:.7rem;text-align:center}
+.attend-grid .player-tile.female .attend-check{color:#d9488b}
+.attend-grid .player-tile.male .attend-check{color:#3a7bd5}
+.attend-check{color:#2563a8}
 .attend-check{position:absolute;top:4px;right:6px;font-size:.8rem;font-weight:800;color:var(--primary)}
 .player-tile.disabled:hover{transform:none;box-shadow:none;border-color:var(--border)}
 
@@ -483,13 +515,21 @@ tr:last-child td{border-bottom:none}
 .sub-toggle{display:flex;justify-content:center;margin-bottom:14px}
 .session-row{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
 .elapsed{color:var(--primary-dark)}
-.headcount{font-size:.8rem;color:var(--muted);margin:-4px 0 10px}
-.bench{display:flex;flex-wrap:wrap;gap:8px}
-.bench-chip{display:flex;flex-direction:column;align-items:center;min-width:64px;padding:6px 10px;border:1px solid var(--border);border-radius:10px;background:#fff}
-.bench-chip .bench-name{font-weight:700;font-size:.88rem}
-.bench-chip .bench-meta{font-size:.7rem;color:var(--muted)}
-.bench-chip.long{border-color:var(--accent-light);background:#fff8ea}
+.headcount{font-size:1.05rem;color:var(--text);margin:-4px 0 10px}
+.bench{display:flex;flex-wrap:wrap;gap:10px}
+.bench-chip{display:flex;flex-direction:column;align-items:center;min-width:92px;padding:10px 14px;border:1px solid var(--border);border-radius:10px;background:#fff}
+.bench-chip .bench-name{font-weight:800;font-size:1.25rem}
+.bench-chip .bench-meta{font-size:1.05rem;font-weight:600;color:var(--text);margin-top:2px}
+/* 남자는 파랑, 여자는 분홍 카드로 한눈에 구분 */
+.bench-chip.male{background:#e6f0fb;border:2.5px solid #8db8e8}
+.bench-chip.female{background:#fbe6f0;border:2.5px solid #eda3c6}
+.bench-chip.long{border-color:var(--accent-dark);border-width:3px}
 .bench-chip.long .bench-meta{color:var(--accent-dark);font-weight:700}
+.bench-resting{margin-top:14px;padding-top:12px;border-top:1px dashed var(--border)}
+.bench-resting-title{font-size:1.05rem;font-weight:700;color:var(--muted);margin-bottom:8px}
+.bench-chip.resting{font:inherit;color:inherit;cursor:pointer}
+.bench-chip.resting:hover,.bench-chip.resting:focus-visible{filter:brightness(.95)}
+.bench-chip.resting:active{transform:scale(.96)}
 .court-add{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--muted);margin-top:13px}
 .court-remove{background:none;border:none;padding:4px 2px;font-size:.75rem;color:var(--muted);text-decoration:underline;cursor:pointer}
 .court-add input{

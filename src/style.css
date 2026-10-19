@@ -137,9 +137,9 @@ body{
 .tab-btn{
   border:none;
   background:transparent;
-  padding:10px 15px;
-  font-size:.85rem;
-  font-weight:600;
+  padding:12px 20px;
+  font-size:1.12rem;
+  font-weight:800;
   color:var(--muted);
   cursor:pointer;
   border-radius:11px 11px 0 0;
@@ -611,7 +611,7 @@ tr:last-child td{border-bottom:none}
 
   /* 탭: 4개를 화면 너비에 꽉 차게, 누르기 쉽게 */
   .tabbar{padding:8px 8px 0;gap:2px}
-  .tab-btn{flex:1;padding:12px 4px;font-size:.92rem}
+  .tab-btn{flex:1;padding:13px 0;font-size:1.08rem;letter-spacing:-.02em}
 
   main{padding:12px 10px 60px}
   .card{padding:16px 14px}
@@ -690,3 +690,22 @@ tr:last-child td{border-bottom:none}
 .name-chip.with-meta .chip-meta,.bench-chip .bench-wait,.player-grid:not(.attend-grid) .player-tile .tile-meta{color:#1f1f1f}
 .name-chip.with-meta .chip-meta.chip-long,.bench-chip .rest-long,.player-grid:not(.attend-grid) .player-tile .tile-meta.tile-long{color:#8a3c00;font-weight:900}
 .bench-chip.resting,.bench-chip.resting.male,.bench-chip.resting.female{background:#c3c9ce;border:2.5px solid #a3abb2}
+
+/* ---------- 아이폰 홈 화면 앱: 시계·배터리 줄(노치)과 아래 홈 막대에 가리지 않게 ----------
+   index.html 이 viewport-fit=cover + black-translucent 라서 앱이 화면 맨 위까지 그려진다. */
+.topbar{
+  padding-top:calc(16px + env(safe-area-inset-top));
+  padding-left:calc(22px + env(safe-area-inset-left));
+  padding-right:calc(22px + env(safe-area-inset-right));
+}
+.tabbar{top:env(safe-area-inset-top)}
+/* 스크롤해서 탭이 위에 붙었을 때 시계 줄 뒤로 글자가 비치지 않게 같은 색으로 덮는다 */
+body::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top);background:#0a4d5c;z-index:30;pointer-events:none}
+main{padding-bottom:calc(60px + env(safe-area-inset-bottom))}
+.modal-root{padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+.toast{margin-bottom:env(safe-area-inset-bottom)}
+@media (max-width:640px){
+  .topbar{padding-top:calc(12px + env(safe-area-inset-top));padding-left:calc(14px + env(safe-area-inset-left));padding-right:calc(14px + env(safe-area-inset-right))}
+  main{padding-bottom:calc(60px + env(safe-area-inset-bottom))}
+  .modal-root{padding-bottom:calc(8px + env(safe-area-inset-bottom))}
+}

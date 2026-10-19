@@ -7,7 +7,7 @@
 import { useSyncExternalStore } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { SUPABASE_URL, SUPABASE_KEY } from '../supabaseConfig';
-import { getState, applyRemoteState, applyMutator, setLocalChangeHook } from '../store';
+import { getState, applyRemoteState, applyMutator, setLocalChangeHook, update } from '../store';
 import { STORAGE_KEY } from './utils';
 
 export const syncEnabled = !!(SUPABASE_URL && SUPABASE_KEY);
@@ -44,6 +44,11 @@ function setStatus(patch) {
   status = { ...status, ...patch };
   snapshot = { team: team && { ...team }, status };
   listeners.forEach(l => l());
+}
+
+// 팀 이름은 바꿀 수 있게 팀 데이터(state.teamName) 안에 둔다. 예전 팀은 처음 만들 때 이름(row.name)을 쓴다.
+function nameOf(row) {
+  return (row.state && row.state.teamName) || row.name;
 }
 
 async function rpc(fn, args) {
@@ -148,7 +153,7 @@ async function pull() {
       if (!team || pushing || queue.length || team.dirty) return; // 받는 사이에 이 기기에서 바뀌었으면 올리기를 먼저
       applyRemoteState(row.state);
       team.version = row.version;
-      team.name = row.name;
+      team.name = nameOf(row);
       saveTeam();
     }
     setStatus({ phase: 'idle', lastSyncedAt: Date.now() });
@@ -250,7 +255,7 @@ export async function previewTeam(code) {
 
 // 팀에 참여한다. 이 기기의 데이터는 팀 데이터로 바뀐다.
 export function joinTeam(code, row) {
-  team = { code, name: row.name, version: row.version, dirty: false };
+  team = { code, name: nameOf(row), version: row.version, dirty: false };
   queue = [];
   applyRemoteState(row.state);
   saveTeam();
@@ -272,6 +277,18 @@ export function leaveTeamAndClear() {
   leaveTeam();
   [STORAGE_KEY, TEAM_KEY, LEFTOVER_KEY, WELCOME_DONE_KEY].forEach(k => localStorage.removeItem(k));
   location.reload();
+}
+
+// 팀 이름 바꾸기: 팀 데이터에 저장해서 다른 기기에도 맞춰진다.
+export function renameTeam(name) {
+  if (!team) return;
+  update(d => { d.teamName = name; });
+  team.name = name;
+  saveTeam();
+}
+
+export function previewName(row) {
+  return nameOf(row);
 }
 
 export function hasUnsyncedChanges() {

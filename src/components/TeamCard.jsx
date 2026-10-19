@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useUI } from '../ui';
 import { useAppState } from '../store';
-import { useSync, createTeam, previewTeam, joinTeam, leaveTeamAndClear, hasUnsyncedChanges, cleanCode, formatCode, inviteLink } from '../lib/sync';
+import { useSync, createTeam, previewTeam, joinTeam, leaveTeamAndClear, hasUnsyncedChanges, cleanCode, formatCode, inviteLink, renameTeam, previewName } from '../lib/sync';
 
 // 잘 맞춰지고 있을 때는 아무것도 안 보여주고, 문제가 있을 때만 알린다.
 function StatusLine({ status }) {
@@ -13,6 +13,8 @@ function StatusLine({ status }) {
 
 function JoinedTeam({ team, status }) {
   const { toast, warn, ask } = useUI();
+  const [editing, setEditing] = useState(false);
+  const [newName, setNewName] = useState(team.name);
   const shown = formatCode(team.code);
   // 링크를 누르면 코드가 미리 들어가서 '참여하기'만 누르면 된다. 링크가 안 열릴 때를 위해 코드도 같이 적는다.
   const message = `배드민턴 매칭 "${team.name}" 팀 초대\n아래 링크를 누르고 "참여하기"를 누르세요.\n${inviteLink(team.code)}\n\n(팀 코드: ${shown})`;
@@ -30,6 +32,14 @@ function JoinedTeam({ team, status }) {
     }
   };
 
+  const saveName = () => {
+    const n = newName.trim();
+    if (!n) { warn('팀 이름을 입력하세요.'); return; }
+    renameTeam(n);
+    setEditing(false);
+    toast('팀 이름을 바꿨어요.');
+  };
+
   const leave = async () => {
     const unsynced = hasUnsyncedChanges() ? '\n\n⚠ 아직 팀에 안 올라간 변경이 있어요. 나가면 그 변경은 사라져요. (인터넷이 연결된 곳에서 잠시 기다렸다가 나가세요)' : '';
     if (!(await ask(`이 휴대폰의 팀 데이터는 지워지고 처음 화면으로 돌아가요. 팀 데이터는 팀에 그대로 남아서, 팀 코드로 언제든 다시 들어올 수 있어요.${unsynced}`, { title: `"${team.name}" 팀에서 나갈까요?`, ok: '팀 나가기', danger: true }))) return;
@@ -38,14 +48,26 @@ function JoinedTeam({ team, status }) {
 
   return (
     <>
-      <div className="team-name-row">
-        <span className="team-title">{team.name}</span>
-        <StatusLine status={status} />
+      {/* 팀 이름 / 팀 코드를 같은 모양의 줄로. 팀 이름 줄을 누르면 그 자리에서 고친다 */}
+      {editing ? (
+        <form className="team-info-row editing" onSubmit={e => { e.preventDefault(); saveName(); }}>
+          <span className="team-info-label">팀 이름</span>
+          <input type="text" value={newName} onChange={e => setNewName(e.target.value)} placeholder="팀 이름" autoFocus maxLength={30} />
+          <button type="button" className="team-info-icon" aria-label="취소" onClick={() => { setEditing(false); setNewName(team.name); }}>✕</button>
+          <button type="submit" className="team-info-icon save" aria-label="저장">✓</button>
+        </form>
+      ) : (
+        <button type="button" className="team-info-row clickable" onClick={() => { setNewName(team.name); setEditing(true); }}>
+          <span className="team-info-label">팀 이름</span>
+          <strong className="team-info-value">{team.name}</strong>
+          <span className="team-info-edit" aria-hidden="true">✏️</span>
+        </button>
+      )}
+      <div className="team-info-row">
+        <span className="team-info-label">팀 코드</span>
+        <strong className="team-info-value team-code">{shown}</strong>
       </div>
-      <div className="team-code-box">
-        <span className="muted">팀 코드</span>
-        <strong className="team-code">{shown}</strong>
-      </div>
+      <StatusLine status={status} />
       {status.message && <div className="sync-message">{status.message}</div>}
       <p className="muted backup-desc">이 코드를 아는 사람은 팀 데이터를 보고 바꿀 수 있어요. 팀원에게만 보내주세요.</p>
       {/* 맞추기는 자동(실시간 알림 + 15초마다 + 인터넷 다시 연결될 때)이라 따로 버튼을 두지 않는다 */}
@@ -102,14 +124,14 @@ export function NoTeam({ initialCode }) {
 
   const join = () => {
     joinTeam(preview.code, preview.row);
-    toast(`"${preview.row.name}" 팀에 참여했어요.`);
+    toast(`"${previewName(preview.row)}" 팀에 참여했어요.`);
   };
 
   if (preview) {
     const s = preview.row.state;
     return (
       <div className="backup-confirm">
-        <div className="backup-confirm-title">"{preview.row.name}" 팀에 참여할까요?</div>
+        <div className="backup-confirm-title">"{previewName(preview.row)}" 팀에 참여할까요?</div>
         <div>회원 {s.players.length}명 · 오늘 경기 {s.games.length}개 · 지난 모임 {(s.sessionHistory || []).length}개</div>
         <div>참여하면 이 기기의 데이터는 <b>팀 데이터로 바뀌어요.</b> (지금 이 기기: 회원 {state.players.length}명 · 경기 {state.games.length}개)</div>
         <div className="row-actions" style={{ marginTop: 10 }}>

@@ -94,6 +94,17 @@ body{
   bottom:-100px; left:10%;
 }
 .brand{display:flex;align-items:center;gap:14px}
+/* 설정 창: 팀 이름 · 팀 코드 줄 */
+.team-info-row{display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;background:var(--primary-pale);border:1.5px solid transparent;border-radius:12px;padding:12px 14px;margin-bottom:8px;font:inherit;text-align:left;color:inherit}
+.team-info-row.clickable{cursor:pointer;transition:border-color .2s ease}
+.team-info-row.clickable:hover{border-color:var(--primary-light)}
+.team-info-label{flex:none;width:52px;font-size:.82rem;color:var(--muted);font-weight:600}
+.team-info-value{flex:1;min-width:0;font-size:1.1rem;font-weight:800;color:var(--primary-dark);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.team-info-edit{flex:none;font-size:.95rem;opacity:.7}
+.team-info-row.editing{border-color:var(--primary-light);background:#fff}
+.team-info-row.editing input{flex:1;min-width:0;border:none;outline:none;background:transparent;font:inherit;font-size:1.1rem;font-weight:800;color:var(--primary-dark);padding:0}
+.team-info-icon{flex:none;width:32px;height:32px;border-radius:50%;border:none;background:var(--primary-pale);color:var(--muted);font-size:1rem;font-weight:800;cursor:pointer}
+.team-info-icon.save{background:var(--primary);color:#fff}
 .team-leave{margin-top:18px;padding-top:14px;border-top:1px dashed var(--border)}
 .brand-logo{
   width:48px;height:48px;border-radius:50%;object-fit:cover;

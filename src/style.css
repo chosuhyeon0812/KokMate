@@ -350,6 +350,10 @@ tr:last-child td{border-bottom:none}
   backdrop-filter:blur(3px);
 }
 .modal-root.hidden{display:none}
+/* 확인 창: 열린 모달 위에 겹쳐 뜬다 */
+.ask-root{z-index:1100}
+.ask-box{max-width:380px}
+.ask-message{white-space:pre-line;font-size:1rem;line-height:1.6;color:var(--text);margin:0 0 4px}
 .modal-box{
   background:#fff;border-radius:18px;padding:22px;max-width:480px;width:100%;
   max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-lg);

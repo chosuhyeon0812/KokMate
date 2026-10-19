@@ -23,6 +23,7 @@ function SummaryGrid({ totalGames, usedCourts, participants, style }) {
 
 function SessionHistoryCard() {
   const state = useAppState();
+  const { ask } = useUI();
   if (state.sessionHistory.length === 0) {
     return (
       <div className="card">
@@ -32,7 +33,7 @@ function SessionHistoryCard() {
     );
   }
 
-  const remove = id => { if (confirm('저장된 모임 기록을 삭제할까요?')) actions.deleteSessionRecord(id); };
+  const remove = async id => { if (await ask('삭제하면 되돌릴 수 없어요.', { title: '저장된 모임 기록을 삭제할까요?', ok: '삭제', danger: true })) actions.deleteSessionRecord(id); };
 
   return (
     <div className="card">
@@ -64,7 +65,7 @@ function SessionHistoryCard() {
 
 export default function History() {
   const state = useAppState();
-  const { toast, openModal } = useUI();
+  const { toast, openModal, ask } = useUI();
   const todays = actions.sessionDoneGames(state).sort((a, b) => b.endTime - a.endTime);
   const usedCourts = new Set(state.games.map(g => g.court)).size;
   const players = new Set();
@@ -72,8 +73,8 @@ export default function History() {
   const memos = todays.filter(g => g.memo).map(g => `코트${g.court} · ${g.memo}`);
   const names = ids => ids.map(id => playerName(state, id));
 
-  const removeGame = g => {
-    if (!confirm(`${g.court}번 코트 ${timeStr(g.startTime)} 경기 기록을 삭제할까요? 참가자 경기 수에서도 빠집니다.`)) return;
+  const removeGame = async g => {
+    if (!(await ask('4명의 경기 수에서도 1씩 빠져요.', { title: `${g.court}번 코트 ${timeStr(g.startTime)} 경기 기록을 삭제할까요?`, ok: '삭제', danger: true }))) return;
     actions.deleteGame(g.id);
     toast('경기 기록을 삭제했습니다.');
   };

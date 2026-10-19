@@ -12,7 +12,7 @@ function StatusLine({ status }) {
 }
 
 function JoinedTeam({ team, status }) {
-  const { toast, warn } = useUI();
+  const { toast, warn, ask } = useUI();
   const shown = formatCode(team.code);
   // 링크를 누르면 코드가 미리 들어가서 '참여하기'만 누르면 된다. 링크가 안 열릴 때를 위해 코드도 같이 적는다.
   const message = `배드민턴 매칭 "${team.name}" 팀 초대\n아래 링크를 누르고 "참여하기"를 누르세요.\n${inviteLink(team.code)}\n\n(팀 코드: ${shown})`;
@@ -30,9 +30,9 @@ function JoinedTeam({ team, status }) {
     }
   };
 
-  const leave = () => {
+  const leave = async () => {
     const unsynced = hasUnsyncedChanges() ? '\n\n⚠ 아직 팀에 안 올라간 변경이 있어요. 나가면 그 변경은 사라져요. (인터넷이 연결된 곳에서 잠시 기다렸다가 나가세요)' : '';
-    if (!confirm(`"${team.name}" 팀에서 나갈까요?\n이 휴대폰의 팀 데이터는 지워지고 처음 화면으로 돌아가요. 팀 데이터는 팀에 그대로 남아서, 팀 코드로 언제든 다시 들어올 수 있어요.${unsynced}`)) return;
+    if (!(await ask(`이 휴대폰의 팀 데이터는 지워지고 처음 화면으로 돌아가요. 팀 데이터는 팀에 그대로 남아서, 팀 코드로 언제든 다시 들어올 수 있어요.${unsynced}`, { title: `"${team.name}" 팀에서 나갈까요?`, ok: '팀 나가기', danger: true }))) return;
     leaveTeamAndClear();
   };
 

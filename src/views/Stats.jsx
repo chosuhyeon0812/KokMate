@@ -6,7 +6,7 @@ import { StatusBadge, EmptyHint } from '../components/cards';
 
 export default function Stats() {
   const state = useAppState();
-  const { toast } = useUI();
+  const { toast, ask } = useUI();
   const [sortBy, setSortBy] = useState('games');
   const diffs = scoreDiffs(state.games);
   const rate = p => (p.wins + p.losses ? p.wins / (p.wins + p.losses) : null);
@@ -18,8 +18,8 @@ export default function Stats() {
   // 다음 매칭 우선 표시는 지금 참석 중인 사람끼리만 비교한다.
   const minGames = Math.min(...todays.filter(p => p.active).map(p => p.totalGames));
 
-  const reset = () => {
-    if (!confirm('오늘 경기 기록과 참가자 경기 수/승패를 초기화할까요? (참가자 명단은 유지됩니다)')) return;
+  const reset = async () => {
+    if (!(await ask('오늘 경기 기록과 경기 수가 모두 지워져요. 회원 명단은 그대로예요.', { title: '오늘 기록을 초기화할까요?', ok: '초기화', danger: true }))) return;
     actions.resetToday();
     toast('오늘 기록이 초기화되었습니다.');
   };

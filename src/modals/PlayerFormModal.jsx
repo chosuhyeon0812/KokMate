@@ -8,7 +8,7 @@ import { playerById, playingPlayerIds, waitingPlayerIds } from '../lib/selectors
 
 export default function PlayerFormModal({ playerId }) {
   const state = useAppState();
-  const { toast, warn, closeModal } = useUI();
+  const { toast, warn, closeModal, ask } = useUI();
   const player = playerId ? playerById(state, playerId) : null;
   const [name, setName] = useState(player ? player.name : '');
   const [gender, setGender] = useState(player ? player.gender : 'M');
@@ -24,10 +24,10 @@ export default function PlayerFormModal({ playerId }) {
     toast('저장되었습니다.');
   };
 
-  const remove = () => {
+  const remove = async () => {
     if (playingPlayerIds(state).has(player.id)) { warn('지금 경기 중인 선수는 삭제할 수 없습니다. 경기 종료 후 삭제하세요.'); return; }
     if (waitingPlayerIds(state).has(player.id)) { warn('대기 코트에 들어가 있는 선수는 삭제할 수 없습니다. 대기 코트에서 먼저 빼주세요.'); return; }
-    if (!confirm(`${player.name} 님을 삭제할까요? 관련 경기 기록의 이름 표시는 유지됩니다.`)) return;
+    if (!(await ask('지난 경기 기록에 나온 이름은 그대로 남아요.', { title: `${player.name} 님을 삭제할까요?`, ok: '삭제', danger: true }))) return;
     actions.deletePlayer(player.id);
     closeModal();
     toast('삭제했습니다.');

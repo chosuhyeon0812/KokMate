@@ -8,7 +8,7 @@ import Courts from './Courts';
 
 export default function Home() {
   const state = useAppState();
-  const { toast, warn, openModal } = useUI();
+  const { toast, warn, openModal, ask } = useUI();
 
   // 모임 종료를 안 누른 채 날짜가 바뀌었으면 알려준다. (지난 모임 경기 수가 오늘 경기에 섞이지 않도록)
   const startedOn = actions.sessionDate(state);
@@ -17,19 +17,19 @@ export default function Home() {
   const stale = startedOn && startedOn !== todayStr() && Date.now() - lastActivity > 6 * 3600000;
   const [, staleMonth, staleDay] = (startedOn || '').split('-').map(Number);
 
-  const endSession = () => {
+  const endSession = async () => {
     const doneCount = actions.sessionDoneGames(state).length;
     // 아직 진행 중인 경기는 결과가 없어 저장되지 않으므로, 지워진다는 걸 미리 알려준다.
     const liveCourts = state.games.filter(g => g.status === 'progress').map(g => g.court).sort((a, b) => a - b);
     const liveNote = liveCourts.length ? `${liveCourts.join(', ')}번 코트에서 아직 경기 중이에요. 이대로 종료하면 그 경기는 기록되지 않고 사라집니다. (남기려면 취소하고 먼저 경기 종료를 눌러주세요)\n\n` : '';
     if (doneCount === 0) {
       if (!liveCourts.length) { warn('저장할 경기 기록이 없습니다.'); return; }
-      if (!confirm(`${liveNote}끝난 경기가 없어 저장할 기록은 없어요. 진행 중인 경기를 지우고 모임을 초기화할까요?`)) return;
-      actions.resetToday();
+      if (!(await ask(`${liveNote}끝난 경기가 없어 저장할 기록은 없어요. 진행 중인 경기를 지우고 모임을 초기화할까요?`, { title: '모임 초기화', ok: '초기화', danger: true }))) return;
+      actions.resetToday({ endOfSession: true });
       toast('모임을 초기화했습니다.');
       return;
     }
-    if (!confirm(`${liveNote}모임을 종료할까요? 오늘 기록이 "기록" 탭의 지난 모임 목록에 저장되고, 경기 기록과 참가자 경기 수는 초기화됩니다. (회원 명단은 유지)`)) return;
+    if (!(await ask(`${liveNote}오늘 기록이 "기록" 탭의 지난 모임 목록에 저장되고, 경기 기록, 경기 수, 콕 제출, 오늘 참석자가 초기화돼요. 회원 명단은 그대로예요.`, { title: '모임을 종료할까요?', ok: '모임 종료' }))) return;
     actions.endSession();
     toast('모임 기록이 저장되었습니다.');
   };

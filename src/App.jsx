@@ -24,6 +24,7 @@ export default function App() {
   const [view, setView] = useState('home');
   const [modal, setModal] = useState(null); // { content, wide }
   const [toastMsg, setToastMsg] = useState(null); // { msg, id }
+  const [askDlg, setAskDlg] = useState(null); // { message, title, ok, danger, resolve }
   const [, setTick] = useState(0);
   const toastTimer = useRef();
   const { team } = useSync();
@@ -56,6 +57,8 @@ export default function App() {
       toast(msg, opts) { show(msg, 'success', opts && opts.action ? 6000 : 2200, opts && opts.action); },
       warn(msg) { show(msg, 'warn', 3200); },
       openModal(content, opts) { setModal({ content, wide: !!(opts && opts.wide) }); },
+      // 브라우저 기본 confirm 대신 앱 모양의 확인 창. 누른 결과(true/false)를 돌려준다. 열린 모달 위에 겹쳐서 뜬다.
+      ask(message, opts = {}) { return new Promise(resolve => setAskDlg({ message, ...opts, resolve })); },
       closeModal() { setModal(null); },
       switchView: setView,
     };
@@ -95,6 +98,18 @@ export default function App() {
       {modal && (
         <div className="modal-root" onClick={e => { if (e.target === e.currentTarget) ui.closeModal(); }}>
           <div className={`modal-box${modal.wide ? ' wide' : ''}`}>{modal.content}</div>
+        </div>
+      )}
+      {askDlg && (
+        <div className="modal-root ask-root" onClick={e => { if (e.target === e.currentTarget) { askDlg.resolve(false); setAskDlg(null); } }}>
+          <div className="modal-box ask-box" role="alertdialog" aria-modal="true">
+            {askDlg.title && <h3>{askDlg.title}</h3>}
+            <p className="ask-message">{askDlg.message}</p>
+            <div className="modal-actions">
+              <button className="btn btn-ghost" onClick={() => { askDlg.resolve(false); setAskDlg(null); }}>취소</button>
+              <button className={`btn ${askDlg.danger ? 'btn-danger' : 'btn-primary'}`} autoFocus onClick={() => { askDlg.resolve(true); setAskDlg(null); }}>{askDlg.ok || '확인'}</button>
+            </div>
+          </div>
         </div>
       )}
       {toastMsg && (

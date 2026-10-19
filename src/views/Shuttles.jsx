@@ -6,13 +6,13 @@ import { GenderBadge, EmptyHint } from '../components/cards';
 
 export default function Shuttles() {
   const state = useAppState();
-  const { toast } = useUI();
+  const { toast, ask } = useUI();
   // 콕은 그날 경기에 쓰는 거라 오늘 참석자만 보여준다. (휴식 중이어도 참석자면 포함)
   const players = sortByName(state.players.filter(p => p.active));
   const doneCount = players.filter(p => p.shuttleDone).length;
 
-  const reset = () => {
-    if (!confirm('콕 제출 상태와 비고를 모두 초기화할까요?')) return;
+  const reset = async () => {
+    if (!(await ask('모든 사람의 콕 제출 표시와 비고가 지워져요.', { title: '콕 제출 상태를 초기화할까요?', ok: '초기화', danger: true }))) return;
     actions.resetShuttles();
     toast('콕 제출 상태가 초기화되었습니다.');
   };

@@ -44,11 +44,11 @@ export function TeamLine({ teamA, teamB, label, style, live, meta = true }) {
 
 export function LiveCourtCard({ game: g }) {
   const state = useAppState();
-  const { openModal, toast } = useUI();
+  const { openModal, toast, ask } = useUI();
   const endGame = useEndGame();
 
-  const cancel = () => {
-    if (!confirm(`${g.court}번 코트 경기를 취소할까요? 기록에 남지 않고 경기 수도 올라가지 않습니다.`)) return;
+  const cancel = async () => {
+    if (!(await ask('기록에 남지 않고 경기 수도 올라가지 않아요.', { title: `${g.court}번 코트 경기를 취소할까요?`, ok: '경기 취소', danger: true }))) return;
     actions.deleteGame(g.id);
     toast(`${g.court}번 코트 경기를 취소했습니다.`);
   };

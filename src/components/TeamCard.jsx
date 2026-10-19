@@ -1,21 +1,21 @@
 /* 팀 공유 카드: 팀 만들기 / 팀 코드로 참여 / 참여 중인 팀 상태와 코드 보내기 */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useUI } from '../ui';
 import { useAppState } from '../store';
-import { timeStr } from '../lib/utils';
-import { useSync, createTeam, previewTeam, joinTeam, leaveTeam, syncNow, cleanCode, formatCode } from '../lib/sync';
+import { useSync, createTeam, previewTeam, joinTeam, leaveTeamAndClear, hasUnsyncedChanges, cleanCode, formatCode, inviteLink } from '../lib/sync';
 
+// 잘 맞춰지고 있을 때는 아무것도 안 보여주고, 문제가 있을 때만 알린다.
 function StatusLine({ status }) {
-  if (status.phase === 'saving') return <span className="sync-status saving">올리는 중…</span>;
   if (status.phase === 'offline') return <span className="sync-status offline">인터넷 없음 · 연결되면 자동으로 올라가요</span>;
   if (status.phase === 'error') return <span className="sync-status error">연결 문제 · 잠시 뒤 다시 시도해요</span>;
-  return <span className="sync-status ok">팀과 맞춰짐{status.lastSyncedAt ? ` · ${timeStr(status.lastSyncedAt)}` : ''}</span>;
+  return null;
 }
 
 function JoinedTeam({ team, status }) {
   const { toast, warn } = useUI();
   const shown = formatCode(team.code);
-  const message = `배드민턴 매칭 "${team.name}" 팀 코드: ${shown}\n앱의 기록 > 공유·백업 > "팀 코드로 참여"에 입력하세요.`;
+  // 링크를 누르면 코드가 미리 들어가서 '참여하기'만 누르면 된다. 링크가 안 열릴 때를 위해 코드도 같이 적는다.
+  const message = `배드민턴 매칭 "${team.name}" 팀 초대\n아래 링크를 누르고 "참여하기"를 누르세요.\n${inviteLink(team.code)}\n\n(팀 코드: ${shown})`;
 
   const share = async () => {
     if (navigator.share) {
@@ -24,16 +24,16 @@ function JoinedTeam({ team, status }) {
     }
     try {
       await navigator.clipboard.writeText(message);
-      toast('팀 코드를 복사했어요. 카톡에 붙여넣어 보내세요.');
+      toast('초대 링크를 복사했어요. 카톡에 붙여넣어 보내세요.');
     } catch (e) {
       warn('복사하지 못했어요. 코드를 직접 적어서 보내주세요.');
     }
   };
 
   const leave = () => {
-    if (!confirm(`"${team.name}" 팀 공유를 멈출까요? 이 기기의 데이터는 그대로 남고, 팀 코드로 언제든 다시 참여할 수 있어요.`)) return;
-    leaveTeam();
-    toast('팀 공유를 멈췄어요.');
+    const unsynced = hasUnsyncedChanges() ? '\n\n⚠ 아직 팀에 안 올라간 변경이 있어요. 나가면 그 변경은 사라져요. (인터넷이 연결된 곳에서 잠시 기다렸다가 나가세요)' : '';
+    if (!confirm(`"${team.name}" 팀에서 나갈까요?\n이 휴대폰의 팀 데이터는 지워지고 처음 화면으로 돌아가요. 팀 데이터는 팀에 그대로 남아서, 팀 코드로 언제든 다시 들어올 수 있어요.${unsynced}`)) return;
+    leaveTeamAndClear();
   };
 
   return (
@@ -48,22 +48,24 @@ function JoinedTeam({ team, status }) {
       </div>
       {status.message && <div className="sync-message">{status.message}</div>}
       <p className="muted backup-desc">이 코드를 아는 사람은 팀 데이터를 보고 바꿀 수 있어요. 팀원에게만 보내주세요.</p>
+      {/* 맞추기는 자동(실시간 알림 + 15초마다 + 인터넷 다시 연결될 때)이라 따로 버튼을 두지 않는다 */}
       <div className="row-actions">
-        <button className="btn btn-primary" onClick={share}>팀 코드 보내기</button>
-        <button className="btn btn-outline" onClick={syncNow}>지금 맞추기</button>
-        <button className="btn btn-ghost" onClick={leave}>공유 멈추기</button>
+        <button className="btn btn-primary" onClick={share}>초대 링크 보내기</button>
+      </div>
+      <div className="team-leave">
+        <button className="btn btn-danger" onClick={leave}>팀 나가기</button>
       </div>
     </>
   );
 }
 
 // 처음 화면(Welcome)에서도 같은 팀 만들기 / 팀 코드로 참여를 쓴다.
-export function NoTeam() {
+export function NoTeam({ initialCode }) {
   const state = useAppState();
   const { toast, warn } = useUI();
-  const [mode, setMode] = useState(null); // 'create' | 'join'
+  const [mode, setMode] = useState(initialCode ? 'join' : null); // 'create' | 'join'
   const [name, setName] = useState('');
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState(initialCode ? formatCode(initialCode) : '');
   const [busy, setBusy] = useState(false);
   const [preview, setPreview] = useState(null); // {code, row}
 
@@ -94,6 +96,9 @@ export function NoTeam() {
       setBusy(false);
     }
   };
+
+  // 초대 링크로 들어왔으면 바로 팀을 확인해서 '참여하기'만 누르면 되게 한다.
+  useEffect(() => { if (initialCode) check(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const join = () => {
     joinTeam(preview.code, preview.row);
@@ -140,6 +145,19 @@ export function NoTeam() {
           <button className="btn btn-outline" onClick={() => setMode('join')}>팀 코드로 참여</button>
         </div>
       )}
+    </>
+  );
+}
+
+// 오른쪽 위 ⚙️ 설정 버튼을 눌렀을 때 뜨는 창. 팀이 없으면 팀 만들기 / 참여를 보여준다.
+export function TeamInfoModal() {
+  const { team, status } = useSync();
+  const { closeModal } = useUI();
+  return (
+    <>
+      <h3>설정</h3>
+      {team ? <JoinedTeam team={team} status={status} /> : <NoTeam />}
+      <div className="modal-actions"><button className="btn btn-ghost" onClick={closeModal}>닫기</button></div>
     </>
   );
 }

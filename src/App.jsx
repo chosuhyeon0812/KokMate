@@ -8,7 +8,8 @@ import Records from './views/Records';
 import Help from './views/Help';
 import Welcome from './views/Welcome';
 import { isFreshDevice } from './store';
-import { syncEnabled, useSync } from './lib/sync';
+import { syncEnabled, useSync, WELCOME_DONE_KEY, readInviteCode } from './lib/sync';
+import { TeamInfoModal } from './components/TeamCard';
 
 const TABS = [
   { key: 'home', label: '🏟 코트', View: Home },
@@ -18,7 +19,6 @@ const TABS = [
 ];
 // 사용법은 탭 대신 오른쪽 위 ? 버튼으로 연다.
 const VIEWS = [...TABS, { key: 'help', View: Help }];
-const WELCOME_DONE_KEY = 'bm-welcome-done';
 
 export default function App() {
   const [view, setView] = useState('home');
@@ -30,6 +30,9 @@ export default function App() {
   const [welcomeDone, setWelcomeDone] = useState(() => { try { return !!localStorage.getItem(WELCOME_DONE_KEY); } catch (e) { return false; } });
   // 처음 여는 기기에만 팀 만들기 / 참여 화면을 보여준다. (예전부터 쓰던 기기는 바로 앱으로)
   const showWelcome = syncEnabled && isFreshDevice && !team && !welcomeDone;
+  // 초대 링크로 들어왔고 아직 그 팀이 아니면, 코드가 들어간 참여 화면을 보여준다.
+  const [invite, setInvite] = useState(() => (syncEnabled ? readInviteCode() : null));
+  const showInvite = !!invite && (!team || team.code !== invite);
   const skipWelcome = () => {
     try { localStorage.setItem(WELCOME_DONE_KEY, '1'); } catch (e) { /* 저장 못 해도 이번엔 넘어간다 */ }
     setWelcomeDone(true);
@@ -67,17 +70,19 @@ export default function App() {
         <div className="brand">
           <img src={logo} alt="로고" className="brand-logo" />
           <div className="brand-text">
-            <strong>배드민턴 매칭</strong>
-            <span>소규모 모임 경기 운영 도우미</span>
+            {/* 팀에 들어가 있으면 팀 이름(예: 씬민턴)을 크게 보여준다 */}
+            <strong>{team ? team.name : '배드민턴 매칭'}</strong>
+            <span>{team ? '배드민턴 매칭' : '소규모 모임 경기 운영 도우미'}</span>
           </div>
         </div>
         <div className="topbar-right">
           <div className="topbar-meta"><span>{today}</span></div>
+          {syncEnabled && !showWelcome && !showInvite && <button className="help-btn" title="설정" aria-label="설정" onClick={() => ui.openModal(<TeamInfoModal />)}>⚙️</button>}
           <button className={`help-btn${view === 'help' ? ' active' : ''}`} title="사용법" aria-label="사용법" onClick={() => setView(view === 'help' ? 'home' : 'help')}>?</button>
         </div>
       </header>
 
-      {showWelcome ? <Welcome onSkip={skipWelcome} /> : (<>
+      {showInvite ? <Welcome initialCode={invite} onSkip={() => setInvite(null)} /> : showWelcome ? <Welcome onSkip={skipWelcome} /> : (<>
       <nav className="tabbar">
         {TABS.map(t => (
           <button key={t.key} className={`tab-btn${view === t.key ? ' active' : ''}`} onClick={() => setView(t.key)}>{t.label}</button>

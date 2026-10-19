@@ -8,12 +8,14 @@ import { useSyncExternalStore } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { SUPABASE_URL, SUPABASE_KEY } from '../supabaseConfig';
 import { getState, applyRemoteState, applyMutator, setLocalChangeHook } from '../store';
+import { STORAGE_KEY } from './utils';
 
 export const syncEnabled = !!(SUPABASE_URL && SUPABASE_KEY);
 
 const TEAM_KEY = 'bm-team-v1'; // {code, name, version, dirty} - 이 기기가 참여한 팀
 const LEFTOVER_KEY = 'bm-offline-leftover'; // 서버에 못 올리고 덮인 이 기기 데이터 (혹시 몰라 남겨둠)
 const POLL_MS = 15000;
+export const WELCOME_DONE_KEY = 'bm-welcome-done'; // 처음 화면에서 '이 기기에서만 쓰기'를 고른 적이 있는지
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // 헷갈리는 0/O, 1/I 는 뺐다
 
 const client = syncEnabled ? createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false } }) : null;
@@ -206,6 +208,25 @@ export function cleanCode(input) {
   return input.toUpperCase().replace(/[^A-Z0-9]/g, '');
 }
 
+// 초대 링크(…/?team=코드)로 들어왔으면 그 코드를 돌려주고, 주소창에서는 지운다. (새로고침해도 다시 안 뜨게)
+export function readInviteCode() {
+  try {
+    const url = new URL(location.href);
+    const raw = url.searchParams.get('team');
+    if (!raw) return null;
+    url.searchParams.delete('team');
+    history.replaceState(null, '', url.pathname + url.search + url.hash);
+    const code = cleanCode(raw);
+    return code.length >= 10 ? code : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+export function inviteLink(code) {
+  return `${location.origin}/?team=${code}`;
+}
+
 // 보여줄 때는 4글자씩 끊어서
 export function formatCode(code) {
   return code.match(/.{1,4}/g).join('-');
@@ -246,6 +267,13 @@ export function leaveTeam() {
   setStatus({ phase: 'idle', lastSyncedAt: null, message: '' });
 }
 
-export function syncNow() {
-  tick();
+// 팀 나가기: 공유를 멈추고 이 기기의 데이터를 지운 뒤 처음 화면으로 돌아간다. (팀 데이터는 서버에 그대로 남는다)
+export function leaveTeamAndClear() {
+  leaveTeam();
+  [STORAGE_KEY, TEAM_KEY, LEFTOVER_KEY, WELCOME_DONE_KEY].forEach(k => localStorage.removeItem(k));
+  location.reload();
+}
+
+export function hasUnsyncedChanges() {
+  return !!(team && (queue.length || team.dirty));
 }

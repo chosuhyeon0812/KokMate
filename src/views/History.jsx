@@ -3,7 +3,7 @@ import { useUI } from '../ui';
 import * as actions from '../actions';
 import { timeStr, durationStr } from '../lib/utils';
 import { playerName } from '../lib/selectors';
-import { EmptyHint } from '../components/cards';
+import { EmptyHint, NameChips } from '../components/cards';
 import EndGameModal from '../modals/EndGameModal';
 
 function Memos({ memos }) {
@@ -94,9 +94,9 @@ export default function History() {
               <span>{timeStr(g.startTime)} ~ {timeStr(g.endTime)} ({durationStr(g.startTime, g.endTime)})</span>
             </div>
             <div className="team-line">
-              <span className={`team-name ${g.winner === 'A' ? 'badge-win' : ''}`}>{names(g.teamA).join(' + ')}</span>
+              <span className={`team-name ${g.winner === 'A' ? 'badge-win' : ''}`}><NameChips ids={g.teamA} label={id => playerName(state, id)} /></span>
               <span className="history-score">{g.scoreA != null ? `${g.scoreA} : ${g.scoreB}` : 'VS'}</span>
-              <span className={`team-name ${g.winner === 'B' ? 'badge-win' : ''}`}>{names(g.teamB).join(' + ')}</span>
+              <span className={`team-name ${g.winner === 'B' ? 'badge-win' : ''}`}><NameChips ids={g.teamB} label={id => playerName(state, id)} /></span>
             </div>
             <div className="center muted" style={{ fontSize: '.75rem', marginTop: 4 }}>
               {g.winner ? `승리 · ${names(g.winner === 'A' ? g.teamA : g.teamB).join(', ')}${g.scoreA == null ? ' (점수 미입력)' : ''}` : '승패 미입력'}

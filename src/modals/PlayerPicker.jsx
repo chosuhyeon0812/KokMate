@@ -3,12 +3,12 @@ import { useState } from 'react';
 import { useAppState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
-import { genderLabel, MAX_WAITING } from '../lib/utils';
+import { MAX_WAITING } from '../lib/utils';
 import {
   playerById, playerName, availablePlayers, playingPlayerIds, waitingModalPlayers,
   fairnessCompare, freeCourts, shortWait, LONG_REST_MS,
 } from '../lib/selectors';
-import { EmptyHint } from '../components/cards';
+import { EmptyHint, RestAlarm } from '../components/cards';
 
 const EMPTY_SLOTS = [null, null, null, null];
 const SLOT_TAGS = ['A1', 'A2', 'B1', 'B2'];
@@ -179,11 +179,13 @@ export default function PlayerPicker({ mode, presetCourt, idx, waitingId, gameId
         const corner = isPlaying ? '경기 중' : shortWait(p);
         const disabled = full && i === -1 && activeSlot === null;
         return (
-          <button key={p.id} type="button" className={`player-tile ${i !== -1 ? 'selected team-' + team : ''}${disabled ? ' disabled' : ''}`} onClick={() => pick(p.id)}>
+          <button key={p.id} type="button" className={`player-tile ${p.gender === 'M' ? 'male' : 'female'}${i !== -1 ? ' selected team-' + team : ''}${disabled ? ' disabled' : ''}`} onClick={() => pick(p.id)}>
             {i !== -1 && <span className="tile-slot">{team.toUpperCase()}{i % 2 + 1}</span>}
-            {corner && <span className={`tile-corner${isPlaying ? ' playing' : longRest ? ' long' : ''}`}>{corner}</span>}
-            <span className="tile-name">{p.name}</span>
-            <span className="tile-meta">{genderLabel(p.gender)} · {p.level} · {p.totalGames}경기</span>
+            {isPlaying && <span className="tile-corner playing">경기 중</span>}
+            {longRest && <RestAlarm />}
+            <span className="tile-name">{p.name} <span className="tile-level">/ {p.level}</span></span>
+            <span className="tile-meta">{p.totalGames}경기</span>
+            {corner && !isPlaying && <span className={`tile-meta${longRest ? ' tile-long' : ''}`}>{corner} 휴식</span>}
           </button>
         );
       })}

@@ -2,7 +2,7 @@ import { useAppState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
 import { todayStr } from '../lib/utils';
-import { RecCard, EmptyHint } from '../components/cards';
+import { EmptyHint } from '../components/cards';
 import AttendanceModal from '../modals/AttendanceModal';
 import Courts from './Courts';
 
@@ -52,21 +52,6 @@ export default function Home() {
       </div>
 
       <Courts />
-
-      <div className="card">
-        <div className="section-row">
-          <h2 className="mb0">자동 추천</h2>
-          <div className="row-actions">
-            {(state.pendingRecs.length > 0 || state.lastShortfall) && <button className="btn btn-ghost btn-sm" onClick={actions.clearRecs}>추천 지우기</button>}
-            <button className="btn btn-outline btn-sm" onClick={actions.recommend}>{state.pendingRecs.length ? '다시 추천' : '추천 받기'}</button>
-          </div>
-        </div>
-        {state.lastShortfall && (
-          <EmptyHint style={{ borderColor: 'var(--danger)', background: 'var(--danger-pale)', color: 'var(--danger)', marginBottom: 10 }}>{state.lastShortfall}</EmptyHint>
-        )}
-        {state.pendingRecs.length === 0 ? <EmptyHint>‘추천 받기’ 버튼을 누르면 추천 조합이 생성됩니다.</EmptyHint> :
-          state.pendingRecs.map((r, idx) => <RecCard key={r.court} rec={r} idx={idx} />)}
-      </div>
     </>
   );
 }

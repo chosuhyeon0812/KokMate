@@ -44,6 +44,15 @@ export function recommend() {
   });
 }
 
+// 추천은 언제든 다시 받을 수 있으니 확인 없이 바로 지운다.
+export function deleteRec(idx) {
+  update(d => { d.pendingRecs.splice(idx, 1); });
+}
+
+export function clearRecs() {
+  update(d => { d.pendingRecs = []; d.lastShortfall = ''; });
+}
+
 export function updateRec(idx, selection) {
   update(d => {
     const r = d.pendingRecs[idx];

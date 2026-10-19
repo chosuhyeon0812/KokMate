@@ -4,7 +4,7 @@ import { useUI } from '../ui';
 import * as actions from '../actions';
 import { activeGameOnCourt, availablePlayers, playingPlayerIds, waitingPlayerIds, fairnessCompare, shortWait, LONG_REST_MS } from '../lib/selectors';
 import { MAX_WAITING } from '../lib/utils';
-import { LiveCourtCard, WaitingCard, EmptyHint, RestAlarm } from '../components/cards';
+import { LiveCourtCard, WaitingCard, EmptyHint } from '../components/cards';
 import RestManagerModal from '../modals/RestManagerModal';
 import PlayerPicker from '../modals/PlayerPicker';
 
@@ -92,7 +92,6 @@ function Bench() {
               const long = p.restSince && Date.now() - p.restSince >= LONG_REST_MS;
               return (
                 <div key={p.id} className={`bench-chip ${p.gender === 'M' ? 'male' : 'female'}`}>
-                  {long && <RestAlarm />}
                   <span className="bench-name">{p.name} <span className="bench-level">/ {p.level}</span></span>
                   <span className="bench-meta">{p.totalGames}경기{p.restSince && <> · <span className={long ? 'rest-long' : ''}>{shortWait(p)}</span></>}</span>
                 </div>

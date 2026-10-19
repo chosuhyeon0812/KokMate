@@ -73,7 +73,7 @@ export default function History() {
   const names = ids => ids.map(id => playerName(state, id));
 
   const removeGame = g => {
-    if (!confirm(`${g.court}번 코트 ${timeStr(g.startTime)} 경기 기록을 삭제할까요? 참가자 경기 수와 승패에서도 빠집니다.`)) return;
+    if (!confirm(`${g.court}번 코트 ${timeStr(g.startTime)} 경기 기록을 삭제할까요? 참가자 경기 수에서도 빠집니다.`)) return;
     actions.deleteGame(g.id);
     toast('경기 기록을 삭제했습니다.');
   };
@@ -93,17 +93,18 @@ export default function History() {
               <span>{g.court}번 코트 · {g.gameType}</span>
               <span>{timeStr(g.startTime)} ~ {timeStr(g.endTime)} ({durationStr(g.startTime, g.endTime)})</span>
             </div>
-            <div className="team-line">
-              <span className={`team-name ${g.winner === 'A' ? 'badge-win' : ''}`}><NameChips ids={g.teamA} label={id => playerName(state, id)} /></span>
-              <span className="history-score">{g.scoreA != null ? `${g.scoreA} : ${g.scoreB}` : 'VS'}</span>
-              <span className={`team-name ${g.winner === 'B' ? 'badge-win' : ''}`}><NameChips ids={g.teamB} label={id => playerName(state, id)} /></span>
+            <div className="team-line four">
+              <NameChips ids={g.teamA.concat(g.teamB)} label={id => playerName(state, id)} />
             </div>
-            <div className="center muted" style={{ fontSize: '.75rem', marginTop: 4 }}>
-              {g.winner ? `승리 · ${names(g.winner === 'A' ? g.teamA : g.teamB).join(', ')}${g.scoreA == null ? ' (점수 미입력)' : ''}` : '승패 미입력'}
-            </div>
+            {/* 예전에 승패를 기록했던 경기만 결과를 보여준다 */}
+            {g.winner && (
+              <div className="center muted" style={{ fontSize: '.75rem', marginTop: 4 }}>
+                승리 · {names(g.winner === 'A' ? g.teamA : g.teamB).join(', ')}{g.scoreA != null ? ` (${g.scoreA}:${g.scoreB})` : ''}
+              </div>
+            )}
             {g.memo && <div className="history-memo">{g.memo}</div>}
             <div className="card-actions">
-              <button className="btn btn-outline btn-sm" onClick={() => openModal(<EndGameModal gameId={g.id} edit />)}>결과 수정</button>
+              <button className="btn btn-outline btn-sm" onClick={() => openModal(<EndGameModal gameId={g.id} />)}>특이사항</button>
               <button className="btn btn-danger btn-sm" onClick={() => removeGame(g)}>삭제</button>
             </div>
           </div>

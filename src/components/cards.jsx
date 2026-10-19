@@ -4,21 +4,8 @@ import * as actions from '../actions';
 import { timeStr, starStr, durationStr } from '../lib/utils';
 import { playerName, playerById, playingPlayerIds, activeGameOnCourt, waitingDuration, freeCourts, shortWait, LONG_REST_MS } from '../lib/selectors';
 import { starsFor } from '../lib/matching';
-import EndGameModal from '../modals/EndGameModal';
+import { useEndGame } from '../modals/EndGameModal';
 import PlayerPicker from '../modals/PlayerPicker';
-
-// 20분 넘게 쉰 사람 표시. 이모지는 기기마다 색이 달라서 메인 청록색 셔틀콕을 직접 그린다.
-export function RestAlarm() {
-  return (
-    <span className="rest-alarm" role="img" aria-label="20분 넘게 쉼" title="20분 넘게 쉼">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
-        <path d="M5 3H19L15 14H9Z" fill="var(--primary-pale-2)" stroke="var(--primary)" strokeWidth="1.6" strokeLinejoin="round" />
-        <path d="M9.6 3.4 11 14M14.4 3.4 13 14M7 8.5H17" stroke="var(--primary)" strokeWidth="1.2" />
-        <path d="M8.5 14H15.5V16A3.5 3.5 0 0 1 8.5 16Z" fill="var(--primary)" />
-      </svg>
-    </span>
-  );
-}
 
 // 남자는 파랑, 여자는 분홍 박스로 이름을 보여준다. (성별 글자 대신 색으로 구분)
 // meta를 켜면 이름 밑에 오늘 경기 수와 쉰 시간(경기 중이면 '경기 중')을 같이 보여준다.
@@ -33,7 +20,6 @@ export function NameChips({ ids, label, meta = false, live = false }) {
     const long = wait && Date.now() - p.restSince >= LONG_REST_MS;
     return (
       <span key={id} className={`name-chip ${p?.gender === 'M' ? 'male' : 'female'}`}>
-        {meta && long && <RestAlarm />}
         <span className="chip-name">{label(id)}{p && <span className="chip-level"> / {p.level}</span>}</span>
         {meta && p && (
           <>
@@ -47,12 +33,11 @@ export function NameChips({ ids, label, meta = false, live = false }) {
   });
 }
 
-export function TeamLine({ teamA, teamB, label, style, live }) {
+// 팀은 코트에서 가위바위보로 정하니까 VS 없이 4명을 한 묶음으로 보여준다.
+export function TeamLine({ teamA, teamB, label, style, live, meta = true }) {
   return (
-    <div className="team-line" style={style}>
-      <span className="team-name"><NameChips ids={teamA} label={label} meta live={live} /></span>
-      <span className="vs">VS</span>
-      <span className="team-name"><NameChips ids={teamB} label={label} meta live={live} /></span>
+    <div className="team-line four" style={style}>
+      <NameChips ids={teamA.concat(teamB)} label={label} meta={meta} live={live} />
     </div>
   );
 }
@@ -60,6 +45,7 @@ export function TeamLine({ teamA, teamB, label, style, live }) {
 export function LiveCourtCard({ game: g }) {
   const state = useAppState();
   const { openModal, toast } = useUI();
+  const endGame = useEndGame();
 
   const cancel = () => {
     if (!confirm(`${g.court}번 코트 경기를 취소할까요? 기록에 남지 않고 경기 수도 올라가지 않습니다.`)) return;
@@ -76,7 +62,7 @@ export function LiveCourtCard({ game: g }) {
       <TeamLine teamA={g.teamA} teamB={g.teamB} label={id => playerName(state, id)} live />
       <div className="muted center" style={{ fontSize: '.75rem' }}>시작 {timeStr(g.startTime)} · <b className="elapsed">{durationStr(g.startTime, Date.now())}째</b> · {g.gameType}</div>
       <div className="card-actions">
-        <button className="btn btn-accent btn-sm btn-block" onClick={() => openModal(<EndGameModal gameId={g.id} />)}>경기 종료 / 점수 입력</button>
+        <button className="btn btn-accent btn-sm btn-block" onClick={() => endGame(g)}>경기 종료</button>
       </div>
       <div className="card-actions">
         <button className="btn btn-outline btn-sm" onClick={() => openModal(<PlayerPicker mode="editGame" gameId={g.id} />, { wide: true })}>선수 바꾸기</button>
@@ -103,6 +89,7 @@ export function RecCard({ rec: r, idx }) {
         <strong style={{ color: 'var(--accent-dark)' }}>추천 · {r.court}번 코트 · {r.gameType}</strong>
         <div className="row-actions">
           <button className="btn btn-outline btn-sm" onClick={() => openModal(<PlayerPicker mode="edit" idx={idx} />, { wide: true })}>수정</button>
+          <button className="btn btn-danger btn-sm" onClick={() => actions.deleteRec(idx)}>삭제</button>
           <button className="btn btn-primary btn-sm" onClick={start}>이 조합으로 경기 시작</button>
         </div>
       </div>

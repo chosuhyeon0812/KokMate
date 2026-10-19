@@ -254,6 +254,8 @@ main{max-width:920px;margin:0 auto;padding:18px 14px 60px}
 .name-chip .chip-long{color:var(--accent-dark);font-weight:800;opacity:1}
 .name-chip.male{background:#e6f0fb;border-color:#b7d2f0}
 .name-chip.female{background:#fbe6f0;border-color:#f2bfd7}
+.team-line.four{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.team-line.four .name-chip{width:100%;max-width:none;padding:6px 8px}
 .team-line .vs{color:var(--muted);font-size:.72rem;font-weight:800;letter-spacing:.05em}
 
 .card-actions{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap}
@@ -295,7 +297,6 @@ tr:last-child td{border-bottom:none}
 .badge-level{background:linear-gradient(135deg,var(--primary-pale),#cfe9eb);color:var(--primary-dark);font-weight:800}
 .badge-male{background:#e6f0fb;color:#2563a8}
 .badge-female{background:#fbe6f0;color:#c22a72}
-.badge-win{background:linear-gradient(135deg,var(--success-pale),#d3f3e4);color:var(--success);font-weight:800;box-shadow:0 0 0 1px rgba(47,158,110,.25) inset}
 .badge-lose{background:var(--danger-pale);color:var(--danger);font-weight:700}
 
 .row-actions{display:flex;gap:6px;flex-wrap:wrap}
@@ -312,7 +313,6 @@ tr:last-child td{border-bottom:none}
 }
 .history-item:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
 .history-head{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);margin-bottom:6px}
-.history-score{font-weight:800;color:var(--primary-dark);font-size:1.05rem}
 .history-memo{margin-top:7px;font-size:.78rem;color:var(--muted);background:var(--bg);padding:7px 9px;border-radius:8px}
 
 .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:14px}
@@ -355,20 +355,6 @@ tr:last-child td{border-bottom:none}
 .slot-select-row{display:flex;gap:8px;align-items:center}
 .slot-select-row select{flex:1}
 
-.picker-slots{display:flex;align-items:stretch;justify-content:center;gap:6px;flex-wrap:wrap;margin-bottom:10px}
-.slot-chip{
-  min-width:110px;padding:10px 14px;border-radius:12px;border:2px dashed var(--border);
-  background:#fbfefe;font-size:1rem;color:var(--muted);text-align:center;font-weight:700;
-  display:flex;flex-direction:column;gap:2px;justify-content:center;transition:border-color .2s ease, background-color .2s ease, color .2s ease;
-}
-.slot-chip .slot-tag{font-size:.72rem;color:var(--primary-light);letter-spacing:.05em;font-weight:800}
-.slot-chip.filled{border-style:solid;border-color:var(--primary-light);background:var(--primary-pale);color:var(--primary-dark);cursor:pointer}
-.slot-chip.filled:hover{border-color:var(--primary)}
-.slot-chip.active{border-style:solid;border-color:var(--accent-dark);background:#fff8ea;color:var(--accent-dark);box-shadow:0 0 0 2px var(--accent-light)}
-.slot-chip.active .slot-tag{color:var(--accent-dark)}
-.slot-hint{text-align:center;font-size:.78rem;color:var(--muted);margin:0 0 10px}
-.slot-vs{align-self:center;color:var(--muted);font-weight:800;font-size:.9rem;padding:0 4px}
-
 .player-grid{
   display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;
   max-height:52vh;overflow-y:auto;padding:2px 2px 4px;margin-bottom:4px;
@@ -386,16 +372,16 @@ tr:last-child td{border-bottom:none}
 .player-tile .tile-corner{position:absolute;top:6px;right:8px;font-size:.75rem;font-weight:800;color:var(--muted);opacity:.8}
 .player-tile .tile-corner.long{color:var(--accent-dark);opacity:1}
 .player-tile .tile-corner.playing{color:var(--danger);opacity:1}
+.pick-count{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:34px;margin-bottom:10px;font-size:1rem;color:var(--muted)}
+.pick-count b{color:var(--primary);font-size:1.15rem}
 .player-tile .tile-slot{
   position:absolute;top:6px;left:8px;font-size:.66rem;font-weight:800;color:#fff;
   background:var(--primary);padding:1px 7px;border-radius:8px;
 }
-/* 남녀 색 타일. 고르면 바탕은 남녀 색 그대로, 테두리를 A팀 청록/B팀 주황으로 굵게 */
+/* 남녀 색 타일. 고르면 바탕은 남녀 색 그대로, 테두리를 청록으로 굵게 */
 .player-tile.male{background:#e6f0fb;border:2px solid #b7d2f0}
 .player-tile.female{background:#fbe6f0;border:2px solid #f2bfd7}
 .player-tile.selected{border:3.5px solid var(--primary-light)}
-.player-tile.selected.team-b{border-color:var(--accent-dark)}
-.player-tile.selected.team-b .tile-slot{background:var(--accent-dark)}
 .player-tile.disabled{opacity:.4;cursor:not-allowed}
 /* 참석자 선택: 회원이 많아 타일을 조금 작게 */
 .attend-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
@@ -476,28 +462,6 @@ tr:last-child td{border-bottom:none}
 .toast-action:hover{background:rgba(255,255,255,.36)}
 
 .field-label{font-size:.78rem;color:var(--muted);margin:4px 0 6px}
-.winner-pick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
-.winner-btn{
-  border:1.5px solid var(--border);border-radius:12px;background:#fff;padding:12px 8px;cursor:pointer;
-  display:flex;flex-direction:column;align-items:center;gap:4px;font-family:inherit;
-  transition:border-color .2s ease, background-color .2s ease, transform .15s var(--ease);
-}
-.winner-btn:hover{border-color:var(--primary-light)}
-.winner-btn:active{transform:scale(.97)}
-.winner-btn .winner-tag{font-size:.68rem;font-weight:800;color:var(--muted);letter-spacing:.03em}
-.winner-btn .winner-names{font-size:.9rem;font-weight:800;color:var(--text)}
-.winner-btn.on{border-color:var(--success);background:var(--success-pale)}
-.winner-btn.on .winner-tag{color:var(--success)}
-.score-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-.score-chip{
-  border:1px solid var(--border);background:#fff;border-radius:20px;padding:7px 12px;
-  font-size:.8rem;font-weight:700;color:var(--primary-dark);cursor:pointer;font-family:inherit;
-  transition:background-color .15s ease, border-color .15s ease;
-}
-.score-chip:hover{border-color:var(--primary-light);background:var(--primary-pale)}
-.score-chip.on{background:var(--grad-primary-soft);color:#fff;border-color:transparent}
-.score-inputs{display:grid;grid-template-columns:1fr 1fr}
-.score-inputs label:last-child{grid-column:1 / -1}
 .pick-notes{display:flex;flex-direction:column;gap:5px;margin:0 0 12px;font-size:.92rem;color:var(--muted)}
 .pick-notes .warn{color:var(--danger);font-weight:700}
 .topbar-right{display:flex;align-items:center;gap:8px}
@@ -536,12 +500,8 @@ tr:last-child td{border-bottom:none}
 /* 남자는 파랑, 여자는 분홍 카드로 한눈에 구분 */
 .bench-chip.male{background:#e6f0fb;border:2.5px solid #8db8e8}
 .bench-chip.female{background:#fbe6f0;border:2.5px solid #eda3c6}
-/* 20분 넘게 쉰 사람: 테두리는 남녀 색 그대로 두고, 오른쪽 위 청록 셔틀콕 + 쉰 시간 주황 굵은 글씨로 */
+/* 20분 넘게 쉰 사람: 테두리는 남녀 색 그대로 두고, 쉰 시간만 주황 굵은 글씨로 */
 .bench-chip .bench-level,.name-chip .chip-level{font-weight:700;color:var(--muted)}
-.bench-chip,.name-chip{position:relative}
-.rest-alarm{position:absolute;top:-9px;right:-7px;display:flex;line-height:0;background:#fff;border-radius:50%;padding:3px;box-shadow:0 1px 3px rgba(0,0,0,.18)}
-.rest-alarm svg{transform:rotate(-25deg)}
-.player-tile .rest-alarm{top:5px;right:6px;box-shadow:none;background:none;padding:0}
 .bench-chip .rest-long{color:var(--accent-dark);font-weight:800}
 .bench-resting{margin-top:14px;padding-top:12px;border-top:1px dashed var(--border)}
 .bench-resting-title{font-size:1.05rem;font-weight:700;color:var(--muted);margin-bottom:8px}
@@ -618,9 +578,6 @@ tr:last-child td{border-bottom:none}
   .attend-grid{grid-template-columns:repeat(3,1fr);gap:8px}
 
   /* 선택칸 4개 + VS 를 한 줄에 */
-  .picker-slots{flex-wrap:nowrap;gap:4px}
-  .slot-chip{min-width:0;flex:1;padding:8px 2px;font-size:.88rem}
-  .slot-vs{padding:0 1px;font-size:.78rem}
 
   /* 콕 / 표 */
   .shuttle-note{min-width:120px}

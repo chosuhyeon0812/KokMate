@@ -56,7 +56,10 @@ export default function Home() {
       <div className="card">
         <div className="section-row">
           <h2 className="mb0">자동 추천</h2>
-          <button className="btn btn-outline btn-sm" onClick={actions.recommend}>추천 받기</button>
+          <div className="row-actions">
+            {(state.pendingRecs.length > 0 || state.lastShortfall) && <button className="btn btn-ghost btn-sm" onClick={actions.clearRecs}>추천 지우기</button>}
+            <button className="btn btn-outline btn-sm" onClick={actions.recommend}>{state.pendingRecs.length ? '다시 추천' : '추천 받기'}</button>
+          </div>
         </div>
         {state.lastShortfall && (
           <EmptyHint style={{ borderColor: 'var(--danger)', background: 'var(--danger-pale)', color: 'var(--danger)', marginBottom: 10 }}>{state.lastShortfall}</EmptyHint>

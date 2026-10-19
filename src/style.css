@@ -480,6 +480,18 @@ tr:last-child td{border-bottom:none}
 .pick-notes{display:flex;flex-direction:column;gap:5px;margin:0 0 12px;font-size:.92rem;color:var(--muted)}
 .pick-notes .warn{color:var(--danger);font-weight:700}
 .topbar-right{display:flex;align-items:center;gap:8px}
+/* 사용법 */
+.help-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.help-step{display:flex;gap:14px;align-items:flex-start;padding:14px;border-radius:14px;background:var(--primary-pale)}
+.help-num{flex:none;width:34px;height:34px;border-radius:50%;background:var(--primary);color:#fff;font-weight:800;font-size:1.1rem;display:flex;align-items:center;justify-content:center}
+.help-step-title{font-weight:800;font-size:1.12rem;color:var(--primary-dark);margin-bottom:4px}
+.help-step-line{font-size:1rem;line-height:1.55;color:var(--text)}
+.help-more{border:1px solid var(--border);border-radius:12px;margin-bottom:8px;background:#fff}
+.help-more summary{padding:13px 14px;font-weight:700;font-size:1.02rem;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center}
+.help-more summary::-webkit-details-marker{display:none}
+.help-more summary::after{content:'＋';color:var(--muted);font-weight:800}
+.help-more[open] summary::after{content:'－'}
+.help-more p{margin:0;padding:0 14px 14px;font-size:.98rem;line-height:1.6;color:var(--text)}
 .help-btn{
   width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.3);
   background:rgba(255,255,255,.14);color:#fff;font-weight:800;font-size:.95rem;cursor:pointer;

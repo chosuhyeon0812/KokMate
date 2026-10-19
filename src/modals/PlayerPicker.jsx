@@ -6,7 +6,7 @@ import * as actions from '../actions';
 import { MAX_WAITING } from '../lib/utils';
 import {
   playerById, availablePlayers, playingPlayerIds, waitingModalPlayers,
-  fairnessCompare, freeCourts, shortWait, LONG_REST_MS,
+  fairnessCompare, freeCourts, waitLabel, LONG_REST_MS,
 } from '../lib/selectors';
 import { EmptyHint } from '../components/cards';
 
@@ -124,15 +124,15 @@ export default function PlayerPicker({ mode, presetCourt, idx, waitingId, gameId
         const i = selection.indexOf(p.id);
                 const isPlaying = playing.has(p.id);
         const longRest = !isPlaying && p.restSince && Date.now() - p.restSince >= LONG_REST_MS;
-        const corner = isPlaying ? '경기 중' : shortWait(p);
         const disabled = full && i === -1;
         return (
           <button key={p.id} type="button" className={`player-tile ${p.gender === 'M' ? 'male' : 'female'}${i !== -1 ? ' selected' : ''}${disabled ? ' disabled' : ''}`} onClick={() => pick(p.id)}>
+            <span className="tile-games">{p.totalGames}경기</span>
             {i !== -1 && <span className="tile-slot">✓</span>}
-            {isPlaying && <span className="tile-corner playing">경기 중</span>}
             <span className="tile-name">{p.name} <span className="tile-level">/ {p.level}</span></span>
-            <span className="tile-meta">{p.totalGames}경기</span>
-            {corner && !isPlaying && <span className={`tile-meta${longRest ? ' tile-long' : ''}`}>{corner} 휴식</span>}
+            {isPlaying
+              ? <span className="tile-meta tile-playing">경기 중</span>
+              : <span className={`tile-meta${longRest ? ' tile-long' : ''}`}>{waitLabel(p)}</span>}
           </button>
         );
       })}

@@ -263,8 +263,12 @@ main{max-width:920px;margin:0 auto;padding:18px 14px 60px}
 .team-line .team-name{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;min-width:0}
 .name-chip{max-width:100%}
 .name-chip{display:inline-flex;flex-direction:column;align-items:center;padding:4px 10px;border-radius:8px;border:1.5px solid transparent;line-height:1.25}
-.name-chip .chip-name{font-weight:800}
-.name-chip .chip-meta{font-size:.82rem;font-weight:600;color:var(--text);opacity:.85;word-break:keep-all;text-align:center}
+.name-chip{position:relative}
+.name-chip.with-meta{padding-top:20px !important;padding-bottom:8px !important}
+.name-chip .chip-games{position:absolute;top:3px;left:7px;font-size:.72rem;font-weight:700;color:var(--muted)}
+.name-chip .chip-name{font-weight:900;font-size:1.55rem;color:var(--text);line-height:1.15;white-space:nowrap}
+/* 쉰 시간(또는 '경기 중')은 오른쪽 위 모서리에 작게 */
+.name-chip .chip-meta{position:absolute;top:3px;right:7px;font-size:.72rem;font-weight:700;color:var(--muted);white-space:nowrap}
 .name-chip .chip-playing{color:var(--danger);font-weight:800;opacity:1}
 .name-chip .chip-long{color:var(--accent-dark);font-weight:800;opacity:1}
 .name-chip.male{background:#e6f0fb;border-color:#b7d2f0}
@@ -274,6 +278,9 @@ main{max-width:920px;margin:0 auto;padding:18px 14px 60px}
 .team-line .vs{color:var(--muted);font-size:.72rem;font-weight:800;letter-spacing:.05em}
 
 .card-actions{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap}
+.live-actions{flex-wrap:nowrap;gap:6px}
+.live-actions .btn{flex:1;padding-left:4px;padding-right:4px;white-space:nowrap}
+.live-actions .btn:last-child{flex:1.4}
 
 .rec-card{
   border:1px solid var(--accent-light);
@@ -375,18 +382,20 @@ tr:last-child td{border-bottom:none}
 .slot-select-row select{flex:1}
 
 .player-grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;
   max-height:52vh;overflow-y:auto;padding:2px 2px 4px;margin-bottom:4px;
 }
 .player-tile{
-  position:relative;height:86px;
+  position:relative;height:98px;
   border:1.5px solid var(--border);border-radius:14px;background:#fff;padding:10px;
   cursor:pointer;text-align:center;display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;
   transition:transform .15s var(--ease), box-shadow .2s ease, border-color .2s ease, background-color .2s ease;
 }
 .player-tile:hover{transform:translateY(-1px);box-shadow:var(--shadow);border-color:var(--primary-light)}
-.player-tile .tile-name{font-weight:800;font-size:1.1rem;color:var(--text)}
-.player-tile .tile-meta{font-size:.88rem;font-weight:600;color:var(--text);opacity:.85;white-space:nowrap;line-height:1.2}
+.player-tile .tile-name{font-weight:900;font-size:1.85rem;color:var(--text);line-height:1.15;white-space:nowrap;margin-top:6px}
+.player-tile .tile-games{position:absolute;top:6px;left:9px;font-size:.75rem;font-weight:700;color:var(--muted)}
+.player-tile .tile-meta.tile-playing{color:var(--danger);font-weight:800;opacity:1}
+.player-tile .tile-meta{position:absolute;top:6px;right:9px;font-size:.75rem;font-weight:700;color:var(--text);opacity:.85;white-space:nowrap;line-height:1.2}
 .player-tile .tile-meta.tile-long{color:var(--accent-dark);font-weight:800;opacity:1}
 .player-tile .tile-corner{position:absolute;top:6px;right:8px;font-size:.75rem;font-weight:800;color:var(--muted);opacity:.8}
 .player-tile .tile-corner.long{color:var(--accent-dark);opacity:1}
@@ -394,7 +403,7 @@ tr:last-child td{border-bottom:none}
 .pick-count{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:34px;margin-bottom:10px;font-size:1rem;color:var(--muted)}
 .pick-count b{color:var(--primary);font-size:1.15rem}
 .player-tile .tile-slot{
-  position:absolute;top:6px;left:8px;font-size:.66rem;font-weight:800;color:#fff;
+  position:absolute;bottom:6px;right:8px;font-size:.72rem;font-weight:800;color:#fff;
   background:var(--primary);padding:1px 7px;border-radius:8px;
 }
 /* 남녀 색 타일. 고르면 바탕은 남녀 색 그대로, 테두리를 청록으로 굵게 */
@@ -406,9 +415,9 @@ tr:last-child td{border-bottom:none}
 .attend-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
 .attend-search{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:1rem;background:#fff;margin-bottom:10px}
 .attend-search:focus{outline:none;border-color:var(--primary-light)}
-.attend-grid{grid-template-columns:repeat(auto-fill,minmax(104px,1fr))}
-.attend-grid .player-tile{height:64px;padding:8px 6px}
-.attend-grid .player-tile .tile-name{font-size:1rem}
+.attend-grid{grid-template-columns:repeat(auto-fill,minmax(124px,1fr))}
+.attend-grid .player-tile{height:74px;padding:8px 6px}
+.attend-grid .player-tile .tile-name{font-size:1.5rem;margin-top:0}
 /* 참석자 선택: 여자/남자 세그먼트 + 정렬 칩 */
 .gender-seg{display:flex;gap:4px;padding:4px;background:#eef4f5;border-radius:14px;margin-bottom:10px}
 .gender-seg button{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:10px 8px;border:none;border-radius:11px;background:transparent;font:inherit;font-size:1.05rem;font-weight:800;color:var(--muted);cursor:pointer;transition:background-color .2s ease,box-shadow .2s ease,color .2s ease}
@@ -435,7 +444,7 @@ tr:last-child td{border-bottom:none}
 .attend-grid .player-tile.female.selected{background:#d9488b;border-color:#d9488b}
 .attend-grid .player-tile.male.selected{background:#3a7bd5;border-color:#3a7bd5}
 .attend-grid .player-tile.selected .tile-name{color:#fff}
-.player-tile .tile-level{font-weight:700;color:var(--muted)}
+.player-tile .tile-level{font-weight:900;color:#4a5f66}
 .attend-grid .player-tile.selected .tile-level{color:rgba(255,255,255,.8)}
 .attend-grid .player-tile .attend-check{top:5px;right:6px;width:18px;height:18px;line-height:18px;border-radius:50%;background:#fff;font-size:.7rem;text-align:center}
 .attend-grid .player-tile.female .attend-check{color:#d9488b}
@@ -528,19 +537,23 @@ tr:last-child td{border-bottom:none}
 .session-row{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
 .elapsed{color:var(--primary-dark)}
 .headcount{font-size:1.05rem;color:var(--text);margin:-4px 0 10px}
-.bench{display:flex;flex-wrap:wrap;gap:10px}
-.bench-chip{display:flex;flex-direction:column;align-items:center;min-width:92px;padding:10px 14px;border:1px solid var(--border);border-radius:10px;background:#fff}
-.bench-chip .bench-name{font-weight:800;font-size:1.25rem}
-.bench-chip .bench-meta{font-size:1.05rem;font-weight:600;color:var(--text);margin-top:2px}
+.bench{display:flex;flex-wrap:wrap;gap:12px}
+/* 쉬는 사람 카드: 이름·급수는 크고 진하게, 경기 수는 왼쪽 위, 쉰 시간은 오른쪽 위 모서리에 작게 */
+.bench-chip{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:132px;min-height:88px;padding:24px 14px 10px;border:1px solid var(--border);border-radius:14px;background:#fff}
+.bench-chip .bench-games{position:absolute;top:5px;left:9px;font-size:.78rem;font-weight:700;color:var(--muted)}
+.bench-chip .bench-name{font-weight:900;font-size:2rem;color:var(--text);line-height:1.15;white-space:nowrap}
+.bench-chip .bench-wait{position:absolute;top:5px;right:9px;font-size:.78rem;font-weight:700;color:var(--muted)}
 /* 남자는 파랑, 여자는 분홍 카드로 한눈에 구분 */
 .bench-chip.male{background:#e6f0fb;border:2.5px solid #8db8e8}
 .bench-chip.female{background:#fbe6f0;border:2.5px solid #eda3c6}
 /* 20분 넘게 쉰 사람: 테두리는 남녀 색 그대로 두고, 쉰 시간만 주황 굵은 글씨로 */
-.bench-chip .bench-level,.name-chip .chip-level{font-weight:700;color:var(--muted)}
+.bench-chip .bench-level{font-weight:900;color:#4a5f66}
+.name-chip .chip-level{font-weight:900;color:#4a5f66}
 .bench-chip .rest-long{color:var(--accent-dark);font-weight:800}
 .bench-resting{margin-top:14px;padding-top:12px;border-top:1px dashed var(--border)}
 .bench-resting-title{font-size:1.05rem;font-weight:700;color:var(--muted);margin-bottom:8px}
-.bench-chip.resting{font:inherit;color:inherit;cursor:pointer}
+/* 휴식 중: 남녀 색 대신 회색으로 위쪽 쉬는 사람과 구분. 흐리게 하지는 않아서 눌러 복귀할 수 있어 보이게 */
+.bench-chip.resting,.bench-chip.resting.male,.bench-chip.resting.female{font:inherit;color:inherit;cursor:pointer;background:#eceff1;border:2.5px solid #b0b8bf}
 .bench-chip.resting:hover,.bench-chip.resting:focus-visible{filter:brightness(.95)}
 .bench-chip.resting:active{transform:scale(.96)}
 .court-add{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--muted);margin-top:13px}
@@ -617,3 +630,25 @@ tr:last-child td{border-bottom:none}
   /* 콕 / 표 */
   .shuttle-note{min-width:120px}
 }
+
+/* ---------- 사람 카드 공통 양식 ----------
+   대기 코트(코트 카드 안 이름칸) · 쉬는 사람 · 경기 만들기 창의 네모는 항상 같은 모양으로 맞춘다.
+   (참석자 선택 창은 경기 수·시간이 없는 다른 양식이라 제외) */
+.name-chip.with-meta,
+.bench-chip,
+.player-grid:not(.attend-grid) .player-tile{
+  position:relative;box-sizing:border-box;height:auto;min-height:86px;
+  padding:22px 10px 10px !important;border-radius:12px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+.name-chip.with-meta.male,.bench-chip.male,.player-grid:not(.attend-grid) .player-tile.male{background:#e6f0fb;border:2.5px solid #8db8e8}
+.name-chip.with-meta.female,.bench-chip.female,.player-grid:not(.attend-grid) .player-tile.female{background:#fbe6f0;border:2.5px solid #eda3c6}
+.name-chip.with-meta .chip-name,.bench-chip .bench-name,.player-grid:not(.attend-grid) .player-tile .tile-name{font-size:1.7rem;font-weight:900;line-height:1.15;white-space:nowrap;margin:0;color:var(--text)}
+.name-chip .chip-level,.bench-chip .bench-level,.player-tile .tile-level{font-weight:900;color:#4a5f66}
+.name-chip .chip-games,.bench-chip .bench-games,.player-tile .tile-games{position:absolute;top:5px;left:9px;font-size:.78rem;font-weight:700;color:var(--muted)}
+.name-chip .chip-meta,.bench-chip .bench-wait,.player-tile .tile-meta{position:absolute;top:5px;right:9px;font-size:.78rem;font-weight:700;color:var(--muted);white-space:nowrap;opacity:1}
+.name-chip .chip-meta.chip-long,.bench-chip .rest-long,.player-tile .tile-meta.tile-long{color:var(--accent-dark);font-weight:800}
+.name-chip .chip-meta.chip-playing,.player-tile .tile-meta.tile-playing{color:var(--danger);font-weight:800}
+/* 고른 사람(경기 만들기)과 휴식 중(쉬는 사람)은 공통 양식 위에 표시만 덧붙인다 */
+.player-grid:not(.attend-grid) .player-tile.selected{border:3.5px solid var(--primary-light)}
+.bench-chip.resting,.bench-chip.resting.male,.bench-chip.resting.female{background:#eceff1;border:2.5px solid #b0b8bf}

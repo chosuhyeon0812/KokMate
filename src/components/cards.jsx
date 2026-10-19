@@ -2,13 +2,13 @@ import { useAppState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
 import { timeStr, starStr, durationStr } from '../lib/utils';
-import { playerName, playerById, playingPlayerIds, activeGameOnCourt, waitingDuration, freeCourts, shortWait, LONG_REST_MS } from '../lib/selectors';
+import { playerName, playerById, playingPlayerIds, activeGameOnCourt, waitingDuration, freeCourts, waitLabel, LONG_REST_MS } from '../lib/selectors';
 import { starsFor } from '../lib/matching';
 import { useEndGame } from '../modals/EndGameModal';
 import PlayerPicker from '../modals/PlayerPicker';
 
 // 남자는 파랑, 여자는 분홍 박스로 이름을 보여준다. (성별 글자 대신 색으로 구분)
-// meta를 켜면 이름 밑에 오늘 경기 수와 쉰 시간(경기 중이면 '경기 중')을 같이 보여준다.
+// meta를 켜면 왼쪽 위 모서리에 경기 수, 이름 밑에 쉰 시간(경기 중이면 '경기 중')을 보여준다.
 // live는 진행 중인 코트처럼 다 같이 경기 중인 게 당연한 곳이라 '경기 중'을 생략한다.
 export function NameChips({ ids, label, meta = false, live = false }) {
   const state = useAppState();
@@ -16,18 +16,14 @@ export function NameChips({ ids, label, meta = false, live = false }) {
   return ids.map(id => {
     const p = playerById(state, id);
     const isPlaying = playing.has(id);
-    const wait = !isPlaying && p ? shortWait(p) : '';
-    const long = wait && Date.now() - p.restSince >= LONG_REST_MS;
+    const long = !isPlaying && p && p.restSince && Date.now() - p.restSince >= LONG_REST_MS;
     return (
-      <span key={id} className={`name-chip ${p?.gender === 'M' ? 'male' : 'female'}`}>
+      <span key={id} className={`name-chip ${p?.gender === 'M' ? 'male' : 'female'}${meta && p ? ' with-meta' : ''}`}>
+        {meta && p && <span className="chip-games">{p.totalGames}경기</span>}
         <span className="chip-name">{label(id)}{p && <span className="chip-level"> / {p.level}</span>}</span>
-        {meta && p && (
-          <>
-            <span className="chip-meta">{p.totalGames}경기</span>
-            {isPlaying && !live && <span className="chip-meta chip-playing">경기 중</span>}
-            {wait && <span className={`chip-meta${long ? ' chip-long' : ''}`}>{wait} 휴식</span>}
-          </>
-        )}
+        {meta && p && !live && (isPlaying
+          ? <span className="chip-meta chip-playing">경기 중</span>
+          : <span className={`chip-meta${long ? ' chip-long' : ''}`}>{waitLabel(p)}</span>)}
       </span>
     );
   });
@@ -61,12 +57,11 @@ export function LiveCourtCard({ game: g }) {
       </div>
       <TeamLine teamA={g.teamA} teamB={g.teamB} label={id => playerName(state, id)} live />
       <div className="muted center" style={{ fontSize: '.75rem' }}>시작 {timeStr(g.startTime)} · <b className="elapsed">{durationStr(g.startTime, Date.now())}째</b> · {g.gameType}</div>
-      <div className="card-actions">
-        <button className="btn btn-accent btn-sm btn-block" onClick={() => endGame(g)}>경기 종료</button>
-      </div>
-      <div className="card-actions">
+      {/* 한 줄에 종료 / 취소 / 선수 바꾸기 */}
+      <div className="card-actions live-actions">
+        <button className="btn btn-accent btn-sm" onClick={() => endGame(g)}>종료</button>
+        <button className="btn btn-danger btn-sm" onClick={cancel}>취소</button>
         <button className="btn btn-outline btn-sm" onClick={() => openModal(<PlayerPicker mode="editGame" gameId={g.id} />, { wide: true })}>선수 바꾸기</button>
-        <button className="btn btn-danger btn-sm" onClick={cancel}>경기 취소</button>
       </div>
     </div>
   );

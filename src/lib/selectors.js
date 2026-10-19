@@ -74,6 +74,12 @@ export function shortWait(p) {
   return mins < 60 ? `${mins}분` : `${Math.floor(mins / 60)}시간`;
 }
 
+// 카드에 쓰는 쉰 시간: 막 들어왔거나 1분이 안 됐으면 '00분', 아니면 'n분'(1시간이 넘으면 'n시간').
+export function waitLabel(p) {
+  const w = p.restSince ? shortWait(p) : '';
+  return !w || w === '0분' ? '00분' : w;
+}
+
 export function fairnessCompare(a, b) {
   // 매칭 알고리즘과 같은 우선순위: 경기 수가 적을수록, 그 다음 오래 쉰 사람일수록 앞에 오도록
   if (a.totalGames !== b.totalGames) return a.totalGames - b.totalGames;

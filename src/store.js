@@ -54,6 +54,8 @@ function readSavedState() {
   }
 }
 
+// 이 기기에 저장된 데이터가 하나도 없던 첫 실행인지. (처음 화면을 보여줄지 정할 때 쓴다)
+export const isFreshDevice = (() => { try { return !localStorage.getItem(STORAGE_KEY); } catch (e) { return false; } })();
 let state = loadState();
 const listeners = new Set();
 // 이 기기에서 데이터를 바꿀 때마다 불린다. (팀 공유가 켜져 있으면 서버로 올리는 데 쓴다)

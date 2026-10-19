@@ -57,7 +57,8 @@ function JoinedTeam({ team, status }) {
   );
 }
 
-function NoTeam() {
+// 처음 화면(Welcome)에서도 같은 팀 만들기 / 팀 코드로 참여를 쓴다.
+export function NoTeam() {
   const state = useAppState();
   const { toast, warn } = useUI();
   const [mode, setMode] = useState(null); // 'create' | 'join'

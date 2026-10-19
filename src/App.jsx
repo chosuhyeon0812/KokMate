@@ -6,6 +6,9 @@ import Players from './views/Players';
 import Shuttles from './views/Shuttles';
 import Records from './views/Records';
 import Help from './views/Help';
+import Welcome from './views/Welcome';
+import { isFreshDevice } from './store';
+import { syncEnabled, useSync } from './lib/sync';
 
 const TABS = [
   { key: 'home', label: '🏟 코트', View: Home },
@@ -15,6 +18,7 @@ const TABS = [
 ];
 // 사용법은 탭 대신 오른쪽 위 ? 버튼으로 연다.
 const VIEWS = [...TABS, { key: 'help', View: Help }];
+const WELCOME_DONE_KEY = 'bm-welcome-done';
 
 export default function App() {
   const [view, setView] = useState('home');
@@ -22,6 +26,14 @@ export default function App() {
   const [toastMsg, setToastMsg] = useState(null); // { msg, id }
   const [, setTick] = useState(0);
   const toastTimer = useRef();
+  const { team } = useSync();
+  const [welcomeDone, setWelcomeDone] = useState(() => { try { return !!localStorage.getItem(WELCOME_DONE_KEY); } catch (e) { return false; } });
+  // 처음 여는 기기에만 팀 만들기 / 참여 화면을 보여준다. (예전부터 쓰던 기기는 바로 앱으로)
+  const showWelcome = syncEnabled && isFreshDevice && !team && !welcomeDone;
+  const skipWelcome = () => {
+    try { localStorage.setItem(WELCOME_DONE_KEY, '1'); } catch (e) { /* 저장 못 해도 이번엔 넘어간다 */ }
+    setWelcomeDone(true);
+  };
 
   // 대기/휴식 시간이 화면에 실시간으로 반영되도록 주기적으로 다시 그린다.
   useEffect(() => {
@@ -65,6 +77,7 @@ export default function App() {
         </div>
       </header>
 
+      {showWelcome ? <Welcome onSkip={skipWelcome} /> : (<>
       <nav className="tabbar">
         {TABS.map(t => (
           <button key={t.key} className={`tab-btn${view === t.key ? ' active' : ''}`} onClick={() => setView(t.key)}>{t.label}</button>
@@ -72,6 +85,7 @@ export default function App() {
       </nav>
 
       <main><View /></main>
+      </>)}
 
       {modal && (
         <div className="modal-root" onClick={e => { if (e.target === e.currentTarget) ui.closeModal(); }}>

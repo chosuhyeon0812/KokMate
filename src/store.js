@@ -1,7 +1,6 @@
 /* 앱 전체 상태 저장소 (localStorage 에 그대로 저장하므로 예전 버전 데이터도 이어서 사용 가능) */
 import { useSyncExternalStore } from 'react';
-import { STORAGE_KEY, newMember } from './lib/utils';
-import { DEFAULT_ROSTER, ROSTER_VERSION } from './lib/roster';
+import { STORAGE_KEY } from './lib/utils';
 
 function defaultState() {
   return {
@@ -16,20 +15,9 @@ function defaultState() {
   };
 }
 
-// 기본 회원 명단을 한 번만 넣는다. 이미 있는 이름은 건너뛰고, 넣은 뒤에는 표시를 남겨서
-// 나중에 지운 사람이 다시 생기지 않게 한다.
-function seedRoster(s) {
-  if (s.rosterVersion === ROSTER_VERSION) return s;
-  const names = new Set(s.players.map(p => p.name));
-  DEFAULT_ROSTER.forEach(([name, gender, level]) => {
-    if (!names.has(name)) s.players.push(newMember({ name, gender, level }));
-  });
-  s.rosterVersion = ROSTER_VERSION;
-  return s;
-}
-
+// 새 기기는 빈 명단으로 시작한다. (모임 회원은 팀에 참여하면 팀 데이터로 들어온다)
 function loadState() {
-  return seedRoster(readSavedState());
+  return readSavedState();
 }
 
 // 저장돼 있던 데이터(또는 백업 파일)를 지금 버전 형식에 맞춘다.

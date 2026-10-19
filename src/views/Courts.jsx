@@ -38,8 +38,7 @@ export default function Courts() {
               return (
                 <div className="court-card empty" key={c}>
                   <div className="court-title"><span>{c}번 코트</span><button type="button" className="court-remove" onClick={() => actions.removeCourt(c)}>코트 빼기</button></div>
-                  <div className="muted center" style={{ padding: '10px 0' }}>비어 있음</div>
-                  <button className="btn btn-primary btn-sm btn-block" onClick={() => openModal(<PlayerPicker mode="manual" presetCourt={c} />, { wide: true })}>경기 만들기</button>
+                  <button className="btn btn-primary btn-sm btn-block" style={{ marginTop: 10 }} onClick={() => openModal(<PlayerPicker mode="manual" presetCourt={c} />, { wide: true })}>경기 만들기</button>
                 </div>
               );
             })}

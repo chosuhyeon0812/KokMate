@@ -1,7 +1,14 @@
 import { useAppState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
-import { timeStr, starStr, durationStr } from '../lib/utils';
+import { starStr } from '../lib/utils';
+
+// 진행 중 코트의 경과 시간: 막 시작하면 '00분', 그 뒤로 '7분', '12분', '1시간 5분'
+function elapsedLabel(startTs) {
+  const mins = Math.max(0, Math.floor((Date.now() - startTs) / 60000));
+  if (mins === 0) return '00분';
+  return mins < 60 ? `${mins}분` : `${Math.floor(mins / 60)}시간 ${mins % 60}분`;
+}
 import { playerName, playerById, playingPlayerIds, activeGameOnCourt, waitingDuration, freeCourts, waitLabel, LONG_REST_MS } from '../lib/selectors';
 import { starsFor } from '../lib/matching';
 import { useEndGame } from '../modals/EndGameModal';
@@ -38,30 +45,47 @@ export function TeamLine({ teamA, teamB, label, style, live, meta = true }) {
   );
 }
 
-export function LiveCourtCard({ game: g }) {
+// 진행 중 코트의 '경기 관리' 창: 종료 / 선수 바꾸기 / 취소
+function LiveGameMenu({ gameId }) {
   const state = useAppState();
-  const { openModal, toast, ask } = useUI();
+  const { openModal, closeModal, toast, ask } = useUI();
   const endGame = useEndGame();
+  const g = state.games.find(x => x.id === gameId && x.status === 'progress');
+  if (!g) return null;
 
   const cancel = async () => {
     if (!(await ask('기록에 남지 않고 경기 수도 올라가지 않아요.', { title: `${g.court}번 코트 경기를 취소할까요?`, ok: '경기 취소', danger: true }))) return;
+    closeModal();
     actions.deleteGame(g.id);
     toast(`${g.court}번 코트 경기를 취소했습니다.`);
   };
 
   return (
+    <>
+      <h3>{g.court}번 코트 경기</h3>
+      <div className="game-menu">
+        <button className="btn btn-accent" onClick={() => { closeModal(); endGame(g); }}>경기 종료</button>
+        <button className="btn btn-outline" onClick={() => openModal(<PlayerPicker mode="editGame" gameId={g.id} />, { wide: true })}>선수 바꾸기</button>
+        <button className="btn btn-danger" onClick={cancel}>경기 취소</button>
+      </div>
+      <div className="modal-actions"><button className="btn btn-ghost" onClick={closeModal}>닫기</button></div>
+    </>
+  );
+}
+
+export function LiveCourtCard({ game: g }) {
+  const state = useAppState();
+  const { openModal } = useUI();
+
+  return (
     <div className="court-card playing">
       <div className="court-title">
         <span>{g.court}번 코트</span>
-        <span className="status-dot live"><span className="dot"></span>진행 중</span>
+        <span className="status-dot live elapsed"><span className="dot"></span>{elapsedLabel(g.startTime)}</span>
       </div>
       <TeamLine teamA={g.teamA} teamB={g.teamB} label={id => playerName(state, id)} live />
-      <div className="muted center" style={{ fontSize: '.75rem' }}>시작 {timeStr(g.startTime)} · <b className="elapsed">{durationStr(g.startTime, Date.now())}째</b> · {g.gameType}</div>
-      {/* 한 줄에 종료 / 취소 / 선수 바꾸기 */}
-      <div className="card-actions live-actions">
-        <button className="btn btn-accent btn-sm" onClick={() => endGame(g)}>종료</button>
-        <button className="btn btn-danger btn-sm" onClick={cancel}>취소</button>
-        <button className="btn btn-outline btn-sm" onClick={() => openModal(<PlayerPicker mode="editGame" gameId={g.id} />, { wide: true })}>선수 바꾸기</button>
+      <div className="card-actions">
+        <button className="btn btn-accent btn-sm btn-block" onClick={() => openModal(<LiveGameMenu gameId={g.id} />)}>경기 관리</button>
       </div>
     </div>
   );
@@ -81,7 +105,7 @@ export function RecCard({ rec: r, idx }) {
   return (
     <div className="rec-card">
       <div className="section-row" style={{ marginBottom: 6 }}>
-        <strong style={{ color: 'var(--accent-dark)' }}>추천 · {r.court}번 코트 · {r.gameType}</strong>
+        <strong style={{ color: 'var(--accent-dark)' }}>추천 · {r.court}번 코트</strong>
         <div className="row-actions">
           <button className="btn btn-outline btn-sm" onClick={() => openModal(<PlayerPicker mode="edit" idx={idx} />, { wide: true })}>수정</button>
           <button className="btn btn-danger btn-sm" onClick={() => actions.deleteRec(idx)}>삭제</button>
@@ -113,7 +137,7 @@ export function WaitingCard({ match: w, no }) {
 
   return (
     <div className="court-card">
-      <div className="court-title"><span><span className="wait-no">대기 {no}</span> {w.gameType}</span><span className="status-dot" style={{ color: 'var(--accent-dark)' }}>🕒 대기</span></div>
+      <div className="court-title"><span><span className="wait-no">대기 {no}</span></span><span className="status-dot" style={{ color: 'var(--accent-dark)' }}>🕒 대기</span></div>
       <TeamLine teamA={w.teamA} teamB={w.teamB} label={id => playerName(state, id)} />
       {hasPlaying && <div className="muted center" style={{ fontSize: '.72rem', marginTop: 2 }}>"경기 중" 선수가 있어요. 그 경기가 끝난 뒤 배정하세요.</div>}
       <div className="card-actions">

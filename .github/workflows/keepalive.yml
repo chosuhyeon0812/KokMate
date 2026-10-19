@@ -1,0 +1,25 @@
+# Supabase 무료 플랜은 일주일 동안 요청이 없으면 프로젝트가 잠든다.
+# 모임을 오래 쉬어도 잠들지 않도록 3일마다 아주 작은 확인 요청을 보낸다.
+# (팀 데이터를 읽거나 바꾸지 않고, 없는 팀 코드의 버전만 물어본다)
+name: Supabase 자동 깨우기
+
+on:
+  schedule:
+    - cron: '0 0 */3 * *' # 3일마다 오전 9시(한국 시간)쯤
+  workflow_dispatch: # Actions 탭에서 직접 눌러 실행할 수도 있다
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Supabase에 확인 요청 보내기
+        run: |
+          # 앱에 들어 있는 공개 주소·키를 그대로 읽어 쓴다 (따로 관리하지 않으려고)
+          URL=$(grep -oE "https://[a-z0-9]+\.supabase\.co" src/supabaseConfig.js)
+          KEY=$(grep -oE "sb_publishable_[A-Za-z0-9_-]+" src/supabaseConfig.js)
+          if [ -z "$URL" ] || [ -z "$KEY" ]; then echo "src/supabaseConfig.js 에서 주소나 키를 찾지 못했어요"; exit 1; fi
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$URL/rest/v1/rpc/get_team_version" \
+            -H "apikey: $KEY" -H "Content-Type: application/json" -d '{"p_code":"KEEPALIVEPING"}')
+          echo "Supabase 응답: $STATUS"
+          [ "$STATUS" = "200" ]

@@ -1,5 +1,5 @@
 /* 상태를 바꾸는 동작들. 입력 검증과 안내 메시지(toast)는 화면 쪽에서 처리한다. */
-import { update } from './store';
+import { update, getState } from './store';
 import { uid, todayStr, newMember } from './lib/utils';
 import { playerById, deriveGameType } from './lib/selectors';
 import { generateRecommendations, scoreSplit } from './lib/matching';
@@ -246,21 +246,52 @@ export function sessionDate(state) {
   return state.games.length ? state.games[0].date : null;
 }
 
-export function endSession() {
-  update(d => {
-    const todaysGames = sessionDoneGames(d);
-    d.sessionHistory.unshift({
-      id: uid('s'), date: sessionDate(d) || todayStr(), endedAt: Date.now(),
-      totalGames: todaysGames.length,
-      usedCourts: new Set(todaysGames.map(g => g.court)).size,
-      participants: d.players
-        .filter(p => p.totalGames > 0)
-        .map(p => ({ name: p.name, gender: p.gender, level: p.level, totalGames: p.totalGames, wins: p.wins, losses: p.losses })),
-      memos: todaysGames.filter(g => g.memo).map(g => `${g.court}번 코트 · ${g.memo}`),
-    });
-    clearSessionData(d);
-    clearAttendance(d);
+function endSessionIn(d) {
+  const todaysGames = sessionDoneGames(d);
+  d.sessionHistory.unshift({
+    id: uid('s'), date: sessionDate(d) || todayStr(), endedAt: Date.now(),
+    totalGames: todaysGames.length,
+    usedCourts: new Set(todaysGames.map(g => g.court)).size,
+    participants: d.players
+      .filter(p => p.totalGames > 0)
+      .map(p => ({ name: p.name, gender: p.gender, level: p.level, totalGames: p.totalGames, wins: p.wins, losses: p.losses })),
+    memos: todaysGames.filter(g => g.memo).map(g => `${g.court}번 코트 · ${g.memo}`),
   });
+  clearSessionData(d);
+  clearAttendance(d);
+}
+
+export function endSession() {
+  update(endSessionIn);
+}
+
+// 모임 종료를 안 누른 채 날짜가 바뀌었는지. 자정을 넘겨 계속 치는 중일 수도 있으니, 마지막 경기 후 6시간이 지났을 때만 지난 모임으로 본다.
+export function isSessionStale(state, now = Date.now()) {
+  const startedOn = sessionDate(state);
+  const lastActivity = Math.max(0, ...state.games.map(g => g.endTime || g.startTime));
+  return !!startedOn && startedOn !== todayStr(now) && now - lastActivity > 6 * 3600000;
+}
+
+// 지난 모임 날짜를 보여주기용으로 (예: "10월 21일")
+export function staleSessionLabel(state) {
+  const [, m, d] = (sessionDate(state) || '').split('-').map(Number);
+  return `${m}월 ${d}일`;
+}
+
+// 지난 모임을 종료해 기록에 저장한다. 저장했으면 true.
+// 경기 종료를 안 누른 경기도 친 경기이므로 끝난 것으로 쳐서 함께 저장한다.
+// 팀 공유 중 다른 기기가 먼저 저장했으면 서버 데이터 위에서 다시 확인하므로 두 번 저장되지 않는다.
+export function endStaleSession() {
+  if (!isSessionStale(getState())) return false;
+  update(d => {
+    if (!isSessionStale(d)) return;
+    d.games.filter(g => g.status === 'progress').forEach(g => {
+      Object.assign(g, { endTime: g.startTime, status: 'done' });
+      applyResult(d, g, 1);
+    });
+    endSessionIn(d);
+  });
+  return true;
 }
 
 export function deleteSessionRecord(id) {

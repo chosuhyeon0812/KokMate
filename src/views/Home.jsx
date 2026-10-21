@@ -1,7 +1,6 @@
 import { useAppState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
-import { todayStr } from '../lib/utils';
 import { EmptyHint } from '../components/cards';
 import AttendanceModal from '../modals/AttendanceModal';
 import Courts from './Courts';
@@ -10,12 +9,8 @@ export default function Home() {
   const state = useAppState();
   const { toast, warn, openModal, ask } = useUI();
 
-  // 모임 종료를 안 누른 채 날짜가 바뀌었으면 알려준다. (지난 모임 경기 수가 오늘 경기에 섞이지 않도록)
-  const startedOn = actions.sessionDate(state);
-  // 자정을 넘겨 계속 치는 중일 수도 있으니, 마지막 경기 후 6시간이 지났을 때만 지난 모임으로 본다.
-  const lastActivity = Math.max(0, ...state.games.map(g => g.endTime || g.startTime));
-  const stale = startedOn && startedOn !== todayStr() && Date.now() - lastActivity > 6 * 3600000;
-  const [, staleMonth, staleDay] = (startedOn || '').split('-').map(Number);
+  const stale = actions.isSessionStale(state);
+  const saveStale = () => { if (actions.endStaleSession()) toast(`${actions.staleSessionLabel(state)} 모임 기록을 저장했어요.`); };
 
   const endSession = async () => {
     const doneCount = actions.sessionDoneGames(state).length;
@@ -43,7 +38,8 @@ export default function Home() {
         </div>
         {stale && (
           <EmptyHint style={{ borderColor: 'var(--danger)', background: 'var(--danger-pale)', color: 'var(--danger)', marginBottom: 10 }}>
-            {staleMonth}월 {staleDay}일 모임이 아직 종료되지 않았어요. 오늘 모임을 시작하기 전에 "모임 종료"를 눌러 저장하세요.
+            {actions.staleSessionLabel(state)} 모임이 아직 종료되지 않았어요.{" "}
+            <button className="btn btn-outline btn-sm" onClick={saveStale}>지난 모임 저장</button>
           </EmptyHint>
         )}
         <div className="session-row">

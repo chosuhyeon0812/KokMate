@@ -7,7 +7,8 @@ import Shuttles from './views/Shuttles';
 import Records from './views/Records';
 import Help from './views/Help';
 import Welcome from './views/Welcome';
-import { isFreshDevice, useAppState } from './store';
+import { isFreshDevice, useAppState, getState } from './store';
+import { isSessionStale, endStaleSession, staleSessionLabel } from './actions';
 import RecommendModal from './modals/RecommendModal';
 import { syncEnabled, useSync, WELCOME_DONE_KEY, readInviteCode } from './lib/sync';
 import { TeamInfoModal } from './components/TeamCard';
@@ -25,7 +26,7 @@ export default function App() {
   const [view, setView] = useState('home');
   const [modal, setModal] = useState(null); // { content, wide }
   const [toastMsg, setToastMsg] = useState(null); // { msg, id }
-  const [askDlg, setAskDlg] = useState(null); // { message, title, ok, danger, resolve }
+  const [askDlg, setAskDlg] = useState(null); // { message, title, ok, cancel, danger, resolve }
   const [, setTick] = useState(0);
   const toastTimer = useRef();
   const { team } = useSync();
@@ -65,6 +66,22 @@ export default function App() {
       switchView: setView,
     };
   }, []);
+
+  // 모임 종료를 안 누르고 날짜가 바뀌었으면, 앱을 열 때(켜둔 동안은 1분마다 확인) 지난 모임을 저장할지 한 번 묻는다.
+  // "나중에"를 누르면 이번에는 다시 묻지 않고, 코트 탭의 안내에서 저장할 수 있다.
+  const askedStale = useRef(false);
+  useEffect(() => {
+    const check = async () => {
+      if (askedStale.current || !isSessionStale(getState())) return;
+      askedStale.current = true;
+      const date = staleSessionLabel(getState());
+      const yes = await ui.ask(`${date} 모임이 아직 종료되지 않았어요. 그날 기록을 "기록" 탭에 저장하고 오늘 모임을 새로 시작할까요?`, { title: '지난 모임 저장', ok: '저장하기', cancel: '나중에' });
+      if (yes && endStaleSession()) ui.toast(`${date} 모임 기록을 저장했어요.`);
+    };
+    check();
+    const t = setInterval(check, 60000);
+    return () => clearInterval(t);
+  }, [ui]);
 
   const { View } = VIEWS.find(t => t.key === view);
   const today = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' });
@@ -110,7 +127,7 @@ export default function App() {
             {askDlg.title && <h3>{askDlg.title}</h3>}
             <p className="ask-message">{askDlg.message}</p>
             <div className="modal-actions">
-              <button className="btn btn-ghost" onClick={() => { askDlg.resolve(false); setAskDlg(null); }}>취소</button>
+              <button className="btn btn-ghost" onClick={() => { askDlg.resolve(false); setAskDlg(null); }}>{askDlg.cancel || '취소'}</button>
               <button className={`btn ${askDlg.danger ? 'btn-danger' : 'btn-primary'}`} autoFocus onClick={() => { askDlg.resolve(true); setAskDlg(null); }}>{askDlg.ok || '확인'}</button>
             </div>
           </div>

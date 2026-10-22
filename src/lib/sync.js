@@ -228,8 +228,16 @@ export function readInviteCode() {
   }
 }
 
+// 내 컴퓨터의 개발용 주소(localhost 등)는 다른 폰에서 안 열리므로, 그때는 실제 배포 주소로 링크를 만든다.
+const PUBLIC_ORIGIN = 'https://badminton-matcher-one.vercel.app';
+function shareOrigin() {
+  const h = location.hostname;
+  const local = h === 'localhost' || h === '127.0.0.1' || h === '[::1]' || h.endsWith('.local') || /^(10|192\.168|172\.(1[6-9]|2\d|3[01]))\./.test(h);
+  return local ? PUBLIC_ORIGIN : location.origin;
+}
+
 export function inviteLink(code) {
-  return `${location.origin}/?team=${code}`;
+  return `${shareOrigin()}/?team=${code}`;
 }
 
 // 보여줄 때는 4글자씩 끊어서

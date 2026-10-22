@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useUI } from '../ui';
 import { useAppState } from '../store';
+import { FONT_SIZES, readFontScale, saveFontScale } from '../lib/fontSize';
 import { useSync, createTeam, previewTeam, joinTeam, leaveTeamAndClear, hasUnsyncedChanges, cleanCode, formatCode, inviteLink, renameTeam, previewName } from '../lib/sync';
 
 // 잘 맞춰지고 있을 때는 아무것도 안 보여주고, 문제가 있을 때만 알린다.
@@ -171,6 +172,20 @@ export function NoTeam({ initialCode }) {
   );
 }
 
+// 글자 크기: 이 폰에서만 바뀐다. (다른 사람 폰은 그대로)
+function FontSizeSetting() {
+  const [scale, setScale] = useState(readFontScale);
+  const pick = v => { setScale(v); saveFontScale(v); };
+  return (
+    <div className="font-size-setting">
+      <div className="team-info-label">글자 크기 <span className="muted">(이 폰에서만)</span></div>
+      <div className="pill-toggle">
+        {FONT_SIZES.map(([v, label]) => <button key={v} type="button" className={scale === v ? 'on' : ''} onClick={() => pick(v)}>{label}</button>)}
+      </div>
+    </div>
+  );
+}
+
 // 오른쪽 위 ⚙️ 설정 버튼을 눌렀을 때 뜨는 창. 팀이 없으면 팀 만들기 / 참여를 보여준다.
 export function TeamInfoModal() {
   const { team, status } = useSync();
@@ -178,6 +193,7 @@ export function TeamInfoModal() {
   return (
     <>
       <h3>설정</h3>
+      <FontSizeSetting />
       {team ? <JoinedTeam team={team} status={status} /> : <NoTeam />}
       <div className="modal-actions"><button className="btn btn-ghost" onClick={closeModal}>닫기</button></div>
     </>

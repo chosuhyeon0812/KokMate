@@ -28,9 +28,9 @@
 }
 
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;font-size:calc(16px * var(--font-scale,1))}
 /* 컴퓨터·태블릿처럼 넓은 화면에서는 글자를 조금 키운다. (글자 크기가 대부분 rem 이라 이것만 바꾸면 같이 커진다. 휴대폰은 그대로) */
-@media (min-width:700px){html{font-size:18px}}
+@media (min-width:700px){html{font-size:calc(18px * var(--font-scale,1))}}
 body{
   margin:0;
   font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
@@ -249,7 +249,7 @@ main{max-width:58rem;margin:0 auto;padding:18px 14px 60px}
 }
 
 /* 코트·대기 코트 카드: 이름칸 4개가 답답하지 않게 넓게 */
-.court-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(19.4rem,1fr));gap:14px}
+.court-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(19.4rem,100%),1fr));gap:14px}
 .court-card{
   border:1px solid var(--border);
   border-radius:14px;
@@ -410,7 +410,7 @@ tr:last-child td{border-bottom:none}
 .slot-select-row select{flex:1}
 
 .player-grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(9.4rem,1fr));gap:10px;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(min(9.4rem,100%),1fr));gap:10px;
   max-height:52vh;overflow-y:auto;padding:2px 2px 4px;margin-bottom:4px;
 }
 .player-tile{
@@ -726,3 +726,7 @@ main{padding-bottom:calc(60px + env(safe-area-inset-bottom))}
   main{padding-bottom:calc(60px + env(safe-area-inset-bottom))}
   .modal-root{padding-bottom:calc(8px + env(safe-area-inset-bottom))}
 }
+
+/* 설정: 글자 크기 */
+.font-size-setting{display:flex;flex-direction:column;gap:8px;padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--border)}
+.font-size-setting .pill-toggle{align-self:flex-start}

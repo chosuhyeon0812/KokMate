@@ -46,10 +46,10 @@ function SessionHistoryCard() {
             <summary style={{ cursor: 'pointer', fontSize: '.82rem', color: 'var(--primary)' }}>참가자별 경기 수 보기</summary>
             <div style={{ overflowX: 'auto', marginTop: 8 }}>
               <table>
-                <thead><tr><th>이름</th><th>경기수</th><th>승</th><th>패</th></tr></thead>
+                <thead><tr><th>이름</th><th>경기수</th></tr></thead>
                 <tbody>
                   {s.participants.slice().sort((a, b) => b.totalGames - a.totalGames).map((p, i) => (
-                    <tr key={i}><td>{p.name}</td><td>{p.totalGames}</td><td>{p.wins}</td><td>{p.losses}</td></tr>
+                    <tr key={i}><td>{p.name}</td><td>{p.totalGames}</td></tr>
                   ))}
                 </tbody>
               </table>

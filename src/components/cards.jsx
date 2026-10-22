@@ -149,10 +149,11 @@ export function WaitingCard({ match: w, no }) {
   );
 }
 
-export function StatusBadge({ player: p }) {
+// showTime=false: 쉰 시간을 옆 칸에 따로 보여줄 때는 상태만
+export function StatusBadge({ player: p, showTime = true }) {
   const state = useAppState();
   if (!p.active) return <span className="badge badge-rest">당일 제외</span>;
-  const dur = waitingDuration(p);
+  const dur = showTime ? waitingDuration(p) : '';
   if (p.resting) return <span className="badge badge-rest">휴식{dur ? ' · ' + dur : ''}</span>;
   if (playingPlayerIds(state).has(p.id)) return <span className="badge badge-playing">경기 중</span>;
   return <span className="badge badge-active">대기{dur ? ' · ' + dur : ''}</span>;

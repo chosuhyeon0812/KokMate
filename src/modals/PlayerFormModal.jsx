@@ -15,6 +15,8 @@ export default function PlayerFormModal({ playerId }) {
   const [level, setLevel] = useState(player ? player.level : 'A');
   const [memo, setMemo] = useState(player && player.memo ? player.memo : '');
   const [role, setRole] = useState(player ? roleOf(player) : 'member');
+  // 같은 이름(띄어쓰기 무시)인 다른 회원. 동명이인일 수도 있어서 막지는 않고 알려만 준다.
+  const sameName = state.players.find(p => p.id !== playerId && name.trim() && p.name.replace(/\s/g, '') === name.replace(/\s/g, ''));
   if (playerId && !player) return null;
 
   const save = () => {
@@ -52,7 +54,9 @@ export default function PlayerFormModal({ playerId }) {
         </div>
       )}
       <div className="form-grid">
-        <label>이름 <input type="text" autoFocus={!player} value={name} onChange={e => setName(e.target.value)} placeholder="이름 입력" /></label>
+        <label>이름 <input type="text" autoFocus={!player} value={name} onChange={e => setName(e.target.value)} placeholder="이름 입력" />
+          {sameName && <span className="field-warn">⚠ {sameName.name} 님이 이미 있어요 ({sameName.gender === 'M' ? '남성' : '여성'} / {sameName.level})</span>}
+        </label>
         <label>성별
           <select value={gender} onChange={e => setGender(e.target.value)}>
             <option value="M">남성</option>

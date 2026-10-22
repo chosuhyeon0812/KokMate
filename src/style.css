@@ -346,6 +346,13 @@ tr:last-child td{border-bottom:none}
 }
 .history-item:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
 .history-head{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);margin-bottom:6px}
+.fold-item summary{cursor:pointer;list-style:none;position:relative;padding-right:22px}
+.fold-item summary::-webkit-details-marker{display:none}
+.fold-item summary::after{content:"▸";position:absolute;right:2px;top:50%;transform:translateY(-50%);color:var(--muted);transition:transform .15s}
+.fold-item[open] summary::after{transform:translateY(-50%) rotate(90deg)}
+.fold-item summary .history-head{margin-bottom:2px;font-size:.92rem;font-weight:700;color:var(--text)}
+.fold-item .fold-line{display:flex;flex-wrap:wrap;gap:4px 16px;align-items:baseline;font-size:.9rem;color:var(--muted);margin-top:2px}
+.fold-item .fold-line b{font-size:1.35rem;font-weight:800;color:var(--primary-dark);margin:0 1px}
 .history-memo{margin-top:7px;font-size:.78rem;color:var(--muted);background:var(--bg);padding:7px 9px;border-radius:8px}
 
 .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:14px}
@@ -384,6 +391,7 @@ tr:last-child td{border-bottom:none}
 .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
 .form-grid{display:flex;flex-direction:column;gap:11px}
 .form-grid label{font-size:.78rem;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+.form-grid .field-warn{color:var(--danger);font-weight:700;font-size:.85rem}
 .form-grid input,.form-grid select,.form-grid textarea{
   padding:9px 11px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:.88rem;font-family:inherit;
   transition:border-color .2s ease, box-shadow .2s ease;

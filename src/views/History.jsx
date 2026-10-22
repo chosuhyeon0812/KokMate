@@ -21,6 +21,12 @@ function SummaryGrid({ totalGames, usedCourts, participants, style }) {
   );
 }
 
+// "2026-10-19" → "10월 19일 (일)"
+function dateLabel(date) {
+  const [y, m, d] = date.split('-').map(Number);
+  return `${m}월 ${d}일 (${'일월화수목금토'[new Date(y, m - 1, d).getDay()]})`;
+}
+
 function SessionHistoryCard() {
   const state = useAppState();
   const { ask } = useUI();
@@ -39,25 +45,25 @@ function SessionHistoryCard() {
     <div className="card">
       <h2>지난 모임 기록</h2>
       {state.sessionHistory.map(s => (
-        <div className="history-item" key={s.id}>
-          <div className="history-head"><span>{s.date}</span><span>{timeStr(s.endedAt)} 종료</span></div>
-          <SummaryGrid totalGames={s.totalGames} usedCourts={s.usedCourts} participants={s.participants.length} style={{ margin: '8px 0' }} />
-          <details>
-            <summary style={{ cursor: 'pointer', fontSize: '.82rem', color: 'var(--primary)' }}>참가자별 경기 수 보기</summary>
-            <div style={{ overflowX: 'auto', marginTop: 8 }}>
-              <table>
-                <thead><tr><th>이름</th><th>경기수</th></tr></thead>
-                <tbody>
-                  {s.participants.slice().sort((a, b) => b.totalGames - a.totalGames).map((p, i) => (
-                    <tr key={i}><td>{p.name}</td><td>{p.totalGames}</td></tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </details>
+        // 모임이 쌓이면 길어지므로 한 줄 요약으로 접어두고, 누르면 참가자별 경기 수와 메모가 펼쳐진다.
+        <details className="history-item fold-item" key={s.id}>
+          <summary>
+            <div className="history-head"><span>{dateLabel(s.date)}</span></div>
+            <div className="fold-line"><span>코트 <b>{s.usedCourts}</b>개</span><span>경기 <b>{s.totalGames}</b>번</span><span>인원 <b>{s.participants.length}</b>명</span>{s.memos.length > 0 && <span>📝</span>}</div>
+          </summary>
+          <div style={{ overflowX: 'auto', marginTop: 8 }}>
+            <table>
+              <thead><tr><th>이름</th><th>경기수</th></tr></thead>
+              <tbody>
+                {s.participants.slice().sort((a, b) => b.totalGames - a.totalGames).map((p, i) => (
+                  <tr key={i}><td>{p.name}</td><td>{p.totalGames}</td></tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
           <Memos memos={s.memos} />
           <div className="card-actions"><button className="btn btn-danger btn-sm" onClick={() => remove(s.id)}>이 기록 삭제</button></div>
-        </div>
+        </details>
       ))}
     </div>
   );

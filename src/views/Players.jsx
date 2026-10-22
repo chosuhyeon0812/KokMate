@@ -46,7 +46,7 @@ export default function Players() {
       {state.players.length > 0 && (
         <div className="settings-grid" style={{ marginBottom: 14 }}>
           {filterSelect('gender', '성별', [['M', '남성'], ['F', '여성']])}
-          {filterSelect('level', '등급', LEVEL_OPTIONS.map(l => [l, l]))}
+          {filterSelect('level', '급수', LEVEL_OPTIONS.map(l => [l, l]))}
           {filterSelect('role', '역할', ROLE_OPTIONS)}
           {filterSelect('active', '당일 참석', [['active', '참석(포함)'], ['inactive', '제외']])}
           {filterActive && <button className="btn btn-ghost btn-sm" onClick={() => setFilter(EMPTY_FILTER)}>필터 초기화</button>}
@@ -56,7 +56,7 @@ export default function Players() {
         filtered.length === 0 ? <EmptyHint>조건에 맞는 참가자가 없습니다.</EmptyHint> : (
           <div style={{ overflowX: 'auto' }}>
             <table>
-              <thead><tr><th>이름</th><th>성별</th><th>등급</th><th>경기수</th><th>상태</th><th></th></tr></thead>
+              <thead><tr><th>이름</th><th>성별</th><th>급수</th><th>경기수</th><th>상태</th><th></th></tr></thead>
               <tbody>
                 {filtered.map(p => (
                   <tr key={p.id} className="clickable-row" onClick={() => openModal(<PlayerFormModal playerId={p.id} />)}>

@@ -114,7 +114,7 @@ export function RecCard({ rec: r, idx }) {
       </div>
       <TeamLine teamA={r.teamA} teamB={r.teamB} label={id => playerName(state, id)} />
       <div className="rec-score">
-        추천 기준 · 경기수균형 {starStr(5)} · 등급균형 {starStr(st.level)} · 파트너중복방지 {starStr(st.partner)} · 상대중복방지 {starStr(st.opponent)}
+        추천 기준 · 경기수균형 {starStr(5)} · 급수균형 {starStr(st.level)} · 파트너중복방지 {starStr(st.partner)} · 상대중복방지 {starStr(st.opponent)}
       </div>
     </div>
   );

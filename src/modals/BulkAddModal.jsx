@@ -7,7 +7,7 @@ import { LEVEL_OPTIONS } from '../lib/utils';
 
 const GENDER_WORDS = { '남': 'M', '남자': 'M', '남성': 'M', 'm': 'M', '여': 'F', '여자': 'F', '여성': 'F', 'f': 'F' };
 
-// 한 줄을 { name, gender, level } 로 해석한다. 칸은 띄어쓰기·탭(엑셀 복사)·쉼표 모두 허용, 이름 다음 성별/등급 순서는 상관없음.
+// 한 줄을 { name, gender, level } 로 해석한다. 칸은 띄어쓰기·탭(엑셀 복사)·쉼표 모두 허용, 이름 다음 성별/급수 순서는 상관없음.
 function parseLine(line) {
   const [name, ...rest] = line.split(/[\s,]+/).filter(Boolean);
   let gender = null, level = null;
@@ -17,7 +17,7 @@ function parseLine(line) {
     else if (LEVEL_OPTIONS.includes(t.toUpperCase())) level = t.toUpperCase();
   }
   if (!gender) return { error: '성별(남/여)이 없어요' };
-  if (!level) return { error: '등급(A~F)이 없어요' };
+  if (!level) return { error: '급수(A~F)가 없어요' };
   return { name, gender, level };
 }
 
@@ -49,7 +49,7 @@ export default function BulkAddModal() {
   return (
     <>
       <h3>여러 명 추가</h3>
-      <p className="muted" style={{ marginTop: -6, fontSize: '.82rem' }}>한 줄에 한 명씩 <b>이름 성별 등급</b> 순서로 적어주세요. 엑셀에서 복사해 붙여넣어도 돼요.</p>
+      <p className="muted" style={{ marginTop: -6, fontSize: '.82rem' }}>한 줄에 한 명씩 <b>이름 성별 급수</b> 순서로 적어주세요. 엑셀에서 복사해 붙여넣어도 돼요.</p>
       <textarea className="bulk-input" rows={9} placeholder={'민수 남 A\n영희 여 B\n철수 남 C'} value={text} onChange={e => setText(e.target.value)} />
       {text.trim() && (
         <div className="bulk-preview">

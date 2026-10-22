@@ -36,8 +36,8 @@ function mixedSplits(males, females) {
   ];
 }
 
-// 오늘 경기 결과를 반영한 실력 보정치 (-1 ~ +1 등급).
-// 경기당 평균 점수 차 10점을 1등급으로 보고, 점수 없이 승패만 있으면 ±5점으로 친다.
+// 오늘 경기 결과를 반영한 실력 보정치 (-1 ~ +1 급수).
+// 경기당 평균 점수 차 10점을 1급수으로 보고, 점수 없이 승패만 있으면 ±5점으로 친다.
 // 경기 수가 적을 때는 우연일 수 있어 보정을 약하게 (1경기 25%, 3경기 50%, 9경기 75%).
 export function formAdjust(state, id) {
   let sum = 0, n = 0;
@@ -91,7 +91,7 @@ export function scoreSplit(state, teamA, teamB) {
 }
 
 function betterScore(s1, s2) {
-  // 우선순위: 등급차이 > 파트너중복 > 상대중복 (경기횟수균형은 후보풀 선정단계에서 이미 반영)
+  // 우선순위: 급수차이 > 파트너중복 > 상대중복 (경기횟수균형은 후보풀 선정단계에서 이미 반영)
   if (s1.levelDiff !== s2.levelDiff) return s1.levelDiff < s2.levelDiff;
   if (s1.partnerRepeat !== s2.partnerRepeat) return s1.partnerRepeat < s2.partnerRepeat;
   return s1.opponentRepeat < s2.opponentRepeat;

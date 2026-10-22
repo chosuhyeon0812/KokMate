@@ -63,7 +63,7 @@ export default function PlayerFormModal({ playerId }) {
             <option value="F">여성</option>
           </select>
         </label>
-        <label>등급
+        <label>급수
           <select value={level} onChange={e => setLevel(e.target.value)}>
             {LEVEL_OPTIONS.map(l => <option key={l} value={l}>{l}</option>)}
           </select>

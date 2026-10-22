@@ -3,6 +3,8 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  // 자동 테스트 (npm test). 테스트는 tests/ 폴더에 있고, 가짜 저장소를 써서 실제 데이터를 건드리지 않는다.
+  test: { include: ['tests/**/*.test.js'], setupFiles: ['tests/setup.js'] },
   // 상대 경로로 빌드해서 GitHub Pages 같은 하위 경로에 올려도 동작하도록 한다.
   base: './',
   plugins: [

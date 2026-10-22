@@ -24,7 +24,7 @@ export default function Home() {
       toast('모임을 초기화했습니다.');
       return;
     }
-    if (!(await ask(`${liveNote}오늘 기록이 "기록" 탭의 지난 모임 목록에 저장되고, 경기 기록, 경기 수, 콕 제출, 오늘 참석자가 초기화돼요. 회원 명단은 그대로예요.`, { title: '모임을 종료할까요?', ok: '모임 종료' }))) return;
+    if (!(await ask(`${liveNote}오늘 기록이 "기록" 탭의 지난 모임 목록에 저장되고, 경기 기록, 경기 수, 콕 제출, 오늘 참석자, 추가한 코트가 초기화돼요. 회원 명단은 그대로예요.`, { title: '모임을 종료할까요?', ok: '모임 종료' }))) return;
     actions.endSession();
     toast('모임 기록이 저장되었습니다.');
   };

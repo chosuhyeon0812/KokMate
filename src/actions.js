@@ -22,9 +22,10 @@ function clearSessionData(d) {
   d.formerNames = {}; // 지난 모임 기록에는 이름이 따로 저장되므로 더는 필요 없다
 }
 
-// 모임이 끝나면 다음 모임에서 참석자를 새로 고르도록 오늘 참석 표시를 모두 푼다.
-function clearAttendance(d) {
+// 모임이 끝나면 다음 모임에서 참석자와 코트를 새로 고르도록 오늘 참석 표시와 추가한 코트를 모두 푼다.
+function clearForNextSession(d) {
   d.players.forEach(p => { p.active = false; p.resting = false; p.restSince = null; });
+  d.settings.courts = [];
 }
 
 /* ---------- 설정 / 추천 ---------- */
@@ -230,9 +231,9 @@ export function resetShuttles() {
 
 /* ---------- 모임 / 기록 ---------- */
 
-// endOfSession: 모임 자체를 끝내는 경우(모임 초기화)면 참석자도 푼다. 통계 탭의 '오늘 기록 초기화'는 참석자를 그대로 둔다.
+// endOfSession: 모임 자체를 끝내는 경우(모임 초기화)면 참석자와 코트도 푼다. 통계 탭의 '오늘 기록 초기화'는 참석자를 그대로 둔다.
 export function resetToday({ endOfSession = false } = {}) {
-  update(d => { clearSessionData(d); if (endOfSession) clearAttendance(d); });
+  update(d => { clearSessionData(d); if (endOfSession) clearForNextSession(d); });
 }
 
 // 이번 모임에서 끝난 경기. "모임 종료" 전까지의 경기가 전부 이번 모임이라 날짜로 거르지 않는다.
@@ -258,7 +259,7 @@ function endSessionIn(d) {
     memos: todaysGames.filter(g => g.memo).map(g => `${g.court}번 코트 · ${g.memo}`),
   });
   clearSessionData(d);
-  clearAttendance(d);
+  clearForNextSession(d);
 }
 
 export function endSession() {

@@ -353,6 +353,8 @@ tr:last-child td{border-bottom:none}
 .fold-item summary .history-head{margin-bottom:2px;font-size:.92rem;font-weight:700;color:var(--text)}
 .fold-item .fold-line{display:flex;flex-wrap:wrap;gap:4px 16px;align-items:baseline;font-size:.9rem;color:var(--muted);margin-top:2px}
 .fold-item .fold-line b{font-size:1.35rem;font-weight:800;color:var(--primary-dark);margin:0 1px}
+.attend-king{background:var(--primary-pale);border-radius:var(--radius-sm);padding:10px 12px;margin:10px 0;font-size:.95rem;color:var(--text)}
+.attend-king b{color:var(--primary-dark);font-size:1.05rem}
 .history-memo{margin-top:7px;font-size:.78rem;color:var(--muted);background:var(--bg);padding:7px 9px;border-radius:8px}
 
 .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:14px}

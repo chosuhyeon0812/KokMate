@@ -255,7 +255,7 @@ function endSessionIn(d) {
     usedCourts: new Set(todaysGames.map(g => g.court)).size,
     participants: d.players
       .filter(p => p.totalGames > 0)
-      .map(p => ({ name: p.name, gender: p.gender, level: p.level, totalGames: p.totalGames, wins: p.wins, losses: p.losses })),
+      .map(p => ({ id: p.id, name: p.name, gender: p.gender, level: p.level, totalGames: p.totalGames, wins: p.wins, losses: p.losses })),
     memos: todaysGames.filter(g => g.memo).map(g => `${g.court}번 코트 · ${g.memo}`),
   });
   clearSessionData(d);

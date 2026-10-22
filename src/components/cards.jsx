@@ -1,7 +1,7 @@
 import { useAppState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
-import { starStr } from '../lib/utils';
+import { starStr, isGuest } from '../lib/utils';
 
 // 진행 중 코트의 경과 시간: 막 시작하면 '00분', 그 뒤로 '7분', '12분', '1시간 5분'
 function elapsedLabel(startTs) {
@@ -27,7 +27,7 @@ export function NameChips({ ids, label, meta = false, live = false }) {
     return (
       <span key={id} className={`name-chip ${p?.gender === 'M' ? 'male' : 'female'}${meta && p ? ' with-meta' : ''}`}>
         {meta && p && <span className="chip-games">{p.totalGames}경기</span>}
-        <span className="chip-name">{label(id)}{p && <span className="chip-level"> / {p.level}</span>}</span>
+        <span className="chip-name">{label(id)}{p && <span className="chip-level"> / {p.level}</span>}{p && <GuestTag player={p} />}</span>
         {meta && p && !live && (isPlaying
           ? <span className="chip-meta chip-playing">경기 중</span>
           : <span className={`chip-meta${long ? ' chip-long' : ''}`}>{waitLabel(p)}</span>)}
@@ -161,6 +161,11 @@ export function StatusBadge({ player: p, showTime = true }) {
 
 export function GenderBadge({ gender }) {
   return <span className={`badge ${gender === 'M' ? 'badge-male' : 'badge-female'}`}>{gender === 'M' ? '남자' : '여자'}</span>;
+}
+
+// 이름 옆에 붙는 작은 '게스트' 표시 (모임 종료하면 명단에서 빠지는 사람)
+export function GuestTag({ player }) {
+  return isGuest(player) ? <span className="guest-tag">게스트</span> : null;
 }
 
 export function EmptyHint({ children, style }) {

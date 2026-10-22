@@ -72,6 +72,7 @@ export default function PlayerFormModal({ playerId }) {
           <select value={role} onChange={e => setRole(e.target.value)}>
             {ROLE_OPTIONS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
           </select>
+          {role === 'guest' && <span className="field-note">모임 종료 시 명단에서 빠져요 (기록은 남음). 자주 오면 일반 회원으로!</span>}
         </label>
         <label>특이사항 <input type="text" value={memo} onChange={e => setMemo(e.target.value)} placeholder="예: 발목 부상 (선택)" /></label>
       </div>

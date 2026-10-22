@@ -3,7 +3,7 @@ import { useAppState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
 import { sortByName, LEVEL_ORDER } from '../lib/utils';
-import { EmptyHint } from '../components/cards';
+import { EmptyHint, GuestTag } from '../components/cards';
 
 export default function AttendanceModal() {
   const state = useAppState();
@@ -74,7 +74,7 @@ export default function AttendanceModal() {
                 return (
                   <button key={p.id} type="button" aria-pressed={on} className={`player-tile ${p.gender === 'M' ? 'male' : 'female'}${on ? ' selected' : ''}`} onClick={() => toggle(p.id)}>
                     {on && <span className="attend-check">✓</span>}
-                    <span className="tile-name">{p.name} <span className="tile-level">/ {p.level}</span></span>
+                    <span className="tile-name">{p.name} <span className="tile-level">/ {p.level}</span><GuestTag player={p} /></span>
                   </button>
                 );
               })}

@@ -8,7 +8,7 @@ import {
   playerById, availablePlayers, playingPlayerIds, waitingModalPlayers,
   fairnessCompare, freeCourts, waitLabel, LONG_REST_MS,
 } from '../lib/selectors';
-import { EmptyHint } from '../components/cards';
+import { EmptyHint, GuestTag } from '../components/cards';
 
 const EMPTY_SLOTS = [null, null, null, null];
 
@@ -129,7 +129,7 @@ export default function PlayerPicker({ mode, presetCourt, idx, waitingId, gameId
           <button key={p.id} type="button" className={`player-tile ${p.gender === 'M' ? 'male' : 'female'}${i !== -1 ? ' selected' : ''}${disabled ? ' disabled' : ''}`} onClick={() => pick(p.id)}>
             <span className="tile-games">{p.totalGames}경기</span>
             {i !== -1 && <span className="tile-slot">✓</span>}
-            <span className="tile-name">{p.name} <span className="tile-level">/ {p.level}</span></span>
+            <span className="tile-name">{p.name} <span className="tile-level">/ {p.level}</span><GuestTag player={p} /></span>
             {isPlaying
               ? <span className="tile-meta tile-playing">경기 중</span>
               : <span className={`tile-meta${longRest ? ' tile-long' : ''}`}>{waitLabel(p)}</span>}

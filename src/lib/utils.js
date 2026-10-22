@@ -3,9 +3,13 @@ export const LEVEL_ORDER = { 'A': 5, 'B': 4, 'C': 3, 'D': 2, 'E': 1, 'F': 0 };
 export const LEVEL_OPTIONS = ['A', 'B', 'C', 'D', 'E', 'F'];
 export const MAX_WAITING = 3; // 대기 코트 최대 개수
 // 회원 역할. 예전 데이터처럼 role 이 없으면 일반 회원으로 본다.
-export const ROLE_OPTIONS = [['owner', '모임장'], ['staff', '운영진'], ['member', '일반 회원']];
+// 게스트(그날만 온 레슨자·손님)는 모임을 종료하면 명단에서 자동으로 지운다.
+export const ROLE_OPTIONS = [['owner', '모임장'], ['staff', '운영진'], ['member', '일반 회원'], ['guest', '게스트']];
 export function roleOf(p) {
   return p.role || 'member';
+}
+export function isGuest(p) {
+  return p.role === 'guest';
 }
 export function roleLabel(role) {
   return (ROLE_OPTIONS.find(([v]) => v === role) || ROLE_OPTIONS[2])[1];

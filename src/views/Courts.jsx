@@ -4,7 +4,7 @@ import { useUI } from '../ui';
 import * as actions from '../actions';
 import { activeGameOnCourt, availablePlayers, playingPlayerIds, waitingPlayerIds, fairnessCompare, waitLabel, LONG_REST_MS } from '../lib/selectors';
 import { MAX_WAITING } from '../lib/utils';
-import { LiveCourtCard, WaitingCard, EmptyHint } from '../components/cards';
+import { LiveCourtCard, WaitingCard, EmptyHint, GuestTag } from '../components/cards';
 import RestManagerModal from '../modals/RestManagerModal';
 import PlayerPicker from '../modals/PlayerPicker';
 
@@ -92,7 +92,7 @@ function Bench() {
               return (
                 <div key={p.id} className={`bench-chip ${p.gender === 'M' ? 'male' : 'female'}`}>
                   <span className="bench-games">{p.totalGames}경기</span>
-                  <span className="bench-name">{p.name} <span className="bench-level">/ {p.level}</span></span>
+                  <span className="bench-name">{p.name} <span className="bench-level">/ {p.level}</span><GuestTag player={p} /></span>
                   <span className={`bench-wait${long ? ' rest-long' : ''}`}>{waitLabel(p)}</span>
                 </div>
               );
@@ -108,7 +108,7 @@ function Bench() {
               <button type="button" key={p.id} className={`bench-chip resting ${p.gender === 'M' ? 'male' : 'female'}`} title="눌러서 휴식 끝내기"
                 onClick={() => { actions.toggleRest(p.id); toast(`${p.name}님 휴식을 끝냈어요.`); }}>
                 <span className="bench-games">{p.totalGames}경기</span>
-                <span className="bench-name">{p.name} <span className="bench-level">/ {p.level}</span></span>
+                <span className="bench-name">{p.name} <span className="bench-level">/ {p.level}</span><GuestTag player={p} /></span>
                 <span className="bench-wait">휴식</span>
               </button>
             ))}

@@ -326,6 +326,9 @@ tr:last-child td{border-bottom:none}
 .badge-playing{background:var(--primary-pale);color:var(--primary)}
 .badge-playing::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--primary);display:inline-block;animation:dotPulse 1.4s infinite}
 .badge-role-owner{background:var(--grad-accent);color:#fff}
+.badge-role-guest{background:#fff4e0;color:#8a5a00;border:1px solid #f2c27a}
+.guest-tag{display:inline-block;margin-left:5px;padding:1px 6px;border-radius:8px;font-size:.62em;font-weight:800;line-height:1.5;vertical-align:middle;background:rgba(255,255,255,.92);color:#8a5a00;border:1px solid #f2c27a;white-space:nowrap}
+.form-grid .field-note{color:var(--muted);font-size:.8rem}
 .badge-role-staff{background:var(--primary-pale);color:var(--primary);border:1px solid var(--primary-light)}
 .badge-level{background:var(--primary-pale-2);color:var(--primary-dark);font-weight:800}
 .badge-male{background:#e6f0fb;color:#2563a8}

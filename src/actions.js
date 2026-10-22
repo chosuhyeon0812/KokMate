@@ -1,6 +1,6 @@
 /* 상태를 바꾸는 동작들. 입력 검증과 안내 메시지(toast)는 화면 쪽에서 처리한다. */
 import { update, getState } from './store';
-import { uid, todayStr, newMember } from './lib/utils';
+import { uid, todayStr, newMember, isGuest } from './lib/utils';
 import { playerById, deriveGameType } from './lib/selectors';
 import { generateRecommendations, scoreSplit } from './lib/matching';
 
@@ -23,7 +23,9 @@ function clearSessionData(d) {
 }
 
 // 모임이 끝나면 다음 모임에서 참석자와 코트를 새로 고르도록 오늘 참석 표시와 추가한 코트를 모두 푼다.
+// 게스트는 명단에서 지운다. (지난 모임 기록에는 이름이 따로 저장돼 있어서 남는다)
 function clearForNextSession(d) {
+  d.players = d.players.filter(p => !isGuest(p));
   d.players.forEach(p => { p.active = false; p.resting = false; p.restSince = null; });
   d.settings.courts = [];
 }

@@ -1,6 +1,6 @@
 // 경기 시작 / 종료 / 되돌리기 / 취소
 import { describe, test, expect } from 'vitest';
-import { startGame, endGame, undoEndGame, deleteGame } from '../src/actions';
+import { startGame, endGame, undoEndGame, deleteGame, moveGame } from '../src/actions';
 import { setup, getState, player } from './helpers';
 
 const four = ['a', 'b', 'c', 'd'];
@@ -51,5 +51,16 @@ describe('경기', () => {
     endGame(id, noResult);
     deleteGame(id);
     expect(four.map(gamesOf)).toEqual([0, 0, 0, 0]);
+  });
+
+  test('코트 바꾸기: 빈 코트로는 옮겨지고, 경기 중인 코트로는 안 옮겨진다', () => {
+    setup({ players: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].map(id => player(id, id)) });
+    startGame(3, four);
+    startGame(4, ['e', 'f', 'g', 'h']);
+    const id = getState().games[0].id;
+    moveGame(id, 4);
+    expect(getState().games[0].court).toBe(3);
+    moveGame(id, 6);
+    expect(getState().games[0].court).toBe(6);
   });
 });

@@ -5,7 +5,7 @@ import { useUI } from '../ui';
 import * as actions from '../actions';
 import { MAX_WAITING } from '../lib/utils';
 import {
-  playerById, availablePlayers, playingPlayerIds, waitingModalPlayers,
+  playerById, availablePlayers, playingPlayerIds, waitingModalPlayers, waitingCounts,
   fairnessCompare, freeCourts, waitLabel, LONG_REST_MS,
 } from '../lib/selectors';
 import { EmptyHint, GuestTag } from '../components/cards';
@@ -46,11 +46,16 @@ export default function PlayerPicker({ mode, presetCourt, idx, waitingId, gameId
   const courts = freeCourts(state);
   const court = courts.includes(courtChoice) ? courtChoice : (courts[0] || null);
 
+  // 대기 코트를 짤 때는 다른 대기 코트에 몇 번 들어가 있는지도 보여준다. (한 사람 최대 3곳)
+  const forWaiting = mode === 'waiting' || mode === 'editWaiting';
+  const waitCount = forWaiting ? waitingCounts(state, waitingId) : new Map();
   let pool;
-  if (mode === 'waiting' || mode === 'editWaiting') {
+  if (forWaiting) {
     pool = waitingModalPlayers(state, waitingId).sort((a, b) => {
       const ap = playing.has(a.id) ? 1 : 0, bp = playing.has(b.id) ? 1 : 0;
-      return ap !== bp ? ap - bp : fairnessCompare(a, b);
+      if (ap !== bp) return ap - bp;
+      const aw = waitCount.get(a.id) || 0, bw = waitCount.get(b.id) || 0;
+      return aw !== bw ? aw - bw : fairnessCompare(a, b);
     });
   } else {
     pool = availablePlayers(state).sort(fairnessCompare);
@@ -133,6 +138,7 @@ export default function PlayerPicker({ mode, presetCourt, idx, waitingId, gameId
             {isPlaying
               ? <span className="tile-meta tile-playing">경기 중</span>
               : <span className={`tile-meta${longRest ? ' tile-long' : ''}`}>{waitLabel(p)}</span>}
+            {waitCount.get(p.id) > 0 && <span className="tile-meta tile-waiting">대기 {waitCount.get(p.id)}곳</span>}
           </button>
         );
       })}

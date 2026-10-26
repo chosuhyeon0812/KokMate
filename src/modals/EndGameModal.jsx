@@ -4,11 +4,10 @@ import { useState } from 'react';
 import { useAppState, getState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
-import { playerName, playingPlayerIds, activeGameOnCourt, nextReadyWaiting } from '../lib/selectors';
-import StartWaitingModal from './StartWaitingModal';
+import { playerName, playingPlayerIds, activeGameOnCourt } from '../lib/selectors';
 
 export function useEndGame() {
-  const { toast, warn, openModal } = useUI();
+  const { toast, warn } = useUI();
 
   const undo = gameId => {
     // 되돌리는 사이에 같은 코트나 같은 선수로 새 경기가 시작됐다면 되돌릴 수 없다.
@@ -25,8 +24,7 @@ export function useEndGame() {
 
   return game => {
     actions.endGame(game.id, { scoreA: null, scoreB: null, winner: null, memo: game.memo || '' });
-    // 코트가 비었으니 바로 시작할 수 있는 대기 코트가 있으면 이어서 물어본다.
-    if (nextReadyWaiting(getState())) openModal(<StartWaitingModal court={game.court} />);
+    // 대기 코트는 팝업으로 묻지 않고, 대기 코트 카드에서 빈 코트를 골라 시작한다.
     toast(`${game.court}번 코트 경기를 종료했습니다.`, { action: { label: '되돌리기', onClick: () => undo(game.id) } });
   };
 }

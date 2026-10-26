@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useAppState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
@@ -45,10 +46,11 @@ export function TeamLine({ teamA, teamB, label, style, live, meta = true }) {
   );
 }
 
-// 진행 중 코트의 '경기 관리' 창: 종료 / 선수 바꾸기 / 취소
+// 진행 중 코트의 '경기 관리' 창: 종료 / 선수 바꾸기 / 코트 바꾸기 / 취소
 function LiveGameMenu({ gameId }) {
   const state = useAppState();
   const { openModal, closeModal, toast, ask } = useUI();
+  const [movingCourt, setMovingCourt] = useState(false);
   const endGame = useEndGame();
   const g = state.games.find(x => x.id === gameId && x.status === 'progress');
   if (!g) return null;
@@ -60,12 +62,36 @@ function LiveGameMenu({ gameId }) {
     toast(`${g.court}번 코트 경기를 취소했습니다.`);
   };
 
+  const move = court => {
+    const from = g.court;
+    closeModal();
+    actions.moveGame(g.id, court);
+    toast(`${from}번 코트 경기를 ${court}번 코트로 옮겼습니다.`);
+  };
+
+  if (movingCourt) {
+    const free = freeCourts(state);
+    return (
+      <>
+        <h3>{g.court}번 코트 경기 · 코트 바꾸기</h3>
+        {free.length === 0 ? <EmptyHint>옮길 수 있는 빈 코트가 없어요.</EmptyHint> : (
+          <div className="court-pick">
+            <span className="court-pick-label">옮길 코트</span>
+            {free.map(c => <button key={c} className="btn btn-primary" onClick={() => move(c)}>{c}번</button>)}
+          </div>
+        )}
+        <div className="modal-actions"><button className="btn btn-ghost" onClick={() => setMovingCourt(false)}>뒤로</button></div>
+      </>
+    );
+  }
+
   return (
     <>
       <h3>{g.court}번 코트 경기</h3>
       <div className="game-menu">
         <button className="btn btn-accent" onClick={() => { closeModal(); endGame(g); }}>경기 종료</button>
         <button className="btn btn-outline" onClick={() => openModal(<PlayerPicker mode="editGame" gameId={g.id} />, { wide: true })}>선수 바꾸기</button>
+        <button className="btn btn-outline" onClick={() => setMovingCourt(true)}>코트 바꾸기</button>
         <button className="btn btn-danger" onClick={cancel}>경기 취소</button>
       </div>
       <div className="modal-actions"><button className="btn btn-ghost" onClick={closeModal}>닫기</button></div>
@@ -126,13 +152,15 @@ export function WaitingCard({ match: w, no }) {
   const playing = playingPlayerIds(state);
   const hasPlaying = w.teamA.concat(w.teamB).some(id => playing.has(id));
 
-  const start = () => {
+  const free = freeCourts(state);
+
+  // 빈 코트마다 버튼을 하나씩 보여주고, 누른 코트에서 바로 시작한다.
+  const start = court => {
     const stillPlaying = w.teamA.concat(w.teamB).filter(pid => playing.has(pid));
     if (stillPlaying.length) { warn(`아직 경기 중인 선수가 있어 시작할 수 없어요: ${stillPlaying.map(id => playerName(state, id)).join(', ')}`); return; }
-    const court = freeCourts(state)[0];
-    if (!court) { warn('비어있는 코트가 없습니다.'); return; }
+    if (activeGameOnCourt(state, court)) { warn(`${court}번 코트에서 이미 다른 경기가 진행 중이에요.`); return; }
     actions.startWaitingMatch(w.id, court);
-    toast(`${court}번 코트에서 경기를 시작했습니다.`);
+    toast(`대기 ${no}번 경기를 ${court}번 코트에서 시작했습니다.`);
   };
 
   return (
@@ -140,8 +168,16 @@ export function WaitingCard({ match: w, no }) {
       <div className="court-title"><span><span className="wait-no">대기 {no}</span></span><span className="status-dot" style={{ color: 'var(--accent-dark)' }}>🕒 대기</span></div>
       <TeamLine teamA={w.teamA} teamB={w.teamB} label={id => playerName(state, id)} />
       {hasPlaying && <div className="muted center" style={{ fontSize: '.72rem', marginTop: 2 }}>"경기 중" 선수가 있어요. 그 경기가 끝난 뒤 배정하세요.</div>}
+      {/* 빈 코트가 여러 개면 번호 버튼만 한 줄로 모아서, 코트가 많아도 카드가 길어지지 않게 한다. */}
+      {free.length > 1 && (
+        <div className="court-pick">
+          <span className="court-pick-label">시작할 코트</span>
+          {free.map(c => <button key={c} className="btn btn-primary btn-sm" disabled={hasPlaying} onClick={() => start(c)}>{c}번</button>)}
+        </div>
+      )}
       <div className="card-actions">
-        <button className="btn btn-primary btn-sm" onClick={start}>코트 배정하고 시작</button>
+        {free.length === 0 && <button className="btn btn-primary btn-sm" disabled>빈 코트 없음</button>}
+        {free.length === 1 && <button className="btn btn-primary btn-sm" disabled={hasPlaying} onClick={() => start(free[0])}>{free[0]}번 코트에서 시작</button>}
         <button className="btn btn-outline btn-sm" onClick={() => openModal(<PlayerPicker mode="editWaiting" waitingId={w.id} />, { wide: true })}>수정</button>
         <button className="btn btn-danger btn-sm" onClick={() => actions.deleteWaitingMatch(w.id)}>삭제</button>
       </div>

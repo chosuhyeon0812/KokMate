@@ -1,5 +1,5 @@
 /* 상태(state)에서 필요한 값을 계산하는 함수들. 모두 state를 직접 받아서 순수하게 동작한다. */
-import { durationStr } from './utils';
+import { durationStr, MAX_WAITING_PER_PLAYER } from './utils';
 
 export function playerById(state, id) {
   return state.players.find(p => p.id === id);
@@ -88,16 +88,20 @@ export function fairnessCompare(a, b) {
   return a.name.localeCompare(b.name, 'ko');
 }
 
-export function waitingModalPlayers(state, exceptId) {
-  // 대기 코트는 다음 경기를 미리 준비하는 용도라, 지금 경기 중인 선수도 선택할 수 있게 한다.
-  // 단, 이미 다른 대기 코트에 들어간 선수는 중복 배정을 막기 위해 제외한다. (수정 중인 대기 코트 자신은 빼고 계산)
-  const waiting = waitingPlayerIds(state, exceptId);
-  return eligiblePlayers(state).filter(p => !waiting.has(p.id));
+// 선수별로 몇 개의 대기 코트에 들어가 있는지. (exceptId 대기 코트는 빼고 센다)
+export function waitingCounts(state, exceptId) {
+  const counts = new Map();
+  state.waitingMatches.forEach(w => {
+    if (w.id === exceptId) return;
+    w.teamA.concat(w.teamB).forEach(id => counts.set(id, (counts.get(id) || 0) + 1));
+  });
+  return counts;
 }
 
-// 지금 바로 시작할 수 있는 첫 번째 대기 코트 (아직 경기 중인 선수가 없는 것). 순번(idx)은 0부터.
-export function nextReadyWaiting(state) {
-  const playing = playingPlayerIds(state);
-  const idx = state.waitingMatches.findIndex(w => !w.teamA.concat(w.teamB).some(id => playing.has(id)));
-  return idx === -1 ? null : { match: state.waitingMatches[idx], idx };
+export function waitingModalPlayers(state, exceptId) {
+  // 대기 코트는 다음 경기를 미리 준비하는 용도라, 지금 경기 중인 선수도 선택할 수 있게 한다.
+  // 한 사람은 대기 코트 MAX_WAITING_PER_PLAYER 곳까지 들어갈 수 있다. (수정 중인 대기 코트 자신은 빼고 계산)
+  const counts = waitingCounts(state, exceptId);
+  return eligiblePlayers(state).filter(p => (counts.get(p.id) || 0) < MAX_WAITING_PER_PLAYER);
 }
+

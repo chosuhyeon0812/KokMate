@@ -164,6 +164,15 @@ export function startWaitingMatch(id, court) {
   });
 }
 
+// 진행 중 경기를 다른 빈 코트로 옮긴다. (대기 코트를 잘못된 코트에서 시작했을 때)
+export function moveGame(id, court) {
+  update(d => {
+    const g = d.games.find(x => x.id === id && x.status === 'progress');
+    if (!g || d.games.some(x => x.status === 'progress' && x.court === court)) return;
+    g.court = court;
+  });
+}
+
 export function deleteWaitingMatch(id) {
   update(d => { d.waitingMatches = d.waitingMatches.filter(x => x.id !== id); });
 }

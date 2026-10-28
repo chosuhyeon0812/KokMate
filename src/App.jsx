@@ -114,7 +114,7 @@ export default function App() {
       <main key={view} className={`page page-${navDir.current}`}>
         {view !== 'menu' && (
           <div className="page-head">
-            <button type="button" className="back-btn" onClick={goHome}><b>‹</b>홈</button>
+            <button type="button" className="back-btn" aria-label="홈으로" title="홈으로" onClick={goHome}>‹</button>
             <h1>{title}</h1>
           </div>
         )}

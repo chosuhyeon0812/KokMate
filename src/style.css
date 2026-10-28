@@ -769,10 +769,9 @@ main{padding-bottom:calc(60px + env(safe-area-inset-bottom))}
 .page .card:nth-child(n+6){animation-delay:.3s}
 
 /* 홈이 아닌 화면 맨 위: ‹ 홈 버튼 + 화면 이름 */
-.page-head{display:flex;align-items:center;gap:6px;margin:0 0 14px -6px}
-.page-head h1{margin:0;font-size:1.35rem;font-weight:800;color:var(--primary-dark)}
-.back-btn{display:flex;align-items:center;gap:2px;border:none;background:none;padding:6px 10px 6px 6px;border-radius:12px;font:inherit;font-size:1rem;font-weight:700;color:var(--primary);cursor:pointer;-webkit-tap-highlight-color:transparent}
-.back-btn b{font-size:1.7rem;line-height:.8;font-weight:500}
+.page-head{display:flex;align-items:center;gap:12px;margin:0 0 14px -8px}
+.page-head h1{margin:0;font-size:1.35rem;font-weight:800;color:var(--primary)}
+.back-btn{width:40px;height:40px;display:grid;place-items:center;border:none;background:none;padding:0 0 4px;border-radius:50%;font:inherit;font-size:2.2rem;line-height:1;font-weight:500;color:var(--primary);cursor:pointer;-webkit-tap-highlight-color:transparent}
 .back-btn:active{background:var(--primary-pale)}
 @media (prefers-reduced-motion:reduce){.page-fwd,.page-back,.page .card{animation:none}}
 

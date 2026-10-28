@@ -1,26 +1,26 @@
 :root{
-  --primary:#0b5566;
-  --primary-dark:#073c48;
-  --primary-light:#14808f;
-  --primary-bright:#1cb0ba;
-  --primary-pale:#e4f1f2;
-  --primary-pale-2:#d3ecee;
+  --primary:#1aa852;
+  --primary-dark:#0f5132;
+  --primary-light:#1aa852;
+  --primary-bright:#4ade80;
+  --primary-pale:#e8f9ee;
+  --primary-pale-2:#d2f2de;
   --accent:#f2a63c;
   --accent-light:#ffcf6e;
   --accent-dark:#c9860f;
-  --bg:#f2f8f9;
+  --bg:#f3faf5;
   --surface:#ffffff;
-  --text:#10282c;
-  --muted:#5b7278;
-  --border:#dbe9ea;
+  --text:#10291b;
+  --muted:#5c7365;
+  --border:#dcefe2;
   --danger:#d6455a;
   --danger-pale:#fbe6e9;
   --success:#2f9e6e;
   --success-pale:#e3f5ec;
   --radius:16px;
   --radius-sm:10px;
-  --shadow:0 2px 10px rgba(6,40,46,.07), 0 1px 2px rgba(6,40,46,.06);
-  --shadow-lg:0 14px 34px rgba(6,45,52,.16), 0 4px 10px rgba(6,45,52,.08);
+  --shadow:0 2px 10px rgba(8,40,22,.07), 0 1px 2px rgba(8,40,22,.06);
+  --shadow-lg:0 14px 34px rgba(8,45,25,.16), 0 4px 10px rgba(8,45,25,.08);
   --grad-primary:var(--primary); /* 그라데이션 대신 단색 (이름은 그대로 둠) */
   --grad-primary-soft:var(--primary-light);
   --grad-accent:var(--accent);
@@ -38,7 +38,7 @@ body{
   padding-bottom:40px;
   -webkit-font-smoothing:antialiased;
   background:
-    radial-gradient(560px 320px at 100% -8%, rgba(28,176,186,.14), transparent 60%),
+    radial-gradient(560px 320px at 100% -8%, rgba(26,168,82,.14), transparent 60%),
     radial-gradient(480px 280px at -6% 8%, rgba(242,166,60,.10), transparent 55%),
     var(--bg);
   background-attachment:fixed;
@@ -46,7 +46,7 @@ body{
 
 ::-webkit-scrollbar{width:10px;height:10px}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:#c3d8da;border-radius:20px;border:2px solid var(--bg)}
+::-webkit-scrollbar-thumb{background:#c3dccb;border-radius:20px;border:2px solid var(--bg)}
 ::-webkit-scrollbar-thumb:hover{background:var(--primary-light)}
 
 @keyframes fadeInUp{
@@ -95,7 +95,7 @@ body{
   background:radial-gradient(circle,rgba(255,207,110,.22),transparent 70%);
   bottom:-100px; left:10%;
 }
-.brand{display:flex;align-items:center;gap:14px}
+.brand{display:flex;align-items:center;gap:14px;cursor:pointer;-webkit-tap-highlight-color:transparent}
 /* 설정 창: 팀 이름 · 팀 코드 줄 */
 .team-info-row{display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;background:var(--primary-pale);border:1.5px solid transparent;border-radius:12px;padding:12px 14px;margin-bottom:8px;font:inherit;text-align:left;color:inherit}
 .team-info-row.clickable{cursor:pointer;transition:border-color .2s ease}
@@ -134,7 +134,7 @@ body{
   position:sticky;
   top:0;
   z-index:20;
-  box-shadow:0 2px 8px rgba(6,40,46,.04);
+  box-shadow:0 2px 8px rgba(8,40,22,.04);
 }
 .tab-btn{
   border:none;
@@ -152,7 +152,7 @@ body{
 .tab-btn.active{
   color:#fff;
   background:var(--grad-primary-soft);
-  box-shadow:0 4px 12px rgba(11,85,102,.32);
+  box-shadow:0 4px 12px rgba(26,168,82,.32);
   transform:translateY(-1px);
 }
 
@@ -209,8 +209,8 @@ main{max-width:58rem;margin:0 auto;padding:18px 14px 60px}
 }
 .btn:active{transform:scale(.96)}
 .btn:focus-visible{outline:2px solid var(--primary-bright); outline-offset:2px}
-.btn-primary{background:var(--grad-primary-soft);color:#fff;box-shadow:0 3px 10px rgba(11,85,102,.32)}
-.btn-primary:hover{filter:brightness(1.08);box-shadow:0 6px 16px rgba(11,85,102,.4);transform:translateY(-1px)}
+.btn-primary{background:var(--grad-primary-soft);color:#fff;box-shadow:0 3px 10px rgba(26,168,82,.32)}
+.btn-primary:hover{filter:brightness(1.08);box-shadow:0 6px 16px rgba(26,168,82,.4);transform:translateY(-1px)}
 .btn-accent{background:var(--grad-accent);color:#3a2600;box-shadow:0 3px 10px rgba(201,134,15,.3)}
 .btn-accent:hover{filter:brightness(1.05);box-shadow:0 6px 16px rgba(201,134,15,.38);transform:translateY(-1px)}
 .btn-ghost{background:var(--primary-pale);color:var(--primary-dark)}
@@ -453,7 +453,7 @@ tr:last-child td{border-bottom:none}
 /* 참석자 선택: 여자/남자 세그먼트 + 정렬 칩 */
 .gender-seg{display:flex;gap:4px;padding:4px;background:#eef4f5;border-radius:14px;margin-bottom:10px}
 .gender-seg button{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:10px 8px;border:none;border-radius:11px;background:transparent;font:inherit;font-size:1.05rem;font-weight:800;color:var(--muted);cursor:pointer;transition:background-color .2s ease,box-shadow .2s ease,color .2s ease}
-.gender-seg button.on{background:#fff;box-shadow:0 1px 4px rgba(6,40,46,.12)}
+.gender-seg button.on{background:#fff;box-shadow:0 1px 4px rgba(8,40,22,.12)}
 .gender-seg button.female.on{color:#c22a72}
 .gender-seg button.male.on{color:#2563a8}
 .gender-dot{width:9px;height:9px;border-radius:50%;background:currentColor;opacity:.35}
@@ -723,7 +723,7 @@ tr:last-child td{border-bottom:none}
 }
 .tabbar{top:env(safe-area-inset-top)}
 /* 스크롤해서 탭이 위에 붙었을 때 시계 줄 뒤로 글자가 비치지 않게 같은 색으로 덮는다 */
-body::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top);background:#0a4d5c;z-index:30;pointer-events:none}
+body::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top);background:#1aa852;z-index:30;pointer-events:none}
 main{padding-bottom:calc(60px + env(safe-area-inset-bottom))}
 .modal-root{padding-bottom:calc(16px + env(safe-area-inset-bottom))}
 .toast{margin-bottom:env(safe-area-inset-bottom)}
@@ -736,3 +736,94 @@ main{padding-bottom:calc(60px + env(safe-area-inset-bottom))}
 /* 설정: 글자 크기 */
 .font-size-setting{display:flex;flex-direction:column;gap:8px;padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--border)}
 .font-size-setting .pill-toggle{align-self:flex-start}
+
+/* 앱을 열 때 맨 앞에 잠깐 보이는 초록 화면 (브랜드 가이드보드 휴대폰 화면) */
+.splash{
+  position:fixed;inset:0;z-index:1000;overflow:hidden;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(120% 70% at 50% 40%, #26b862, #1aa852 70%);
+  color:#fff;text-align:center;
+  transition:opacity .45s ease;
+}
+.splash.leaving{opacity:0;pointer-events:none}
+.splash-center{position:relative;z-index:1;margin-top:-10vh;animation:fadeInUp .5s ease both}
+.splash-mascot{display:block;margin:0 auto -6px;animation:floatSlow 2.4s ease-in-out infinite}
+.splash-title{margin:0;font-family:'Fredoka','Pretendard',system-ui,sans-serif;font-size:3.4rem;font-weight:600;letter-spacing:.5px;line-height:1.1}
+.splash-slogan{margin:8px 0 0;font-size:1.05rem;font-weight:600}
+.splash-dots{display:flex;justify-content:center;gap:10px;margin-top:13vh}
+.splash-dots span{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.5)}
+.splash-dots span:nth-child(2){background:#fff}
+.splash-court{position:absolute;left:0;bottom:0;width:100%;height:24vh}
+@media (prefers-reduced-motion:reduce){.splash-mascot,.splash-center{animation:none}}
+
+/* ===== 휴대폰 앱 느낌: 화면 넘김 · 카드가 하나씩 등장 · 위에 뒤로 버튼 ===== */
+.page-fwd{animation:pageInRight .32s var(--ease) backwards}
+.page-back{animation:pageInLeft .32s var(--ease) backwards}
+@keyframes pageInRight{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}
+@keyframes pageInLeft{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:none}}
+/* 같은 줄에 있는 카드들이 위에서부터 톡톡 차례로 나타난다 */
+.page .card:nth-child(2){animation-delay:.06s}
+.page .card:nth-child(3){animation-delay:.12s}
+.page .card:nth-child(4){animation-delay:.18s}
+.page .card:nth-child(5){animation-delay:.24s}
+.page .card:nth-child(n+6){animation-delay:.3s}
+
+/* 홈이 아닌 화면 맨 위: ‹ 홈 버튼 + 화면 이름 */
+.page-head{display:flex;align-items:center;gap:6px;margin:0 0 14px -6px}
+.page-head h1{margin:0;font-size:1.35rem;font-weight:800;color:var(--primary-dark)}
+.back-btn{display:flex;align-items:center;gap:2px;border:none;background:none;padding:6px 10px 6px 6px;border-radius:12px;font:inherit;font-size:1rem;font-weight:700;color:var(--primary);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.back-btn b{font-size:1.7rem;line-height:.8;font-weight:500}
+.back-btn:active{background:var(--primary-pale)}
+@media (prefers-reduced-motion:reduce){.page-fwd,.page-back,.page .card{animation:none}}
+
+/* ===== 홈 메뉴 (가이드보드에서 손에 든 휴대폰 화면) ===== */
+.menu{max-width:520px;margin:0 auto;padding:8px 4px 0}
+.menu > *{animation:fadeInUp .4s var(--ease) backwards}
+.menu > :nth-child(2){animation-delay:.04s}
+.menu > :nth-child(3){animation-delay:.08s}
+.menu > :nth-child(4){animation-delay:.14s}
+.menu > :nth-child(5){animation-delay:.2s}
+.menu > :nth-child(6){animation-delay:.26s}
+.menu-logo{display:flex;align-items:center;gap:6px;margin:6px 0 4px -6px}
+.menu-wordmark{font-family:'Fredoka','Pretendard',system-ui,sans-serif;font-size:2rem;font-weight:600;color:#22c55e;letter-spacing:.2px}
+.menu-wordmark b{font-weight:600;color:#0f5132}
+.menu-greet{margin:6px 2px 18px;color:var(--primary);font-size:1.12rem;font-weight:700}
+.menu-start{
+  width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  border:none;border-radius:18px;padding:20px 22px;margin-bottom:16px;cursor:pointer;
+  background:var(--primary);color:#fff;font:inherit;font-size:1.2rem;font-weight:800;text-align:left;
+  box-shadow:0 8px 20px rgba(26,168,82,.3);
+  transition:transform .15s var(--ease), box-shadow .2s ease;
+}
+.menu-start small{display:block;margin-top:3px;font-size:.8rem;font-weight:600;opacity:.88}
+.menu-arrow{font-size:1.6rem;line-height:1;transition:transform .2s var(--ease)}
+.menu-start:hover .menu-arrow{transform:translateX(4px)}
+.menu-start:active,.menu-card:active{transform:scale(.97)}
+.menu-card{
+  width:100%;display:flex;align-items:center;gap:16px;margin-bottom:12px;padding:18px;
+  border:1px solid var(--border);border-radius:18px;background:var(--surface);box-shadow:var(--shadow);
+  font:inherit;color:inherit;text-align:left;cursor:pointer;
+  transition:transform .15s var(--ease), box-shadow .2s ease;
+}
+.menu-card:hover{box-shadow:var(--shadow-lg)}
+.menu-ico{flex:none;width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-size:1.6rem}
+.menu-ico.tone-green{background:#d9f5e3}
+.menu-ico.tone-orange{background:#ffead2}
+.menu-ico.tone-purple{background:#e5e3fb}
+.menu-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.menu-text strong{font-size:1.08rem;color:var(--text)}
+.menu-text span{font-size:.86rem;color:var(--muted)}
+.menu-chev{flex:none;font-size:1.6rem;color:#b9c6be;line-height:1}
+@media (prefers-reduced-motion:reduce){.menu > *{animation:none}}
+/* 홈 맨 위: 로고 + 자동 추천·설정·사용법 버튼 (위쪽 초록 머리줄 대신) */
+.menu-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.menu-top .menu-logo{margin:6px 0 4px -6px}
+.menu-actions{display:flex;gap:8px}
+.round-btn{position:relative;width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:var(--surface);box-shadow:var(--shadow);color:var(--primary-dark);font:inherit;font-size:1rem;font-weight:800;cursor:pointer;display:grid;place-items:center}
+.round-btn:active{transform:scale(.92)}
+.menu-team{display:inline-block;margin:2px 2px 0;padding:4px 12px;border-radius:20px;background:var(--primary-pale-2);color:var(--primary-dark);font-size:.86rem;font-weight:800}
+.round-btn .sparkle-dot{box-shadow:0 0 0 2px #fff}
+/* 머리줄이 없어져서, 아이폰 홈 화면 앱에서는 시계 줄 아래부터 그린다 */
+main{padding-top:calc(18px + env(safe-area-inset-top))}
+@media (max-width:640px){main{padding-top:calc(12px + env(safe-area-inset-top))}}
+.welcome{padding-top:calc(24px + env(safe-area-inset-top))}

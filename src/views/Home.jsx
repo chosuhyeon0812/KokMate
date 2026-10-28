@@ -27,7 +27,7 @@ export default function Home() {
     }
     const guests = state.players.filter(isGuest).map(p => p.name);
     const rosterNote = guests.length ? `회원 명단은 그대로이고, 게스트 ${guests.length}명(${guests.join(', ')})만 명단에서 빠져요.` : '회원 명단은 그대로예요.';
-    if (!(await ask(`${liveNote}오늘 기록이 "기록" 탭의 지난 모임 목록에 저장되고, 경기 기록, 경기 수, 콕 제출, 오늘 참석자, 추가한 코트가 초기화돼요. ${rosterNote}`, { title: '모임을 종료할까요?', ok: '모임 종료' }))) return;
+    if (!(await ask(`${liveNote}오늘 기록이 "기록" 화면의 지난 모임 목록에 저장되고, 경기 기록, 경기 수, 콕 제출, 오늘 참석자, 추가한 코트가 초기화돼요. ${rosterNote}`, { title: '모임을 종료할까요?', ok: '모임 종료' }))) return;
     actions.endSession();
     toast('모임 기록이 저장되었습니다.');
   };

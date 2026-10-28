@@ -37,7 +37,7 @@ export default function Stats() {
         </div>
         <button className="btn btn-outline btn-sm" onClick={reset}>오늘 기록 초기화</button>
       </div>
-      {todays.length === 0 ? <EmptyHint>"코트" 탭에서 오늘 참석자를 먼저 선택하세요.</EmptyHint> : (
+      {todays.length === 0 ? <EmptyHint>"코트" 화면에서 오늘 참석자를 먼저 선택하세요.</EmptyHint> : (
         <>
           <div style={{ overflowX: 'auto' }}>
             <table>

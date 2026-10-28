@@ -1,36 +1,57 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { UIContext } from './ui';
-import logo from './assets/logo.svg';
 import Home from './views/Home';
+import Menu from './views/Menu';
 import Players from './views/Players';
 import Shuttles from './views/Shuttles';
 import Records from './views/Records';
 import Help from './views/Help';
 import Welcome from './views/Welcome';
-import { isFreshDevice, useAppState, getState } from './store';
+import { isFreshDevice, getState } from './store';
 import { isSessionStale, endStaleSession, staleSessionLabel } from './actions';
-import RecommendModal from './modals/RecommendModal';
 import { syncEnabled, useSync, WELCOME_DONE_KEY, readInviteCode } from './lib/sync';
-import { TeamInfoModal } from './components/TeamCard';
+import Splash from './components/Splash';
 
-const TABS = [
-  { key: 'home', label: '🏟 코트', View: Home },
-  { key: 'players', label: '👥 참가자', View: Players },
-  { key: 'shuttles', label: '🏸 콕', View: Shuttles },
-  { key: 'records', label: '📋 기록', View: Records },
+// 탭 줄 없이 홈 메뉴에서 각 화면으로 들어가고, 화면 맨 위 '‹ 홈'으로 돌아온다. (사용법은 홈의 ? 버튼)
+const VIEWS = [
+  { key: 'menu', View: Menu },
+  { key: 'home', title: '코트', View: Home },
+  { key: 'players', title: '참가자', View: Players },
+  { key: 'shuttles', title: '콕', View: Shuttles },
+  { key: 'records', title: '기록', View: Records },
+  { key: 'help', title: '사용법', View: Help },
 ];
-// 사용법은 탭 대신 오른쪽 위 ? 버튼으로 연다.
-const VIEWS = [...TABS, { key: 'help', View: Help }];
+const viewIndex = key => VIEWS.findIndex(t => t.key === key);
+const onSubPage = () => !!(window.history.state && window.history.state.page);
 
 export default function App() {
-  const [view, setView] = useState('home');
+  const [view, setViewRaw] = useState('menu'); // 앱을 열면 홈 메뉴부터
+  // 휴대폰 앱처럼: 홈에서 들어갈 땐 화면이 오른쪽에서, 홈으로 돌아올 땐 왼쪽에서 밀려 들어온다.
+  const navDir = useRef('fwd');
+  const setView = useCallback(next => setViewRaw(cur => {
+    if (next !== cur) navDir.current = viewIndex(next) > viewIndex(cur) ? 'fwd' : 'back';
+    return next;
+  }), []);
+  useEffect(() => { window.scrollTo(0, 0); }, [view]);
+  // 휴대폰 '뒤로' 버튼(뒤로 가기 몸짓)을 누르면 앱이 꺼지지 않고 홈으로 돌아오게 한다.
+  useEffect(() => {
+    if (view !== 'menu' && !onSubPage()) window.history.pushState({ page: true }, '');
+  }, [view]);
+  useEffect(() => {
+    const onPop = () => { setModal(null); setView('menu'); };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, [setView]);
+  const goHome = () => { if (onSubPage()) window.history.back(); else setView('menu'); };
   const [modal, setModal] = useState(null); // { content, wide }
   const [toastMsg, setToastMsg] = useState(null); // { msg, id }
   const [askDlg, setAskDlg] = useState(null); // { message, title, ok, cancel, danger, resolve }
   const [, setTick] = useState(0);
   const toastTimer = useRef();
+  // 앱을 열 때마다 맨 앞에 잠깐 초록 화면을 보여준다.
+  const [splash, setSplash] = useState(true);
+  const hideSplash = useCallback(() => setSplash(false), []);
   const { team } = useSync();
-  const hasRecs = useAppState().pendingRecs.length > 0;
   const [welcomeDone, setWelcomeDone] = useState(() => { try { return !!localStorage.getItem(WELCOME_DONE_KEY); } catch (e) { return false; } });
   // 처음 여는 기기에만 팀 만들기 / 참여 화면을 보여준다. (예전부터 쓰던 기기는 바로 앱으로)
   const showWelcome = syncEnabled && isFreshDevice && !team && !welcomeDone;
@@ -68,14 +89,14 @@ export default function App() {
   }, []);
 
   // 모임 종료를 안 누르고 날짜가 바뀌었으면, 앱을 열 때(켜둔 동안은 1분마다 확인) 지난 모임을 저장할지 한 번 묻는다.
-  // "나중에"를 누르면 이번에는 다시 묻지 않고, 코트 탭의 안내에서 저장할 수 있다.
+  // "나중에"를 누르면 이번에는 다시 묻지 않고, 코트 화면의 안내에서 저장할 수 있다.
   const askedStale = useRef(false);
   useEffect(() => {
     const check = async () => {
       if (askedStale.current || !isSessionStale(getState())) return;
       askedStale.current = true;
       const date = staleSessionLabel(getState());
-      const yes = await ui.ask(`${date} 모임이 아직 종료되지 않았어요. 그날 기록을 "기록" 탭에 저장하고 오늘 모임을 새로 시작할까요?`, { title: '지난 모임 저장', ok: '저장하기', cancel: '나중에' });
+      const yes = await ui.ask(`${date} 모임이 아직 종료되지 않았어요. 그날 기록을 "기록" 화면에 저장하고 오늘 모임을 새로 시작할까요?`, { title: '지난 모임 저장', ok: '저장하기', cancel: '나중에' });
       if (yes && endStaleSession()) ui.toast(`${date} 모임 기록을 저장했어요.`);
     };
     check();
@@ -83,37 +104,22 @@ export default function App() {
     return () => clearInterval(t);
   }, [ui]);
 
-  const { View } = VIEWS.find(t => t.key === view);
-  const today = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' });
+  const { View, title } = VIEWS.find(t => t.key === view);
 
   return (
     <UIContext.Provider value={ui}>
-      <header className="topbar">
-        <div className="brand">
-          <img src={logo} alt="로고" className="brand-logo" />
-          <div className="brand-text">
-            {/* 팀에 들어가 있으면 팀 이름(예: 씬민턴)을 크게 보여준다 */}
-            <strong>{team ? team.name : '배드민턴 매칭'}</strong>
-            <span>{team ? '배드민턴 매칭' : '소규모 모임 경기 운영 도우미'}</span>
-          </div>
-        </div>
-        <div className="topbar-right">
-          <div className="topbar-meta"><span>{today}</span></div>
-          {/* 자동 추천은 잘 안 써서 숨겨둔 기능. 추천이 남아 있으면 작은 점으로 알려준다 */}
-          {!showWelcome && !showInvite && <button className="help-btn sparkle-btn" title="자동 추천" aria-label="자동 추천" onClick={() => ui.openModal(<RecommendModal />, { wide: true })}>✨{hasRecs && <span className="sparkle-dot" />}</button>}
-          {syncEnabled && !showWelcome && !showInvite && <button className="help-btn" title="설정" aria-label="설정" onClick={() => ui.openModal(<TeamInfoModal />)}>⚙️</button>}
-          <button className={`help-btn${view === 'help' ? ' active' : ''}`} title="사용법" aria-label="사용법" onClick={() => setView(view === 'help' ? 'home' : 'help')}>?</button>
-        </div>
-      </header>
-
+      {splash && <Splash onDone={hideSplash} />}
+      {/* 위쪽 초록 머리줄은 없앴다. 로고 · 팀 이름 · 자동 추천/설정/사용법 버튼은 홈 화면 맨 위에 있다. */}
       {showInvite ? <Welcome initialCode={invite} onSkip={() => setInvite(null)} /> : showWelcome ? <Welcome onSkip={skipWelcome} /> : (<>
-      <nav className="tabbar">
-        {TABS.map(t => (
-          <button key={t.key} className={`tab-btn${view === t.key ? ' active' : ''}`} onClick={() => setView(t.key)}>{t.label}</button>
-        ))}
-      </nav>
-
-      <main><View /></main>
+      <main key={view} className={`page page-${navDir.current}`}>
+        {view !== 'menu' && (
+          <div className="page-head">
+            <button type="button" className="back-btn" onClick={goHome}><b>‹</b>홈</button>
+            <h1>{title}</h1>
+          </div>
+        )}
+        <View />
+      </main>
       </>)}
 
       {modal && (

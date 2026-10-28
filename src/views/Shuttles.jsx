@@ -23,7 +23,7 @@ export default function Shuttles() {
         <h2 className="mb0">콕 관리 <span className="muted" style={{ fontSize: '.8rem', fontWeight: 600 }}>오늘 참석자</span></h2>
         <button className="btn btn-outline btn-sm" onClick={reset}>전체 초기화</button>
       </div>
-      {players.length === 0 ? <EmptyHint>"코트" 탭에서 오늘 참석자를 먼저 선택하세요.</EmptyHint> : (
+      {players.length === 0 ? <EmptyHint>"코트" 화면에서 오늘 참석자를 먼저 선택하세요.</EmptyHint> : (
         <>
           <div className="summary-grid">
             <div className="summary-box"><div className="num">{doneCount} / {players.length}</div><div className="lbl">콕 제출</div></div>

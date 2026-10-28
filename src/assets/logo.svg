@@ -1,23 +1,34 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" fill="#0b5566"/>
-  <!-- 휴대폰 아이콘 모양에 따라 가장자리가 잘려도 그림이 남도록 조금 작게 -->
-  <g transform="translate(256 256) scale(.92) translate(-256 -256)">
-    <g stroke="#ffcf6e" stroke-width="14" stroke-linecap="round" opacity=".9">
-      <line x1="120" y1="372" x2="190" y2="372"/>
-      <line x1="96" y1="320" x2="176" y2="320"/>
-      <line x1="132" y1="424" x2="186" y2="424"/>
+  <rect width="512" height="512" fill="#22c55e"/>
+  <!-- 콕메이트 캐릭터 (components/Mascot.jsx 와 같은 그림). 휴대폰 아이콘 모양에 따라 가장자리가 잘려도 남도록 조금 작게 -->
+  <g transform="translate(256 256) scale(2.05) translate(-100 -100)">
+    <g stroke="#fff" stroke-width="6" stroke-linecap="round" fill="none">
+      <path d="M44 58 Q34 72 38 90"/>
+      <path d="M28 78 Q22 88 27 100"/>
+      <path d="M128 140 L150 128"/>
+      <path d="M132 156 L148 149"/>
     </g>
-    <g transform="translate(270 250) rotate(-50) scale(.95) translate(-256 -250)">
-      <path d="M210 318 L150 140 Q165 126 180 138 Q195 124 210 136 Q225 122 240 134 Q256 120 272 134 Q287 122 302 136 Q317 124 332 138 Q347 126 362 140 L302 318 Z" fill="#fff"/>
-      <g stroke="#0b5566" stroke-width="6" stroke-linecap="round">
-        <line x1="226" y1="316" x2="186" y2="146"/>
-        <line x1="241" y1="316" x2="221" y2="142"/>
-        <line x1="256" y1="316" x2="256" y2="140"/>
-        <line x1="271" y1="316" x2="291" y2="142"/>
-        <line x1="286" y1="316" x2="326" y2="146"/>
-        <line x1="186" y1="250" x2="326" y2="250" stroke-width="9"/>
+    <g transform="translate(-4 2) rotate(35 100 100)">
+      <g fill="#0f3d24" stroke="#0f3d24" stroke-width="13" stroke-linejoin="round">
+        <path d="M70 108 L42 54 A17 17 0 0 1 70 36 A17 17 0 0 1 100 30 A17 17 0 0 1 130 36 A17 17 0 0 1 158 54 L130 108 Z"/>
+        <path d="M72 120 C66 150 78 178 100 178 C122 178 134 150 128 120 Z"/>
+        <path d="M68 104 H132 L129 124 H71 Z"/>
       </g>
-      <path d="M204 330 H308 V342 A52 52 0 0 1 204 342 Z" fill="#f2a63c"/>
+      <path d="M70 108 L42 54 A17 17 0 0 1 70 36 A17 17 0 0 1 100 30 A17 17 0 0 1 130 36 A17 17 0 0 1 158 54 L130 108 Z" fill="#fff"/>
+      <g stroke="#dfe4e1" stroke-width="4.5" stroke-linecap="round">
+        <path d="M86 100 L74 46"/>
+        <path d="M100 100 L100 40"/>
+        <path d="M114 100 L126 46"/>
+      </g>
+      <path d="M72 120 C66 150 78 178 100 178 C122 178 134 150 128 120 Z" fill="#fff"/>
+      <path d="M68 104 H132 L129 124 H71 Z" fill="#22c55e"/>
+      <g transform="translate(0 4) rotate(-35 100 150)">
+        <ellipse cx="82" cy="156" rx="6.5" ry="4" fill="#fbb4c0"/>
+        <ellipse cx="118" cy="156" rx="6.5" ry="4" fill="#fbb4c0"/>
+        <circle cx="89" cy="146" r="4.2" fill="#0f3d24"/>
+        <circle cx="111" cy="146" r="4.2" fill="#0f3d24"/>
+        <path d="M93 155 Q100 162 107 155" fill="none" stroke="#0f3d24" stroke-width="4" stroke-linecap="round"/>
+      </g>
     </g>
   </g>
 </svg>

@@ -34,7 +34,7 @@ function SessionHistoryCard() {
     return (
       <div className="card">
         <h2>지난 모임 기록</h2>
-        <EmptyHint>아직 저장된 모임이 없습니다. 모임이 끝나면 "코트" 탭의 "모임 종료"를 눌러 저장하세요.</EmptyHint>
+        <EmptyHint>아직 저장된 모임이 없습니다. 모임이 끝나면 "코트" 화면의 "모임 종료"를 눌러 저장하세요.</EmptyHint>
       </div>
     );
   }

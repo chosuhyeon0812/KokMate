@@ -12,15 +12,17 @@ import { isSessionStale, endStaleSession, staleSessionLabel } from './actions';
 import { syncEnabled, useSync, WELCOME_DONE_KEY, readInviteCode } from './lib/sync';
 import Splash from './components/Splash';
 
-// 탭 줄 없이 홈 메뉴에서 각 화면으로 들어가고, 화면 맨 위 '‹ 홈'으로 돌아온다. (사용법은 홈의 ? 버튼)
+// 홈 메뉴에서 각 화면으로 들어가고, 화면 맨 위 '‹ 홈'으로 돌아온다. (사용법은 홈의 ? 버튼)
+// 모임 중에는 코트·참가자·콕·기록을 자주 오가서, 안쪽 화면 맨 아래 탭 줄(icon 있는 것)로 홈을 거치지 않고 바로 옮긴다.
 const VIEWS = [
   { key: 'menu', View: Menu },
-  { key: 'home', title: '코트', View: Home },
-  { key: 'players', title: '참가자', View: Players },
-  { key: 'shuttles', title: '콕', View: Shuttles },
-  { key: 'records', title: '기록', View: Records },
+  { key: 'home', title: '코트', icon: '🏟️', View: Home },
+  { key: 'players', title: '참가자', icon: '👥', View: Players },
+  { key: 'shuttles', title: '콕', icon: '🏸', View: Shuttles },
+  { key: 'records', title: '기록', icon: '📋', View: Records },
   { key: 'help', title: '사용법', View: Help },
 ];
+const NAV_VIEWS = VIEWS.filter(t => t.icon);
 const viewIndex = key => VIEWS.findIndex(t => t.key === key);
 const onSubPage = () => !!(window.history.state && window.history.state.page);
 
@@ -120,6 +122,16 @@ export default function App() {
         )}
         <View />
       </main>
+      {NAV_VIEWS.some(t => t.key === view) && (
+        <nav className="bottom-nav" aria-label="화면 바꾸기">
+          {NAV_VIEWS.map(t => (
+            <button type="button" key={t.key} className={`bottom-nav-btn${t.key === view ? ' active' : ''}`} aria-current={t.key === view ? 'page' : undefined} onClick={() => setView(t.key)}>
+              <span className="bottom-nav-ico" aria-hidden="true">{t.icon}</span>
+              {t.title}
+            </button>
+          ))}
+        </nav>
+      )}
       </>)}
 
       {modal && (

@@ -843,5 +843,6 @@ main{padding-top:calc(18px + env(safe-area-inset-top))}
 .bottom-nav-ico{font-size:1.45rem;line-height:1;filter:grayscale(1);opacity:.55}
 .bottom-nav-btn.active{color:var(--primary);background:var(--primary-pale)}
 .bottom-nav-btn.active .bottom-nav-ico{filter:none;opacity:1}
-main:has(~ .bottom-nav){padding-bottom:calc(110px + env(safe-area-inset-bottom))}
+/* 콕 화면처럼 내용이 짧아도 화면보다 조금 길게 해서, 휴대폰 브라우저 주소창이 튀어나와 탭 줄이 위로 밀려 올라오지 않게 한다 */
+main:has(~ .bottom-nav){padding-bottom:calc(110px + env(safe-area-inset-bottom));min-height:calc(100vh + 2px);min-height:calc(100lvh + 2px)}
 .bottom-nav ~ .toast{bottom:calc(84px + env(safe-area-inset-bottom))}

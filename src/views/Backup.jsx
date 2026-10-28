@@ -56,7 +56,7 @@ export default function Backup() {
 
   const share = async () => {
     try {
-      await navigator.share({ files: [backupFile()], title: '배드민턴 매칭 백업' });
+      await navigator.share({ files: [backupFile()], title: '콕메이트 백업' });
       markBackedUp();
     } catch (e) {
       if (e.name !== 'AbortError') warn('보내기에 실패했어요. "파일로 저장"을 이용해 주세요.');

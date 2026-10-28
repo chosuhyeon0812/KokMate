@@ -8,7 +8,7 @@ export default function Welcome({ onSkip, initialCode }) {
     <main className="welcome">
       <div className="card welcome-card">
         <img src={logo} alt="" className="welcome-logo" />
-        <h2 className="welcome-title">배드민턴 매칭</h2>
+        <h2 className="welcome-title">콕메이트</h2>
         {initialCode ? (
           <p className="welcome-desc">초대받은 팀 코드가 들어가 있어요.<br />팀을 확인하고 <b>참여하기</b>를 누르세요.</p>
         ) : (

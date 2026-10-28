@@ -19,8 +19,8 @@ export default defineConfig({
         cleanupOutdatedCaches: true,
       },
       manifest: {
-        name: '배드민턴 매칭',
-        short_name: '배드민턴매칭',
+        name: '콕메이트',
+        short_name: '콕메이트',
         description: '소규모 배드민턴 모임 경기 운영 도우미',
         start_url: './',
         scope: './',

@@ -18,7 +18,7 @@ function JoinedTeam({ team, status }) {
   const [newName, setNewName] = useState(team.name);
   const shown = formatCode(team.code);
   // 링크를 누르면 코드가 미리 들어가서 '참여하기'만 누르면 된다. 링크가 안 열릴 때를 위해 코드도 같이 적는다.
-  const message = `배드민턴 매칭 "${team.name}" 팀 초대\n아래 링크를 누르고 "참여하기"를 누르세요.\n${inviteLink(team.code)}\n\n(팀 코드: ${shown})`;
+  const message = `콕메이트 "${team.name}" 팀 초대\n아래 링크를 누르고 "참여하기"를 누르세요.\n${inviteLink(team.code)}\n\n(팀 코드: ${shown})`;
 
   const share = async () => {
     if (navigator.share) {

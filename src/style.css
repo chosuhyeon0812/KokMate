@@ -65,37 +65,6 @@ body{
 @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
 @keyframes floatSlow{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 
-.topbar{
-  position:relative;
-  overflow:hidden;
-  background:var(--grad-primary);
-  color:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:16px 22px;
-  box-shadow:var(--shadow-lg);
-  isolation:isolate;
-}
-.topbar::before,.topbar::after{
-  content:"";
-  position:absolute;
-  border-radius:50%;
-  filter:blur(2px);
-  z-index:-1;
-  opacity:.5;
-}
-.topbar::before{
-  width:220px;height:220px;
-  background:radial-gradient(circle,rgba(255,255,255,.16),transparent 70%);
-  top:-120px; right:-40px;
-}
-.topbar::after{
-  width:160px;height:160px;
-  background:radial-gradient(circle,rgba(255,207,110,.22),transparent 70%);
-  bottom:-100px; left:10%;
-}
-.brand{display:flex;align-items:center;gap:14px;cursor:pointer;-webkit-tap-highlight-color:transparent}
 /* 설정 창: 팀 이름 · 팀 코드 줄 */
 .team-info-row{display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;background:var(--primary-pale);border:1.5px solid transparent;border-radius:12px;padding:12px 14px;margin-bottom:8px;font:inherit;text-align:left;color:inherit}
 .team-info-row.clickable{cursor:pointer;transition:border-color .2s ease}
@@ -108,53 +77,7 @@ body{
 .team-info-icon{flex:none;width:32px;height:32px;border-radius:50%;border:none;background:var(--primary-pale);color:var(--muted);font-size:1rem;font-weight:800;cursor:pointer}
 .team-info-icon.save{background:var(--primary);color:#fff}
 .team-leave{margin-top:18px;padding-top:14px;border-top:1px dashed var(--border)}
-.brand-logo{
-  width:48px;height:48px;border-radius:50%;object-fit:cover;
-  box-shadow:0 0 0 3px rgba(255,255,255,.5), 0 4px 14px rgba(0,0,0,.25);
-  transition:transform .35s var(--ease);
-  animation:floatSlow 5s ease-in-out infinite;
-}
-.brand-logo:hover{transform:scale(1.08) rotate(-4deg)}
-.brand-text{display:flex;flex-direction:column;line-height:1.35}
-.brand-text strong{font-size:1.12rem;letter-spacing:.2px;text-shadow:0 1px 3px rgba(0,0,0,.2)}
-.brand-text span{font-size:.72rem;opacity:.85}
-.topbar-meta{
-  font-size:.78rem;opacity:.92;background:rgba(255,255,255,.14);
-  padding:6px 12px;border-radius:20px;backdrop-filter:blur(4px);
-  border:1px solid rgba(255,255,255,.18);
-}
 
-.tabbar{
-  display:flex;
-  gap:4px;
-  padding:10px 14px 0;
-  background:var(--surface);
-  border-bottom:1px solid var(--border);
-  overflow-x:auto;
-  position:sticky;
-  top:0;
-  z-index:20;
-  box-shadow:0 2px 8px rgba(8,40,22,.04);
-}
-.tab-btn{
-  border:none;
-  background:transparent;
-  padding:12px 20px;
-  font-size:1.12rem;
-  font-weight:800;
-  color:var(--muted);
-  cursor:pointer;
-  border-radius:11px 11px 0 0;
-  white-space:nowrap;
-  transition:background-color .25s var(--ease), color .25s var(--ease), transform .2s var(--ease);
-}
-.tab-btn:hover{color:var(--primary);background:var(--primary-pale)}
-.tab-btn.active{
-  color:#fff;
-  background:var(--grad-primary-soft);
-  box-shadow:0 4px 12px rgba(26,168,82,.32);
-  transform:translateY(-1px);
-}
 
 main{max-width:58rem;margin:0 auto;padding:18px 14px 60px}
 
@@ -510,7 +433,6 @@ tr:last-child td{border-bottom:none}
 .mb0{margin-bottom:0}
 
 @media (max-width:520px){
-  .brand-text span{display:none}
   th,td{padding:8px 6px;font-size:.78rem}
 }
 
@@ -524,7 +446,6 @@ tr:last-child td{border-bottom:none}
 .field-label{font-size:.78rem;color:var(--muted);margin:4px 0 6px}
 .pick-notes{display:flex;flex-direction:column;gap:5px;margin:0 0 12px;font-size:.92rem;color:var(--muted)}
 .pick-notes .warn{color:var(--danger);font-weight:700}
-.topbar-right{display:flex;align-items:center;gap:8px}
 .sparkle-btn{position:relative}
 .sparkle-btn:hover{animation:sparkle 1.2s ease-in-out infinite}
 @keyframes sparkle{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(1.12) rotate(-8deg)}}
@@ -541,11 +462,6 @@ tr:last-child td{border-bottom:none}
 .help-more summary::after{content:'＋';color:var(--muted);font-weight:800}
 .help-more[open] summary::after{content:'－'}
 .help-more p{margin:0;padding:0 14px 14px;font-size:.98rem;line-height:1.6;color:var(--text)}
-.help-btn{
-  width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.3);
-  background:rgba(255,255,255,.14);color:#fff;font-weight:800;font-size:.95rem;cursor:pointer;
-}
-.help-btn:hover,.help-btn.active{background:rgba(255,255,255,.3)}
 .team-name-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px;margin-bottom:10px}
 .team-title{font-weight:800;font-size:1.05rem;color:var(--primary-dark)}
 .sync-status{font-size:.75rem;font-weight:700;padding:3px 10px;border-radius:20px}
@@ -622,18 +538,6 @@ tr:last-child td{border-bottom:none}
 
 /* ===== 휴대폰 화면 (체육관에서 폰으로 보는 경우) ===== */
 @media (max-width:520px){
-  /* 헤더: 제목이 줄바꿈되지 않게, 날짜는 숨기고 ? 버튼만 */
-  .topbar{padding:12px 14px}
-  .brand{gap:10px}
-  .brand-logo{width:38px;height:38px}
-  .brand-text strong{white-space:nowrap;font-size:1.05rem}
-  .topbar-meta{display:none}
-  .help-btn{width:36px;height:36px;font-size:1rem}
-
-  /* 탭: 4개를 화면 너비에 꽉 차게, 누르기 쉽게 */
-  .tabbar{padding:8px 8px 0;gap:2px}
-  .tab-btn{flex:1;padding:13px 0;font-size:1.08rem;letter-spacing:-.02em}
-
   main{padding:12px 10px 60px}
   .card{padding:16px 14px}
   .card h2{font-size:1.1rem}
@@ -716,19 +620,12 @@ tr:last-child td{border-bottom:none}
 
 /* ---------- 아이폰 홈 화면 앱: 시계·배터리 줄(노치)과 아래 홈 막대에 가리지 않게 ----------
    index.html 이 viewport-fit=cover + black-translucent 라서 앱이 화면 맨 위까지 그려진다. */
-.topbar{
-  padding-top:calc(16px + env(safe-area-inset-top));
-  padding-left:calc(22px + env(safe-area-inset-left));
-  padding-right:calc(22px + env(safe-area-inset-right));
-}
-.tabbar{top:env(safe-area-inset-top)}
-/* 스크롤해서 탭이 위에 붙었을 때 시계 줄 뒤로 글자가 비치지 않게 같은 색으로 덮는다 */
+/* 스크롤할 때 시계 줄 뒤로 글자가 비치지 않게 초록으로 덮는다 */
 body::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top);background:#1aa852;z-index:30;pointer-events:none}
 main{padding-bottom:calc(60px + env(safe-area-inset-bottom))}
 .modal-root{padding-bottom:calc(16px + env(safe-area-inset-bottom))}
 .toast{margin-bottom:env(safe-area-inset-bottom)}
 @media (max-width:640px){
-  .topbar{padding-top:calc(12px + env(safe-area-inset-top));padding-left:calc(14px + env(safe-area-inset-left));padding-right:calc(14px + env(safe-area-inset-right))}
   main{padding-bottom:calc(60px + env(safe-area-inset-bottom))}
   .modal-root{padding-bottom:calc(8px + env(safe-area-inset-bottom))}
 }

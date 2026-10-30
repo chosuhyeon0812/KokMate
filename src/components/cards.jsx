@@ -59,14 +59,14 @@ function LiveGameMenu({ gameId }) {
     if (!(await ask('기록에 남지 않고 경기 수도 올라가지 않아요.', { title: `${g.court}번 코트 경기를 취소할까요?`, ok: '경기 취소', danger: true }))) return;
     closeModal();
     actions.deleteGame(g.id);
-    toast(`${g.court}번 코트 경기를 취소했습니다.`);
+    toast(`${g.court}번 코트 경기를 취소했어요.`);
   };
 
   const move = court => {
     const from = g.court;
     closeModal();
     actions.moveGame(g.id, court);
-    toast(`${from}번 코트 경기를 ${court}번 코트로 옮겼습니다.`);
+    toast(`${from}번 코트 경기를 ${court}번 코트로 옮겼어요.`);
   };
 
   if (movingCourt) {
@@ -123,9 +123,9 @@ export function RecCard({ rec: r, idx }) {
   const st = starsFor(r.score);
 
   const start = () => {
-    if (activeGameOnCourt(state, r.court)) { warn('해당 코트에 이미 진행 중인 경기가 있습니다.'); return; }
+    if (activeGameOnCourt(state, r.court)) { warn('그 코트는 이미 경기 중이에요.'); return; }
     actions.startRecommendation(idx);
-    toast(`${r.court}번 코트 경기를 시작했습니다.`);
+    toast(`${r.court}번 코트 경기를 시작했어요.`);
   };
 
   return (
@@ -160,14 +160,14 @@ export function WaitingCard({ match: w, no }) {
     if (stillPlaying.length) { warn(`아직 경기 중인 선수가 있어 시작할 수 없어요: ${stillPlaying.map(id => playerName(state, id)).join(', ')}`); return; }
     if (activeGameOnCourt(state, court)) { warn(`${court}번 코트에서 이미 다른 경기가 진행 중이에요.`); return; }
     actions.startWaitingMatch(w.id, court);
-    toast(`대기 ${no}번 경기를 ${court}번 코트에서 시작했습니다.`);
+    toast(`대기 ${no}번 경기를 ${court}번 코트에서 시작했어요.`);
   };
 
   return (
     <div className="court-card">
       <div className="court-title"><span><span className="wait-no">대기 {no}</span></span><span className="status-dot" style={{ color: 'var(--accent-dark)' }}>🕒 대기</span></div>
       <TeamLine teamA={w.teamA} teamB={w.teamB} label={id => playerName(state, id)} />
-      {hasPlaying && <div className="muted center" style={{ fontSize: '.72rem', marginTop: 2 }}>"경기 중" 선수가 있어요. 그 경기가 끝난 뒤 배정하세요.</div>}
+      {hasPlaying && <div className="muted center" style={{ fontSize: '.72rem', marginTop: 2 }}>"경기 중" 선수가 있어요. 그 경기가 끝난 뒤 넣어 주세요.</div>}
       {/* 빈 코트가 여러 개면 번호 버튼만 한 줄로 모아서, 코트가 많아도 카드가 길어지지 않게 한다. */}
       {free.length > 1 && (
         <div className="court-pick">

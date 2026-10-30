@@ -24,7 +24,7 @@ export default function Stats() {
   const reset = async () => {
     if (!(await ask('오늘 경기 기록과 경기 수가 모두 지워져요. 회원 명단은 그대로예요.', { title: '오늘 기록을 초기화할까요?', ok: '초기화', danger: true }))) return;
     actions.resetToday();
-    toast('오늘 기록이 초기화되었습니다.');
+    toast('오늘 기록을 초기화했어요.');
   };
 
   return (

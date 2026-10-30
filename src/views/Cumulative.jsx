@@ -39,7 +39,7 @@ export default function Cumulative() {
           {PERIODS.map(([k, label]) => <button key={k} className={period === k ? 'on' : ''} onClick={() => setPeriod(k)}>{label}</button>)}
         </div>
       </div>
-      {state.sessionHistory.length === 0 ? <EmptyHint>아직 저장된 모임이 없습니다. 모임이 끝나면 "모임 종료"를 눌러 저장하세요.</EmptyHint> : (
+      {state.sessionHistory.length === 0 ? <EmptyHint>아직 저장된 모임이 없어요. 모임이 끝나면 "모임 종료"를 눌러 저장하세요.</EmptyHint> : (
         <>
           {kings.length > 0 && (
             <div className="attend-king">👑 {periodName} 출석왕 <b>{kings.map(r => r.name).join(', ')}</b> <span className="muted">({topAttend}번)</span></div>

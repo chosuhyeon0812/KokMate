@@ -14,7 +14,7 @@ export default function Shuttles() {
   const reset = async () => {
     if (!(await ask('모든 사람의 콕 제출 표시와 비고가 지워져요.', { title: '콕 제출 상태를 초기화할까요?', ok: '초기화', danger: true }))) return;
     actions.resetShuttles();
-    toast('콕 제출 상태가 초기화되었습니다.');
+    toast('콕 제출 상태를 초기화했어요.');
   };
 
   return (

@@ -52,8 +52,8 @@ export default function Players() {
           {filterActive && <button className="btn btn-ghost btn-sm" onClick={() => setFilter(EMPTY_FILTER)}>필터 초기화</button>}
         </div>
       )}
-      {state.players.length === 0 ? <EmptyHint>등록된 참가자가 없습니다. ‘참가자 추가’로 시작하세요.</EmptyHint> :
-        filtered.length === 0 ? <EmptyHint>조건에 맞는 참가자가 없습니다.</EmptyHint> : (
+      {state.players.length === 0 ? <EmptyHint>아직 등록된 참가자가 없어요. ‘참가자 추가’로 시작하세요.</EmptyHint> :
+        filtered.length === 0 ? <EmptyHint>조건에 맞는 참가자가 없어요.</EmptyHint> : (
           <div style={{ overflowX: 'auto' }}>
             <table>
               <thead><tr><th>이름</th><th>성별</th><th>급수</th><th>경기수</th><th>상태</th><th></th></tr></thead>

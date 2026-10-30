@@ -19,17 +19,17 @@ export default function Home() {
     const liveCourts = state.games.filter(g => g.status === 'progress').map(g => g.court).sort((a, b) => a - b);
     const liveNote = liveCourts.length ? `${liveCourts.join(', ')}번 코트에서 아직 경기 중이에요. 이대로 종료하면 그 경기는 기록되지 않고 사라집니다. (남기려면 취소하고 먼저 경기 종료를 눌러주세요)\n\n` : '';
     if (doneCount === 0) {
-      if (!liveCourts.length) { warn('저장할 경기 기록이 없습니다.'); return; }
+      if (!liveCourts.length) { warn('저장할 경기 기록이 없어요.'); return; }
       if (!(await ask(`${liveNote}끝난 경기가 없어 저장할 기록은 없어요. 진행 중인 경기를 지우고 모임을 초기화할까요?`, { title: '모임 초기화', ok: '초기화', danger: true }))) return;
       actions.resetToday({ endOfSession: true });
-      toast('모임을 초기화했습니다.');
+      toast('모임을 초기화했어요.');
       return;
     }
     const guests = state.players.filter(isGuest).map(p => p.name);
     const rosterNote = guests.length ? `회원 명단은 그대로이고, 게스트 ${guests.length}명(${guests.join(', ')})만 명단에서 빠져요.` : '회원 명단은 그대로예요.';
     if (!(await ask(`${liveNote}오늘 기록이 "기록" 화면의 지난 모임 목록에 저장되고, 경기 기록, 경기 수, 콕 제출, 오늘 참석자, 추가한 코트가 초기화돼요. ${rosterNote}`, { title: '모임을 종료할까요?', ok: '모임 종료' }))) return;
     actions.endSession();
-    toast('모임 기록이 저장되었습니다.');
+    toast('모임 기록을 저장했어요.');
   };
 
   return (

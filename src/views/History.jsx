@@ -34,7 +34,7 @@ function SessionHistoryCard() {
     return (
       <div className="card">
         <h2>지난 모임 기록</h2>
-        <EmptyHint>아직 저장된 모임이 없습니다. 모임이 끝나면 "코트" 화면의 "모임 종료"를 눌러 저장하세요.</EmptyHint>
+        <EmptyHint>아직 저장된 모임이 없어요. 모임이 끝나면 "코트" 화면의 "모임 종료"를 눌러 저장하세요.</EmptyHint>
       </div>
     );
   }
@@ -82,7 +82,7 @@ export default function History() {
   const removeGame = async g => {
     if (!(await ask('4명의 경기 수에서도 1씩 빠져요.', { title: `${g.court}번 코트 ${timeStr(g.startTime)} 경기 기록을 삭제할까요?`, ok: '삭제', danger: true }))) return;
     actions.deleteGame(g.id);
-    toast('경기 기록을 삭제했습니다.');
+    toast('경기 기록을 삭제했어요.');
   };
 
   return (
@@ -94,7 +94,7 @@ export default function History() {
       </div>
       <div className="card">
         <h2>경기 기록</h2>
-        {todays.length === 0 ? <EmptyHint>오늘 종료된 경기가 없습니다.</EmptyHint> : todays.map(g => (
+        {todays.length === 0 ? <EmptyHint>오늘 끝난 경기가 아직 없어요.</EmptyHint> : todays.map(g => (
           <div className="history-item" key={g.id}>
             <div className="history-head">
               <span>{g.court}번 코트 · {g.gameType}</span>

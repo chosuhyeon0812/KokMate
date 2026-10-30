@@ -14,7 +14,7 @@ export default function RestManagerModal() {
     <>
       <h3>휴식 관리</h3>
       <div className="checklist">
-        {rows.length === 0 ? <EmptyHint>당일 참여 중인 참가자가 없습니다.</EmptyHint> : rows.map(p => {
+        {rows.length === 0 ? <EmptyHint>오늘 참석한 사람이 없어요.</EmptyHint> : rows.map(p => {
           const dur = waitingDuration(p);
           const durLabel = dur ? ` · ${p.resting ? '휴식' : '대기'} ${dur}` : '';
           return (

@@ -43,7 +43,7 @@ export default function BulkAddModal() {
     if (ok.length === 0) { warn('추가할 사람이 없어요. 형식을 확인해 주세요.'); return; }
     actions.addPlayers(ok);
     closeModal();
-    toast(`${ok.length}명을 등록했습니다. "오늘 참석자 선택"에서 오늘 온 사람을 체크하세요.`);
+    toast(`${ok.length}명을 등록했어요. "오늘 참석자 선택"에서 오늘 온 사람을 체크하세요.`);
   };
 
   return (
@@ -53,7 +53,7 @@ export default function BulkAddModal() {
       <textarea className="bulk-input" rows={9} placeholder={'민수 남 A\n영희 여 B\n철수 남 C'} value={text} onChange={e => setText(e.target.value)} />
       {text.trim() && (
         <div className="bulk-preview">
-          <div className="bulk-ok">✓ {ok.length}명 추가됩니다{ok.length > 0 && <span className="muted"> · {ok.map(p => p.name).join(', ')}</span>}</div>
+          <div className="bulk-ok">✓ {ok.length}명 추가돼요{ok.length > 0 && <span className="muted"> · {ok.map(p => p.name).join(', ')}</span>}</div>
           {skipped.length > 0 && <div className="muted">이미 있거나 중복된 이름이라 건너뜀: {skipped.join(', ')}</div>}
           {errors.length > 0 && (
             <div className="bulk-errors">

@@ -2,7 +2,6 @@
    로고 · 인사말 · 큰 '경기 시작하기' 버튼 · 메뉴 카드(누르면 그 화면으로 들어간다). */
 import { useAppState } from '../store';
 import { useUI } from '../ui';
-import { playingPlayerIds } from '../lib/selectors';
 import Mascot from '../components/Mascot';
 import RecommendModal from '../modals/RecommendModal';
 import { TeamInfoModal } from '../components/TeamCard';
@@ -14,7 +13,6 @@ export default function Menu() {
   const { team } = useSync();
   const hasRecs = state.pendingRecs.length > 0;
   const attending = state.players.filter(p => p.active);
-  const playing = playingPlayerIds(state).length;
   const shuttleDone = attending.filter(p => p.shuttleDone).length;
 
   const items = [
@@ -43,7 +41,7 @@ export default function Menu() {
       <button type="button" className="menu-start" onClick={() => switchView('home')}>
         <span>
           경기 시작하기
-          <small>{playing ? `지금 ${playing}명 경기 중` : attending.length ? `오늘 참석 ${attending.length}명` : '코트로 가서 오늘 경기를 짜요'}</small>
+          <small>{attending.length ? `오늘 참석 ${attending.length}명` : '코트로 가서 오늘 경기를 짜요'}</small>
         </span>
         <span className="menu-arrow" aria-hidden="true">→</span>
       </button>

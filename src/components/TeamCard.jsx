@@ -35,7 +35,7 @@ function JoinedTeam({ team, status }) {
 
   const saveName = () => {
     const n = newName.trim();
-    if (!n) { warn('팀 이름을 입력하세요.'); return; }
+    if (!n) { warn('팀 이름을 적어 주세요.'); return; }
     renameTeam(n);
     setEditing(false);
     toast('팀 이름을 바꿨어요.');
@@ -93,7 +93,7 @@ export function NoTeam({ initialCode }) {
   const [preview, setPreview] = useState(null); // {code, row}
 
   const create = async () => {
-    if (!name.trim()) { warn('팀 이름을 입력하세요.'); return; }
+    if (!name.trim()) { warn('팀 이름을 적어 주세요.'); return; }
     setBusy(true);
     try {
       await createTeam(name.trim());
@@ -107,7 +107,7 @@ export function NoTeam({ initialCode }) {
 
   const check = async () => {
     const c = cleanCode(code);
-    if (c.length < 10) { warn('팀 코드 12자리를 입력하세요.'); return; }
+    if (c.length < 10) { warn('팀 코드 12자리를 적어 주세요.'); return; }
     setBusy(true);
     try {
       const row = await previewTeam(c);

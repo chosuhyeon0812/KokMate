@@ -78,30 +78,30 @@ export default function PlayerPicker({ mode, presetCourt, idx, waitingId, gameId
   const unpick = id => setSelection(prev => prev.map(x => (x === id ? null : x)));
 
   const submit = () => {
-    if (mode === 'manual' && !court) { warn('코트를 선택하세요.'); return; }
-    if (filled !== 4) { warn('4명 모두 선택하세요.'); return; }
+    if (mode === 'manual' && !court) { warn('코트를 골라 주세요.'); return; }
+    if (filled !== 4) { warn('4명을 모두 골라 주세요.'); return; }
     if (mode === 'manual') {
       actions.startGame(court, selection);
       closeModal();
-      toast('경기를 시작했습니다.');
+      toast('경기를 시작했어요.');
       switchView('home');
     } else if (mode === 'waiting') {
       if (state.waitingMatches.length >= MAX_WAITING) { warn(`대기 코트는 최대 ${MAX_WAITING}개까지 만들 수 있어요.`); return; }
       actions.addWaitingMatch(selection);
       closeModal();
-      toast('대기 코트에 추가되었습니다.');
+      toast('대기 코트에 넣었어요.');
     } else if (mode === 'editGame') {
       actions.updateGamePlayers(gameId, selection);
       closeModal();
-      toast(`${game.court}번 코트 선수를 바꿨습니다.`);
+      toast(`${game.court}번 코트 선수를 바꿨어요.`);
     } else if (mode === 'editWaiting') {
       actions.updateWaitingMatch(waitingId, selection);
       closeModal();
-      toast('대기 코트 멤버를 수정했습니다.');
+      toast('대기 코트 멤버를 수정했어요.');
     } else {
       actions.updateRec(idx, selection);
       closeModal();
-      toast('조합이 수정되었습니다.');
+      toast('조합을 수정했어요.');
     }
   };
 
@@ -123,7 +123,7 @@ export default function PlayerPicker({ mode, presetCourt, idx, waitingId, gameId
   );
 
   const full = filled >= 4;
-  const grid = pool.length === 0 ? <EmptyHint>선택 가능한 참가자가 없습니다.</EmptyHint> : (
+  const grid = pool.length === 0 ? <EmptyHint>고를 수 있는 참가자가 없어요.</EmptyHint> : (
     <div className="player-grid">
       {pool.map(p => {
         const i = selection.indexOf(p.id);

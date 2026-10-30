@@ -20,19 +20,19 @@ export default function PlayerFormModal({ playerId }) {
   if (playerId && !player) return null;
 
   const save = () => {
-    if (!name.trim()) { warn('이름을 입력하세요.'); return; }
+    if (!name.trim()) { warn('이름을 적어 주세요.'); return; }
     actions.savePlayer(player ? player.id : null, { name: name.trim(), gender, level, role, memo: memo.trim() });
     closeModal();
-    toast('저장되었습니다.');
+    toast('저장했어요.');
   };
 
   const remove = async () => {
-    if (playingPlayerIds(state).has(player.id)) { warn('지금 경기 중인 선수는 삭제할 수 없습니다. 경기 종료 후 삭제하세요.'); return; }
-    if (waitingPlayerIds(state).has(player.id)) { warn('대기 코트에 들어가 있는 선수는 삭제할 수 없습니다. 대기 코트에서 먼저 빼주세요.'); return; }
+    if (playingPlayerIds(state).has(player.id)) { warn('지금 경기 중인 선수는 삭제할 수 없어요. 경기가 끝난 뒤 삭제해 주세요.'); return; }
+    if (waitingPlayerIds(state).has(player.id)) { warn('대기 코트에 들어가 있는 선수는 삭제할 수 없어요. 대기 코트에서 먼저 빼 주세요.'); return; }
     if (!(await ask('지난 경기 기록에 나온 이름은 그대로 남아요.', { title: `${player.name} 님을 삭제할까요?`, ok: '삭제', danger: true }))) return;
     actions.deletePlayer(player.id);
     closeModal();
-    toast('삭제했습니다.');
+    toast('삭제했어요.');
   };
 
   return (

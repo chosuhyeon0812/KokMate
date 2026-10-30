@@ -152,7 +152,7 @@ export function generateRecommendations(state) {
   for (const court of courts) {
     const gameType = chooseCourtGameType(remainingMales, remainingFemales);
     if (!gameType) {
-      shortfall = `현재 참여 가능 인원으로는 ${assignments.length}개 코트만 구성할 수 있습니다. (요청: ${courts.length}개)`;
+      shortfall = `지금 인원으로는 코트 ${courts.length}개 중 ${assignments.length}개만 짤 수 있어요.`;
       break;
     }
 

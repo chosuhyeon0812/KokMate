@@ -19,13 +19,13 @@ export function useEndGame() {
     const busy = game.teamA.concat(game.teamB).filter(id => playing.has(id));
     if (busy.length) { warn(`다른 경기에 들어간 선수가 있어 되돌릴 수 없어요: ${busy.map(id => playerName(now, id)).join(', ')}`); return; }
     actions.undoEndGame(gameId);
-    toast(`${game.court}번 코트 경기를 진행 중으로 되돌렸습니다.`);
+    toast(`${game.court}번 코트 경기를 진행 중으로 되돌렸어요.`);
   };
 
   return game => {
     actions.endGame(game.id, { scoreA: null, scoreB: null, winner: null, memo: game.memo || '' });
     // 대기 코트는 팝업으로 묻지 않고, 대기 코트 카드에서 빈 코트를 골라 시작한다.
-    toast(`${game.court}번 코트 경기를 종료했습니다.`, { action: { label: '되돌리기', onClick: () => undo(game.id) } });
+    toast(`${game.court}번 코트 경기를 종료했어요.`, { action: { label: '되돌리기', onClick: () => undo(game.id) } });
   };
 }
 
@@ -40,7 +40,7 @@ export default function EndGameModal({ gameId }) {
     // 예전에 기록한 승패·점수는 그대로 두고 특이사항만 바꾼다.
     actions.editGameResult(gameId, { scoreA: g.scoreA, scoreB: g.scoreB, winner: g.winner, memo: memo.trim() });
     closeModal();
-    toast('특이사항을 저장했습니다.');
+    toast('특이사항을 저장했어요.');
   };
 
   return (

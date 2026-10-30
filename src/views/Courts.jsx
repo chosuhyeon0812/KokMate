@@ -18,7 +18,7 @@ export default function Courts() {
   const addCourt = e => {
     e.preventDefault();
     const n = Number(courtInput);
-    if (!Number.isInteger(n) || n < 1 || n > 99) { warn('코트 번호를 숫자로 입력하세요. (1~99)'); return; }
+    if (!Number.isInteger(n) || n < 1 || n > 99) { warn('코트 번호를 숫자로 적어 주세요. (1~99)'); return; }
     if (courts.includes(n)) { warn(`${n}번 코트는 이미 등록되어 있어요.`); return; }
     actions.addCourt(n);
     setCourtInput('');

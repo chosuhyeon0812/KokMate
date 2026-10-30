@@ -411,7 +411,9 @@ tr:last-child td{border-bottom:none}
 .player-tile.disabled:hover{transform:none;box-shadow:none;border-color:var(--border)}
 
 .toast{
-  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  /* 나타나는 애니메이션(popIn)이 transform 을 덮어쓰므로 transform 없이 가운데 맞춘다.
+     (예전 left:50% + translateX 는 화면 오른쪽 반에 갇혀 글자가 두세 자씩 끊겼다) */
+  position:fixed;bottom:24px;left:16px;right:16px;margin:0 auto;width:max-content;max-width:calc(100vw - 32px);
   background:var(--grad-primary);color:#fff;padding:11px 20px;border-radius:30px;
   font-size:.82rem;box-shadow:var(--shadow-lg);z-index:200;font-weight:600;
   animation:popIn .25s var(--ease) both;

@@ -17,7 +17,7 @@ export default function Home() {
     const doneCount = actions.sessionDoneGames(state).length;
     // 아직 진행 중인 경기는 결과가 없어 저장되지 않으므로, 지워진다는 걸 미리 알려준다.
     const liveCourts = state.games.filter(g => g.status === 'progress').map(g => g.court).sort((a, b) => a - b);
-    const liveNote = liveCourts.length ? `${liveCourts.join(', ')}번 코트에서 아직 경기 중이에요. 이대로 종료하면 그 경기는 기록되지 않고 사라집니다. (남기려면 취소하고 먼저 경기 종료를 눌러주세요)\n\n` : '';
+    const liveNote = liveCourts.length ? `${liveCourts.join(', ')}번 코트에서 아직 경기 중이에요. 이대로 종료하면 그 경기는 기록되지 않고 사라져요. (남기려면 취소하고 먼저 경기 종료를 눌러 주세요)\n\n` : '';
     if (doneCount === 0) {
       if (!liveCourts.length) { warn('저장할 경기 기록이 없어요.'); return; }
       if (!(await ask(`${liveNote}끝난 경기가 없어 저장할 기록은 없어요. 진행 중인 경기를 지우고 모임을 초기화할까요?`, { title: '모임 초기화', ok: '초기화', danger: true }))) return;

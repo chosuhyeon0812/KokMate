@@ -140,6 +140,8 @@ main{max-width:58rem;margin:0 auto;padding:18px 14px 60px}
 .btn-ghost:hover{background:var(--primary-pale-2)}
 .btn-outline{background:#fff;color:var(--primary);border:1px solid var(--primary-light)}
 .btn-outline:hover{background:var(--primary-pale);border-color:var(--primary)}
+.btn-kakao{background:#fee500;color:#191919}
+.btn-kakao:hover{filter:brightness(.97)}
 .btn-danger{background:var(--danger-pale);color:var(--danger)}
 .btn-danger:hover{background:#f7d3d8}
 .btn-sm{padding:8px 14px;font-size:.85rem;border-radius:9px}

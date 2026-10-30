@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useUI } from '../ui';
 import { useAppState } from '../store';
 import { FONT_SIZES, readFontScale, saveFontScale } from '../lib/fontSize';
+import { shareTeamInvite } from '../lib/kakao';
 import { useSync, createTeam, previewTeam, joinTeam, leaveTeamAndClear, hasUnsyncedChanges, cleanCode, formatCode, inviteLink, renameTeam, previewName } from '../lib/sync';
 
 // 잘 맞춰지고 있을 때는 아무것도 안 보여주고, 문제가 있을 때만 알린다.
@@ -30,6 +31,14 @@ function JoinedTeam({ team, status }) {
       toast('초대 링크를 복사했어요. 카톡에 붙여넣어 보내세요.');
     } catch (e) {
       warn('복사하지 못했어요. 코드를 직접 적어서 보내주세요.');
+    }
+  };
+
+  const shareKakao = async () => {
+    try {
+      await shareTeamInvite(team.name, inviteLink(team.code));
+    } catch (e) {
+      warn('카카오톡을 열지 못했어요. 인터넷 연결을 확인하거나 "초대 링크 보내기"를 써 주세요.');
     }
   };
 
@@ -73,7 +82,8 @@ function JoinedTeam({ team, status }) {
       <p className="muted backup-desc">이 코드를 아는 사람은 팀 데이터를 보고 바꿀 수 있어요. 팀원에게만 보내주세요.</p>
       {/* 맞추기는 자동(실시간 알림 + 15초마다 + 인터넷 다시 연결될 때)이라 따로 버튼을 두지 않는다 */}
       <div className="row-actions">
-        <button className="btn btn-primary" onClick={share}>초대 링크 보내기</button>
+        <button className="btn btn-kakao" onClick={shareKakao}>카카오톡으로 초대하기</button>
+        <button className="btn btn-outline" onClick={share}>초대 링크 보내기</button>
       </div>
       <div className="team-leave">
         <button className="btn btn-danger" onClick={leave}>팀 나가기</button>

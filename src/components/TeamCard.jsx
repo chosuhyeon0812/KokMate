@@ -41,8 +41,8 @@ function JoinedTeam({ team, status }) {
     try {
       if (!shareTeamInvite(team.name, inviteLink(team.code))) warn('카카오톡을 준비하고 있어요. 잠시 뒤 다시 눌러 주세요.');
     } catch (e) {
-      // 원인을 알 수 있게 오류 내용도 붙인다 (예: 카카오 쪽 오류 번호)
-      warn(`카카오톡을 열지 못했어요. "초대 링크 보내기"를 써 주세요. (${e && e.message ? e.message : e})`);
+      // 컴퓨터 브라우저는 카톡 공유를 팝업 창으로 여는데, 팝업이 막혀 있으면 여기로 온다
+      warn('이 브라우저에서는 카카오톡 창을 열 수 없어요. 아래 "초대 링크 보내기"를 써 주세요.');
     }
   };
 

@@ -14,9 +14,18 @@ import Splash from './components/Splash';
 
 // 홈 메뉴에서 각 화면으로 들어가고, 화면 맨 위 '‹ 홈'으로 돌아온다. (사용법은 홈의 ? 버튼)
 // 모임 중에는 코트·참가자·콕·기록을 자주 오가서, 안쪽 화면 맨 아래 탭 줄(icon 있는 것)로 홈을 거치지 않고 바로 옮긴다.
+// 배드민턴 코트 이모지가 없어서 위에서 본 코트를 직접 그린다. (가운데 네트, 짧은 서비스 라인, 센터 라인)
+const CourtIcon = (
+  <svg viewBox="0 0 20 24" width="0.85em" height="1em">
+    <rect x="3" y="1" width="14" height="22" rx="0.5" fill="#3fa34d" stroke="#fff" strokeWidth="0.8" />
+    <path d="M3 8.75H17M3 15.25H17M10 1V8.75M10 15.25V23" stroke="#fff" strokeWidth="0.7" />
+    <path d="M1.5 12H18.5" stroke="#2b2b2b" strokeWidth="1.2" />
+  </svg>
+);
+
 const VIEWS = [
   { key: 'menu', View: Menu },
-  { key: 'home', title: '코트', icon: '🏟️', View: Home },
+  { key: 'home', title: '코트', icon: CourtIcon, View: Home },
   { key: 'players', title: '참가자', icon: '👥', View: Players },
   { key: 'shuttles', title: '콕', icon: '🏸', View: Shuttles },
   { key: 'records', title: '기록', icon: '📋', View: Records },

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useUI } from '../ui';
 import { useAppState } from '../store';
 import { FONT_SIZES, readFontScale, saveFontScale } from '../lib/fontSize';
-import { shareTeamInvite } from '../lib/kakao';
+import { preloadKakao, shareTeamInvite } from '../lib/kakao';
 import { useSync, createTeam, previewTeam, joinTeam, leaveTeamAndClear, hasUnsyncedChanges, cleanCode, formatCode, inviteLink, renameTeam, previewName } from '../lib/sync';
 
 // 잘 맞춰지고 있을 때는 아무것도 안 보여주고, 문제가 있을 때만 알린다.
@@ -34,9 +34,12 @@ function JoinedTeam({ team, status }) {
     }
   };
 
-  const shareKakao = async () => {
+  useEffect(() => { preloadKakao(); }, []);
+
+  // 기다리면 휴대폰이 카톡 열기를 막으므로 await 없이 바로 보낸다.
+  const shareKakao = () => {
     try {
-      await shareTeamInvite(team.name, inviteLink(team.code));
+      if (!shareTeamInvite(team.name, inviteLink(team.code))) warn('카카오톡을 준비하고 있어요. 잠시 뒤 다시 눌러 주세요.');
     } catch (e) {
       warn('카카오톡을 열지 못했어요. 인터넷 연결을 확인하거나 "초대 링크 보내기"를 써 주세요.');
     }

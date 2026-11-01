@@ -12,6 +12,16 @@ import { EmptyHint, GuestTag } from '../components/cards';
 
 const EMPTY_SLOTS = [null, null, null, null];
 
+// 모임 밖 사람(레슨자 등) 자리. 노란 '외부' 칸을 누르면 이 표시가 한 칸을 차지하고, 저장할 때는 빠져서 경기에는 우리 사람만 남는다.
+// 우리 사람이 적어도 1명은 있어야 하니 최대 3자리.
+const OUTSIDERS = ['outsider-1', 'outsider-2', 'outsider-3'];
+const isOutsider = id => OUTSIDERS.includes(id);
+
+// 저장된 경기는 우리 사람만 들고 있으니, 4명이 안 되면 나머지를 '외부'로 채워서 보여준다.
+function presetSlots(ids) {
+  return ids.concat(OUTSIDERS.slice(0, 4 - ids.length));
+}
+
 // 직전 경기와 똑같은 4명 조합이면 알려준다. (막지는 않고 안내만. 팀은 코트에서 정하니 파트너는 따지지 않는다)
 function pickNotes(state, sel) {
   const done = state.games.filter(g => g.status === 'done').sort((a, b) => b.endTime - a.endTime);
@@ -34,7 +44,7 @@ export default function PlayerPicker({ mode, presetCourt, idx, waitingId, gameId
   const game = mode === 'editGame' ? state.games.find(g => g.id === gameId && g.status === 'progress') : null;
   const preset = rec || wait || game;
   // 4칸 배열. 빈 칸은 null이라, 한 명을 빼고 다시 고르면 그 칸에 들어간다. (팀은 코트에서 정하니 순서는 상관없다)
-  const [selection, setSelection] = useState(() => preset ? preset.teamA.concat(preset.teamB) : EMPTY_SLOTS);
+  const [selection, setSelection] = useState(() => preset ? presetSlots(preset.teamA.concat(preset.teamB)) : EMPTY_SLOTS);
   const filled = selection.filter(Boolean).length;
   const [courtChoice, setCourtChoice] = useState(presetCourt || null);
 
@@ -79,27 +89,28 @@ export default function PlayerPicker({ mode, presetCourt, idx, waitingId, gameId
 
   const submit = () => {
     if (mode === 'manual' && !court) { warn('코트를 골라 주세요.'); return; }
-    if (filled !== 4) { warn('4명을 모두 골라 주세요.'); return; }
+    if (filled !== 4) { warn('4칸을 모두 채워 주세요. 모임 밖 사람은 노란 "외부" 칸을 누르세요.'); return; }
+    const members = selection.map(id => (isOutsider(id) ? null : id)); // '외부' 자리는 빼고 저장
     if (mode === 'manual') {
-      actions.startGame(court, selection);
+      actions.startGame(court, members);
       closeModal();
       toast('경기를 시작했어요.');
       switchView('home');
     } else if (mode === 'waiting') {
       if (state.waitingMatches.length >= MAX_WAITING) { warn(`대기 코트는 최대 ${MAX_WAITING}개까지 만들 수 있어요.`); return; }
-      actions.addWaitingMatch(selection);
+      actions.addWaitingMatch(members);
       closeModal();
       toast('대기 코트에 넣었어요.');
     } else if (mode === 'editGame') {
-      actions.updateGamePlayers(gameId, selection);
+      actions.updateGamePlayers(gameId, members);
       closeModal();
       toast(`${game.court}번 코트 선수를 바꿨어요.`);
     } else if (mode === 'editWaiting') {
-      actions.updateWaitingMatch(waitingId, selection);
+      actions.updateWaitingMatch(waitingId, members);
       closeModal();
       toast('대기 코트 멤버를 수정했어요.');
     } else {
-      actions.updateRec(idx, selection);
+      actions.updateRec(idx, members);
       closeModal();
       toast('조합을 수정했어요.');
     }
@@ -123,8 +134,19 @@ export default function PlayerPicker({ mode, presetCourt, idx, waitingId, gameId
   );
 
   const full = filled >= 4;
+  // 고른 '외부' 칸은 모두 보여주고, 더 넣을 수 있으면 빈 '외부' 칸을 하나 더 둔다.
+  const pickedOutsiders = selection.filter(isOutsider);
+  const nextOutsider = OUTSIDERS.find(o => !selection.includes(o));
+  const outsiderTiles = pickedOutsiders.concat(!full && nextOutsider ? [nextOutsider] : []);
   const grid = pool.length === 0 ? <EmptyHint>고를 수 있는 참가자가 없어요.</EmptyHint> : (
     <div className="player-grid">
+      {outsiderTiles.map(o => (
+        <button key={o} type="button" className={`player-tile outsider${selection.includes(o) ? ' selected' : ''}`} onClick={() => pick(o)}>
+          <span className="tile-games">레슨자 등</span>
+          {selection.includes(o) && <span className="tile-slot">✓</span>}
+          <span className="tile-name">외부</span>
+        </button>
+      ))}
       {pool.map(p => {
         const i = selection.indexOf(p.id);
                 const isPlaying = playing.has(p.id);

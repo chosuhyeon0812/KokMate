@@ -4,6 +4,12 @@ import { uid, todayStr, newMember, isGuest } from './lib/utils';
 import { playerById, deriveGameType } from './lib/selectors';
 import { generateRecommendations, scoreSplit } from './lib/matching';
 
+// 고르는 창의 4칸에서 빈 칸을 빼고 둘로 나눈다. 모임 밖 사람(레슨자 등)을 끼워 치면 1~3명만 들어온다.
+function splitTeams(selection) {
+  const ids = selection.filter(Boolean);
+  return [ids.slice(0, 2), ids.slice(2, 4)];
+}
+
 function startGameIn(d, court, teamA, teamB, gameType) {
   d.games.push({
     id: uid('g'), round: d.games.length + 1, court, gameType: gameType || deriveGameType(d, teamA, teamB),
@@ -64,8 +70,7 @@ export function clearRecs() {
 export function updateRec(idx, selection) {
   update(d => {
     const r = d.pendingRecs[idx];
-    r.teamA = selection.slice(0, 2);
-    r.teamB = selection.slice(2, 4);
+    [r.teamA, r.teamB] = splitTeams(selection);
     r.score = scoreSplit(d, r.teamA, r.teamB);
     r.gameType = deriveGameType(d, r.teamA, r.teamB);
   });
@@ -81,7 +86,7 @@ export function startRecommendation(idx) {
 /* ---------- 경기 ---------- */
 
 export function startGame(court, selection) {
-  update(d => startGameIn(d, court, selection.slice(0, 2), selection.slice(2, 4)));
+  update(d => startGameIn(d, court, ...splitTeams(selection)));
 }
 
 // 끝난 경기 결과를 참가자 경기 수/승패에 반영(sign=1)하거나 취소(sign=-1)한다.
@@ -125,8 +130,7 @@ export function editGameResult(gameId, { scoreA, scoreB, winner, memo }) {
 export function updateGamePlayers(gameId, selection) {
   update(d => {
     const g = d.games.find(x => x.id === gameId);
-    g.teamA = selection.slice(0, 2);
-    g.teamB = selection.slice(2, 4);
+    [g.teamA, g.teamB] = splitTeams(selection);
     g.gameType = deriveGameType(d, g.teamA, g.teamB);
   });
 }
@@ -142,7 +146,7 @@ export function deleteGame(gameId) {
 
 export function addWaitingMatch(selection) {
   update(d => {
-    const teamA = selection.slice(0, 2), teamB = selection.slice(2, 4);
+    const [teamA, teamB] = splitTeams(selection);
     d.waitingMatches.push({ id: uid('w'), teamA, teamB, gameType: deriveGameType(d, teamA, teamB) });
   });
 }
@@ -150,8 +154,7 @@ export function addWaitingMatch(selection) {
 export function updateWaitingMatch(id, selection) {
   update(d => {
     const w = d.waitingMatches.find(x => x.id === id);
-    w.teamA = selection.slice(0, 2);
-    w.teamB = selection.slice(2, 4);
+    [w.teamA, w.teamB] = splitTeams(selection);
     w.gameType = deriveGameType(d, w.teamA, w.teamB);
   });
 }

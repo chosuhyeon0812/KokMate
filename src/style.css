@@ -747,3 +747,10 @@ main{padding-top:calc(18px + env(safe-area-inset-top))}
 /* 콕 화면처럼 내용이 짧아도 화면보다 조금 길게 해서, 휴대폰 브라우저 주소창이 튀어나와 탭 줄이 위로 밀려 올라오지 않게 한다 */
 main:has(~ .bottom-nav){padding-bottom:calc(110px + env(safe-area-inset-bottom));min-height:calc(100vh + 2px);min-height:calc(100lvh + 2px)}
 .bottom-nav ~ .toast{bottom:calc(84px + env(safe-area-inset-bottom))}
+
+/* 모임 밖 사람(레슨자 등) 자리: 노란 '외부' 칸 (경기 만들기 창 · 코트 카드 · 기록 공통) */
+.name-chip.outsider,.name-chip.outsider.with-meta,
+.player-grid:not(.attend-grid) .player-tile.outsider{background:#ffd95e;border:2.5px solid #e8b400}
+.name-chip.outsider .chip-name,.name-chip.outsider.with-meta .chip-name,
+.player-grid:not(.attend-grid) .player-tile.outsider .tile-name{color:#3d2e00}
+.player-grid:not(.attend-grid) .player-tile.outsider .tile-games{color:#5c4600}

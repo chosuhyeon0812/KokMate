@@ -37,11 +37,22 @@ export function NameChips({ ids, label, meta = false, live = false }) {
   });
 }
 
+// 모임 밖 사람(레슨자 등)을 끼워 친 경기는 앱에 없는 자리를 회색 '외부' 칸으로 채워 4칸을 맞춘다.
+export function OutsiderChips({ count, meta = false }) {
+  return Array.from({ length: Math.max(0, 4 - count) }, (_, i) => (
+    <span key={`outsider-${i}`} className={`name-chip outsider${meta ? ' with-meta' : ''}`}>
+      <span className="chip-name">외부</span>
+    </span>
+  ));
+}
+
 // 팀은 코트에서 가위바위보로 정하니까 VS 없이 4명을 한 묶음으로 보여준다.
 export function TeamLine({ teamA, teamB, label, style, live, meta = true }) {
+  const ids = teamA.concat(teamB);
   return (
     <div className="team-line four" style={style}>
-      <NameChips ids={teamA.concat(teamB)} label={label} meta={meta} live={live} />
+      <NameChips ids={ids} label={label} meta={meta} live={live} />
+      <OutsiderChips count={ids.length} meta={meta} />
     </div>
   );
 }

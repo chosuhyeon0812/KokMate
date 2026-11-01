@@ -12,6 +12,7 @@ export function playerName(state, id) {
 }
 
 export function deriveGameType(state, teamA, teamB) {
+  if (teamA.length + teamB.length < 4) return '외부 인원 포함';
   const genders = teamA.concat(teamB).map(id => playerById(state, id)?.gender);
   const mCount = genders.filter(g => g === 'M').length;
   const fCount = genders.filter(g => g === 'F').length;

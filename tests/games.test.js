@@ -63,4 +63,14 @@ describe('경기', () => {
     moveGame(id, 6);
     expect(getState().games[0].court).toBe(6);
   });
+
+  test('모임 밖 사람을 끼워 치면 1~3명만 넣어도 시작되고, 들어간 사람만 경기 수가 오른다', () => {
+    setup({ players: four.concat('e').map(id => player(id, id)) });
+    startGame(1, ['a', null, 'c', null]);
+    const g = getState().games[0];
+    expect(g.teamA.concat(g.teamB)).toEqual(['a', 'c']);
+    expect(g.gameType).toBe('외부 인원 포함');
+    endGame(g.id, noResult);
+    expect(four.map(gamesOf)).toEqual([1, 0, 1, 0]);
+  });
 });

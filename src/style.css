@@ -275,6 +275,14 @@ tr:last-child td{border-bottom:none}
 .pill-toggle button.on{background:var(--grad-primary-soft);color:#fff}
 
 .rank-1{color:var(--accent-dark);font-weight:800}
+.name-level{font-size:.78em;font-weight:700;color:var(--muted)}
+/* 통계 표: 사진(오늘 경기 순위)과 같은 모양 - 메달, 남녀 점, 큰 이름 */
+.rank-table td{font-size:1rem;vertical-align:middle}
+.rank-table .rank-cell{font-weight:900;font-size:1.15rem;width:2.6em}
+.rank-table .rank-name{font-weight:900;font-size:1.2rem}
+.gender-dot{display:inline-block;width:.6em;height:.6em;border-radius:50%;margin-right:7px;vertical-align:middle;background:#b0b8bf}
+.gender-dot.male{background:#2f6fca}
+.gender-dot.female{background:#d4407f}
 
 .history-item{
   border:1px solid var(--border);border-radius:13px;padding:13px 15px;margin-bottom:11px;background:#fff;

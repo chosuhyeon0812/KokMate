@@ -3,7 +3,8 @@ import { useUI } from '../ui';
 import * as actions from '../actions';
 import { timeStr, durationStr } from '../lib/utils';
 import { playerName } from '../lib/selectors';
-import { EmptyHint, NameChips, OutsiderChips } from '../components/cards';
+import { EmptyHint, NameChips, OutsiderChips, RankLabel, RankName } from '../components/cards';
+import { shareRanking, rankOf } from '../lib/shareImage';
 import EndGameModal from '../modals/EndGameModal';
 
 function Memos({ memos }) {
@@ -29,7 +30,7 @@ function dateLabel(date) {
 
 function SessionHistoryCard() {
   const state = useAppState();
-  const { ask } = useUI();
+  const { ask, toast, warn } = useUI();
   if (state.sessionHistory.length === 0) {
     return (
       <div className="card">
@@ -39,12 +40,33 @@ function SessionHistoryCard() {
     );
   }
 
+  // 지난 모임 순위: 많이 친 사람부터, 같은 경기 수는 같은 순위 (통계 탭과 같은 모양)
+  const rankingOf = s => {
+    const list = s.participants.slice().sort((a, b) => b.totalGames - a.totalGames || a.name.localeCompare(b.name, 'ko'));
+    return { list, ranks: rankOf(list, (a, b) => a.totalGames === b.totalGames) };
+  };
+
+  const share = async s => {
+    const { list, ranks } = rankingOf(s);
+    const [, m, d] = s.date.split('-').map(Number);
+    try {
+      const result = await shareRanking({
+        title: `${m}월 ${d}일 경기 순위`, subtitle: `${dateLabel(s.date)} · 경기 ${s.totalGames}판 · ${list.length}명`, columns: ['경기수'],
+        rows: list.map((p, i) => ({ rank: ranks[i], name: p.name, level: p.level, gender: p.gender, values: [p.totalGames] })),
+        filename: `콕메이트-경기순위-${s.date}.png`,
+      });
+      if (result === 'saved') toast('사진을 저장했어요.');
+    } catch (e) {
+      warn('사진을 만들지 못했어요.');
+    }
+  };
+
   const remove = async id => { if (await ask('삭제하면 되돌릴 수 없어요.', { title: '저장된 모임 기록을 삭제할까요?', ok: '삭제', danger: true })) actions.deleteSessionRecord(id); };
 
   return (
     <div className="card">
       <h2>지난 모임 기록</h2>
-      {state.sessionHistory.map(s => (
+      {state.sessionHistory.map(s => { const { list, ranks } = rankingOf(s); return (
         // 모임이 쌓이면 길어지므로 한 줄 요약으로 접어두고, 누르면 참가자별 경기 수와 메모가 펼쳐진다.
         <details className="history-item fold-item" key={s.id}>
           <summary>
@@ -52,19 +74,22 @@ function SessionHistoryCard() {
             <div className="fold-line"><span>코트 <b>{s.usedCourts}</b>개</span><span>경기 <b>{s.totalGames}</b>번</span><span>인원 <b>{s.participants.length}</b>명</span>{s.memos.length > 0 && <span>📝</span>}</div>
           </summary>
           <div style={{ overflowX: 'auto', marginTop: 8 }}>
-            <table>
-              <thead><tr><th>이름</th><th>경기수</th></tr></thead>
+            <table className="rank-table">
+              <thead><tr><th>순위</th><th>이름</th><th>경기수</th></tr></thead>
               <tbody>
-                {s.participants.slice().sort((a, b) => b.totalGames - a.totalGames).map((p, i) => (
-                  <tr key={i}><td>{p.name}</td><td>{p.totalGames}</td></tr>
+                {list.map((p, i) => (
+                  <tr key={i}><td className="rank-cell"><RankLabel rank={ranks[i]} /></td><td><RankName person={p} /></td><td>{p.totalGames}</td></tr>
                 ))}
               </tbody>
             </table>
           </div>
           <Memos memos={s.memos} />
-          <div className="card-actions"><button className="btn btn-danger btn-sm" onClick={() => remove(s.id)}>이 기록 삭제</button></div>
+          <div className="card-actions">
+            <button className="btn btn-outline btn-sm" onClick={() => share(s)}>공유</button>
+            <button className="btn btn-danger btn-sm" onClick={() => remove(s.id)}>이 기록 삭제</button>
+          </div>
         </details>
-      ))}
+      ); })}
     </div>
   );
 }

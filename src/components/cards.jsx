@@ -46,6 +46,22 @@ export function OutsiderChips({ count, meta = false }) {
   ));
 }
 
+// 순위표(통계·지난 모임) 공통: 1~3등은 메달, 나머지는 숫자
+export function RankLabel({ rank }) {
+  return ['🥇', '🥈', '🥉'][rank - 1] || rank;
+}
+
+// 순위표 이름 칸: 남녀 점 + 큰 이름 + 작은 급수. (성별·급수가 없는 예전 기록은 회색 점, 급수 생략)
+export function RankName({ person }) {
+  const dot = person.gender === 'M' ? 'male' : person.gender === 'F' ? 'female' : '';
+  return (
+    <>
+      <span className={`gender-dot ${dot}`} /><span className="rank-name">{person.name}</span>
+      {person.level && <> <span className="name-level">{person.level}</span></>}
+    </>
+  );
+}
+
 // 팀은 코트에서 가위바위보로 정하니까 VS 없이 4명을 한 묶음으로 보여준다.
 export function TeamLine({ teamA, teamB, label, style, live, meta = true }) {
   const ids = teamA.concat(teamB);

@@ -64,3 +64,10 @@ describe('누적 기록', () => {
     expect(r.days).toBe(14);
   });
 });
+
+describe('순위', () => {
+  test('같은 점수는 같은 순위, 그다음은 사람 수만큼 건너뛴다', async () => {
+    const { rankOf } = await import('../src/lib/shareImage');
+    expect(rankOf([5, 3, 3, 1], (a, b) => a === b)).toEqual([1, 2, 2, 4]);
+  });
+});

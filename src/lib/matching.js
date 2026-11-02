@@ -83,7 +83,10 @@ function pastOpponentCount(state, id1, id2) {
 
 export function scoreSplit(state, teamA, teamB) {
   // 0.25 단위로 반올림해서, 실력 차이가 비슷하면 파트너/상대 중복을 기준으로 고르게 한다.
-  const levelDiff = Math.round(Math.abs(avgLevel(state, teamA) - avgLevel(state, teamB)) * 4) / 4;
+  // 모임 밖 사람(외부)은 앱에 없어서 계산에서 빠진다. 한쪽 팀에 우리 사람이 없으면 급수 차이는 따지지 않는다.
+  const levelDiff = teamA.length && teamB.length
+    ? Math.round(Math.abs(avgLevel(state, teamA) - avgLevel(state, teamB)) * 4) / 4
+    : 0;
   const partnerRepeat = pastPartnerCount(state, teamA[0], teamA[1]) + pastPartnerCount(state, teamB[0], teamB[1]);
   let opponentRepeat = 0;
   for (const x of teamA) for (const y of teamB) opponentRepeat += pastOpponentCount(state, x, y);

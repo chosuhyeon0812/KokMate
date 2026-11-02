@@ -73,4 +73,11 @@ describe('경기', () => {
     endGame(g.id, noResult);
     expect(four.map(gamesOf)).toEqual([1, 0, 1, 0]);
   });
+
+  test('외부 인원이 낀 조합은 외부를 빼고 별점을 매긴다 (급수 차이 계산이 깨지지 않음)', async () => {
+    const { scoreSplit } = await import('../src/lib/matching');
+    setup({ players: four.map(id => player(id, id)) });
+    expect(scoreSplit(getState(), ['a', 'b'], []).levelDiff).toBe(0);
+    expect(scoreSplit(getState(), ['a', 'b'], ['c']).levelDiff).toBe(0);
+  });
 });

@@ -37,7 +37,7 @@ export function NameChips({ ids, label, meta = false, live = false }) {
   });
 }
 
-// 모임 밖 사람(레슨자 등)을 끼워 친 경기는 앱에 없는 자리를 회색 '외부' 칸으로 채워 4칸을 맞춘다.
+// 모임 밖 사람(레슨자 등)을 끼워 친 경기는 앱에 없는 자리를 노란 '외부' 칸으로 채워 4칸을 맞춘다.
 export function OutsiderChips({ count, meta = false }) {
   return Array.from({ length: Math.max(0, 4 - count) }, (_, i) => (
     <span key={`outsider-${i}`} className={`name-chip outsider${meta ? ' with-meta' : ''}`}>

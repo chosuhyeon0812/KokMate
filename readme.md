@@ -118,6 +118,8 @@
 - 아직 로그인이 없어서 **팀 코드를 아는 사람은 누구나 데이터를 보고 고칠 수 있다.** 팀원에게만 공유한다.
 - 새 휴대폰은 빈 회원 명단으로 시작하고, 팀에 참여하면 팀 명단이 들어온다.
 
+<img src="docs/다른-모임-시작-안내.png" alt="다른 모임 시작 안내" width="360">
+
 ---
 
 ## 5. 개발 / 실행
@@ -152,7 +154,7 @@ npm run preview  # 빌드 결과 미리보기
 Player  id, name, gender(M/F), level(A~F), role(owner/staff/member/guest),
         active(오늘 참석), resting(휴식), totalGames, restSince(쉬기 시작한 시각),
         shuttleDone, shuttleNote
-Game    id, court, teamA, teamB(4명 저장용, 팀 의미 없음), startTime, endTime,
+Game    id, court, teamA, teamB(4명 저장용, 팀 의미 없음. 외부 인원이 끼면 그만큼 적음), startTime, endTime,
         status(progress/done), memo, date
 WaitingMatch  id, teamA, teamB
 Session (sessionHistory) id, date, endedAt, totalGames, usedCourts, memos,
@@ -162,27 +164,3 @@ State   players, games, waitingMatches, pendingRecs, settings.courts,
 ```
 
 - 글자 크기는 팀 데이터가 아니라 그 폰에만 저장한다 (localStorage `bm-font-scale`).
-
----
-
-## 6. 내 할 일 📝🏸
-
-### 곧 할 것 🐣
-
-- [ ] 갤럭시에서 **공유** 눌러보기 → 사진 저장 메뉴가 없으면 공유 옆에 작은 **저장** 버튼 💾
-- [ ] **모임 종료**할 때 "오늘 순위 공유할까요?" 물어보기 📷
-- [ ] 경기 만들기에서 **오늘 같이 친 횟수** 보여주기 (맨날 같은 사람끼리 치지 않게) 🤝
-- [ ] 콕 화면도 순위표처럼 이름 앞 남녀 점 + 작은 급수로 통일 🎨
-
-### 언젠가 해볼 것 🌱
-
-- [ ] 누적에서 이름 누르면 그 사람의 달별 출석·경기 수 👤
-- [ ] "초대 링크 보내기"로 보낸 링크에도 로고 미리보기 카드 🖼️
-- [ ] 팀 로고 넣기 (할지 생각 중) 🤔
-- [ ] 여러 팀 오가기 (지금은 폰 하나에 팀 하나) 🔀
-
-### 지금은 안 하기로 한 것 🙅
-
-- **카카오 로그인 + 권한** — 쓰는 사람이 운영진 몇 명이라 아직 괜찮아요. 회원들한테도 열어줄 때 다시 생각 🔐
-- **앱 출시 (스토어)** — 돈이 들어서 보류! 대신 필요한 모임에만 주소를 나눠줘요 (`docs/다른-모임-시작-안내.png`) 💌
-- **위젯 · 다이나믹 아일랜드** — 웹앱으로는 안 되고, 모임 땐 큰 화면으로 보니까 패스 📱

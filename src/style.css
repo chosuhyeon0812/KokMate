@@ -695,32 +695,38 @@ main{padding-bottom:calc(60px + env(safe-area-inset-bottom))}
 .menu-logo{display:flex;align-items:center;gap:6px;margin:6px 0 4px -6px}
 .menu-wordmark{font-family:'Fredoka','Pretendard',system-ui,sans-serif;font-size:2rem;font-weight:600;color:#22c55e;letter-spacing:.2px}
 .menu-wordmark b{font-weight:600;color:#0f5132}
-.menu-greet{margin:6px 2px 18px;color:var(--primary);font-size:1.12rem;font-weight:700}
+.menu-hello{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin:4px 2px 20px}
+.menu-hello .menu-team{margin:0}
+.menu-date{font-size:.86rem;font-weight:700;color:var(--muted)}
+.menu-greet{flex-basis:100%;margin:4px 0 0;color:var(--primary-dark);font-size:1.15rem;font-weight:800}
 .menu-start{
   width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;
-  border:none;border-radius:18px;padding:20px 22px;margin-bottom:16px;cursor:pointer;
-  background:var(--primary);color:#fff;font:inherit;font-size:1.2rem;font-weight:800;text-align:left;
-  box-shadow:0 8px 20px rgba(26,168,82,.3);
+  position:relative;overflow:hidden;
+  border:none;border-radius:22px;padding:26px 22px;margin-bottom:20px;cursor:pointer;
+  background:linear-gradient(135deg,#2ccb68 0%,#1aa852 55%,#128a42 100%);color:#fff;font:inherit;font-size:1.3rem;font-weight:800;text-align:left;
+  box-shadow:0 10px 24px rgba(26,168,82,.28);
   transition:transform .15s var(--ease), box-shadow .2s ease;
 }
 .menu-start small{display:block;margin-top:3px;font-size:.8rem;font-weight:600;opacity:.88}
-.menu-arrow{font-size:1.6rem;line-height:1;transition:transform .2s var(--ease)}
+.menu-start > span{position:relative;z-index:1}
+.menu-arrow{flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.22);font-size:1.4rem;line-height:1;transition:transform .2s var(--ease)}
+.menu-start-deco{position:absolute;right:78px;top:50%;margin-top:-50px;opacity:.2;pointer-events:none}
 .menu-start:hover .menu-arrow{transform:translateX(4px)}
 .menu-start:active,.menu-card:active{transform:scale(.97)}
 .menu-card{
-  width:100%;display:flex;align-items:center;gap:16px;margin-bottom:12px;padding:18px;
-  border:1px solid var(--border);border-radius:18px;background:var(--surface);box-shadow:var(--shadow);
+  width:100%;display:flex;align-items:center;gap:16px;margin-bottom:10px;padding:16px 18px;
+  border:1px solid rgba(15,81,50,.06);border-radius:20px;background:var(--surface);box-shadow:0 2px 10px rgba(15,81,50,.05);
   font:inherit;color:inherit;text-align:left;cursor:pointer;
   transition:transform .15s var(--ease), box-shadow .2s ease;
 }
 .menu-card:hover{box-shadow:var(--shadow-lg)}
-.menu-ico{flex:none;width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-size:1.6rem}
+.menu-ico{flex:none;width:50px;height:50px;border-radius:16px;display:grid;place-items:center;font-size:1.5rem}
 .menu-ico.tone-green{background:#d9f5e3}
 .menu-ico.tone-orange{background:#ffead2}
 .menu-ico.tone-purple{background:#e5e3fb}
 .menu-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
 .menu-text strong{font-size:1.08rem;color:var(--text)}
-.menu-text span{font-size:.86rem;color:var(--muted)}
+.menu-text span{font-size:.86rem;color:var(--muted);word-break:keep-all}
 .menu-chev{flex:none;font-size:1.6rem;color:#b9c6be;line-height:1}
 @media (prefers-reduced-motion:reduce){.menu > *{animation:none}}
 /* 홈 맨 위: 로고 + 자동 추천·설정·사용법 버튼 (위쪽 초록 머리줄 대신) */

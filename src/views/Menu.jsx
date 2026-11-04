@@ -7,6 +7,11 @@ import RecommendModal from '../modals/RecommendModal';
 import { TeamInfoModal } from '../components/TeamCard';
 import { syncEnabled, useSync } from '../lib/sync';
 
+// 인사말 위에 작게 보여주는 오늘 날짜 (예: 11월 4일 수요일)
+function todayLabel(d = new Date()) {
+  return `${d.getMonth() + 1}월 ${d.getDate()}일 ${'일월화수목금토'[d.getDay()]}요일`;
+}
+
 export default function Menu() {
   const state = useAppState();
   const { switchView, openModal } = useUI();
@@ -35,8 +40,11 @@ export default function Menu() {
           <button type="button" className="round-btn" title="사용법" aria-label="사용법" onClick={() => switchView('help')}>?</button>
         </div>
       </div>
-      {team && <span className="menu-team">{team.name}</span>}
-      <p className="menu-greet">오늘도 좋은 매치, 기대할게요!</p>
+      <div className="menu-hello">
+        {team && <span className="menu-team">{team.name}</span>}
+        <span className="menu-date">{todayLabel()}</span>
+        <p className="menu-greet">오늘도 좋은 매치, 기대할게요!</p>
+      </div>
 
       <button type="button" className="menu-start" onClick={() => switchView('home')}>
         <span>
@@ -44,6 +52,8 @@ export default function Menu() {
           <small>{attending.length ? `오늘 참석 ${attending.length}명` : '코트로 가서 오늘 경기를 짜요'}</small>
         </span>
         <span className="menu-arrow" aria-hidden="true">→</span>
+        {/* 버튼 오른쪽 뒤에 흐리게 깔리는 셔틀콕 캐릭터 */}
+        <Mascot size={100} lineColor="#fff" className="menu-start-deco" />
       </button>
 
       {items.map(it => (

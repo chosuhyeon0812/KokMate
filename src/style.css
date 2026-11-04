@@ -721,9 +721,15 @@ main{padding-bottom:calc(60px + env(safe-area-inset-bottom))}
 }
 .menu-card:hover{box-shadow:var(--shadow-lg)}
 .menu-ico{flex:none;width:50px;height:50px;border-radius:16px;display:grid;place-items:center;font-size:1.5rem}
-.menu-ico.tone-green{background:#d9f5e3}
-.menu-ico.tone-orange{background:#ffead2}
-.menu-ico.tone-purple{background:#e5e3fb}
+.menu-ico.tone-green{background:#ddf6e6;color:#16a34a}
+.menu-ico.tone-orange{background:#ffeedb;color:#e0861b}
+.menu-ico.tone-purple{background:#eae8fc;color:#6a5cd6}
+.menu-court{display:block;width:88%;max-width:380px;margin:30px auto 12px;animation-delay:.32s}
+.court-person{fill:#fff;stroke:#0f5132;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.court-person path{fill:none}
+.court-person .dot{fill:#0f5132;stroke:none}
+.court-person .shine{fill:#fff;stroke:none}
+.court-person .blush{fill:#ffc2cf;stroke:none;opacity:.8}
 .menu-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
 .menu-text strong{font-size:1.08rem;color:var(--text)}
 .menu-text span{font-size:.86rem;color:var(--muted);word-break:keep-all}

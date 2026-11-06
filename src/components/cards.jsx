@@ -4,10 +4,9 @@ import { useUI } from '../ui';
 import * as actions from '../actions';
 import { starStr, isGuest } from '../lib/utils';
 
-// 진행 중 코트의 경과 시간: 막 시작하면 '00분', 그 뒤로 '7분', '12분', '1시간 5분'
+// 진행 중 코트의 경과 시간: 막 시작하면 '0분', 그 뒤로 '7분', '12분', '1시간 5분'
 function elapsedLabel(startTs) {
   const mins = Math.max(0, Math.floor((Date.now() - startTs) / 60000));
-  if (mins === 0) return '00분';
   return mins < 60 ? `${mins}분` : `${Math.floor(mins / 60)}시간 ${mins % 60}분`;
 }
 import { playerName, playerById, playingPlayerIds, activeGameOnCourt, waitingDuration, freeCourts, waitLabel, LONG_REST_MS } from '../lib/selectors';

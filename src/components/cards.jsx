@@ -225,9 +225,10 @@ export function GenderBadge({ gender }) {
   return <span className={`badge ${gender === 'M' ? 'badge-male' : 'badge-female'}`}>{gender === 'M' ? '남자' : '여자'}</span>;
 }
 
-// 이름 옆에 붙는 작은 '게스트' 표시 (모임 종료하면 명단에서 빠지는 사람)
+// 이름 옆에 붙는 작은 동그라미 'G' = 게스트 (모임 종료하면 명단에서 빠지는 사람)
+// 코트 카드처럼 좁은 칸에서도 줄이 안 넘치게 글자 대신 한 글자로 보여준다.
 export function GuestTag({ player }) {
-  return isGuest(player) ? <span className="guest-tag">게스트</span> : null;
+  return isGuest(player) ? <span className="guest-tag" title="게스트" aria-label="게스트">G</span> : null;
 }
 
 export function EmptyHint({ children, style }) {

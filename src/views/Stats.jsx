@@ -3,13 +3,14 @@ import { useAppState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
 import { StatusBadge, EmptyHint, RankLabel, RankName } from '../components/cards';
+import PlayerFormModal from '../modals/PlayerFormModal';
 import { playingPlayerIds, shortWait, LONG_REST_MS } from '../lib/selectors';
 import { todayStr } from '../lib/utils';
 import { shareRanking, rankOf } from '../lib/shareImage';
 
 export default function Stats() {
   const state = useAppState();
-  const { toast, warn, ask } = useUI();
+  const { toast, warn, ask, openModal } = useUI();
   const [sortBy, setSortBy] = useState('games');
   const playing = playingPlayerIds(state);
   // 쉬고 있는 시점. 경기 중이거나 오늘 빠진 사람은 쉬는 중이 아니라 null
@@ -73,7 +74,7 @@ export default function Stats() {
                   const from = restFrom(p);
                   const long = from && Date.now() - from >= LONG_REST_MS;
                   return (
-                    <tr key={p.id} style={isMin ? { background: 'var(--primary-pale)' } : undefined}>
+                    <tr key={p.id} className="clickable-row" style={isMin ? { background: 'var(--primary-pale)' } : undefined} onClick={() => openModal(<PlayerFormModal playerId={p.id} />)}>
                       <td className="rank-cell">{sortBy === 'games' ? <RankLabel rank={ranks[i]} /> : i + 1}</td>
                       <td><RankName person={p} /></td>
                       <td className={isMin ? 'rank-1' : ''}>{p.totalGames}</td>

@@ -3,10 +3,11 @@ import { useUI } from '../ui';
 import * as actions from '../actions';
 import { sortByName } from '../lib/utils';
 import { GenderBadge, EmptyHint } from '../components/cards';
+import PlayerFormModal from '../modals/PlayerFormModal';
 
 export default function Shuttles() {
   const state = useAppState();
-  const { toast, ask } = useUI();
+  const { toast, ask, openModal } = useUI();
   // 콕은 그날 경기에 쓰는 거라 오늘 참석자만 보여준다. (휴식 중이어도 참석자면 포함)
   const players = sortByName(state.players.filter(p => p.active));
   const doneCount = players.filter(p => p.shuttleDone).length;
@@ -34,7 +35,8 @@ export default function Shuttles() {
               <tbody>
                 {players.map(p => (
                   <tr key={p.id}>
-                    <td>{p.name}</td>
+                    {/* 이름을 누르면 참가자 탭과 같은 수정 창 (콕 버튼·비고 칸은 따로 눌리게 이름 칸만) */}
+                    <td className="name-edit" onClick={() => openModal(<PlayerFormModal playerId={p.id} />)}>{p.name}</td>
                     <td><GenderBadge gender={p.gender} /></td>
                     <td>
                       <button className={`shuttle-toggle${p.shuttleDone ? ' on' : ''}`} aria-pressed={p.shuttleDone} aria-label={`${p.name} 콕 ${p.shuttleDone ? '제출함' : '아직 안 냄'}`} onClick={() => actions.toggleShuttle(p.id)}>

@@ -536,6 +536,9 @@ tr:last-child td{border-bottom:none}
 .clickable-row{cursor:pointer;transition:background-color .15s ease}
 .clickable-row:hover{background:var(--primary-pale)}
 .row-chevron{color:var(--muted);font-size:1.2rem;text-align:right;width:24px}
+/* 콕 표에서 이름 칸을 누르면 수정 창이 뜬다 */
+.name-edit{cursor:pointer}
+.name-edit:hover{color:var(--primary-dark)}
 .today-status{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:14px;padding:10px 12px;background:var(--primary-pale);border-radius:12px}
 .today-status .field-label{width:100%;margin:0}
 
@@ -702,15 +705,14 @@ main{padding-bottom:calc(60px + env(safe-area-inset-bottom))}
 .menu-start{
   width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;
   position:relative;overflow:hidden;
-  border:none;border-radius:22px;padding:26px 22px;margin-bottom:20px;cursor:pointer;
-  background:linear-gradient(135deg,#2ccb68 0%,#1aa852 55%,#128a42 100%);color:#fff;font:inherit;font-size:1.3rem;font-weight:800;text-align:left;
+  border:none;border-radius:26px;padding:30px 24px;min-height:150px;margin-bottom:22px;cursor:pointer;
+  background:linear-gradient(135deg,#2ccb68 0%,#1aa852 55%,#128a42 100%);color:#fff;font:inherit;font-size:1.9rem;font-weight:900;text-align:left;
   box-shadow:0 10px 24px rgba(26,168,82,.28);
   transition:transform .15s var(--ease), box-shadow .2s ease;
 }
-.menu-start small{display:block;margin-top:3px;font-size:.8rem;font-weight:600;opacity:.88}
-.menu-start > span{position:relative;z-index:1}
-.menu-arrow{flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.22);font-size:1.4rem;line-height:1;transition:transform .2s var(--ease)}
-.menu-start-deco{position:absolute;right:78px;top:50%;margin-top:-50px;opacity:.2;pointer-events:none}
+.menu-start > span{position:relative;z-index:1;word-break:keep-all}
+.menu-arrow{flex:none;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.22);font-size:1.7rem;line-height:1;transition:transform .2s var(--ease)}
+.menu-start-deco{position:absolute;right:88px;top:50%;margin-top:-70px;opacity:.2;pointer-events:none}
 .menu-start:hover .menu-arrow{transform:translateX(4px)}
 .menu-start:active,.menu-card:active{transform:scale(.97)}
 .menu-card{
@@ -724,15 +726,7 @@ main{padding-bottom:calc(60px + env(safe-area-inset-bottom))}
 .menu-ico.tone-green{background:#ddf6e6;color:#16a34a}
 .menu-ico.tone-orange{background:#ffeedb;color:#e0861b}
 .menu-ico.tone-purple{background:#eae8fc;color:#6a5cd6}
-.menu-court{display:block;width:88%;max-width:380px;margin:30px auto 12px;animation-delay:.32s}
-.court-person{fill:#fff;stroke:#0f5132;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
-.court-person path{fill:none}
-.court-person .dot{fill:#0f5132;stroke:none}
-.court-person .shine{fill:#fff;stroke:none}
-.court-person .blush{fill:#ffc2cf;stroke:none;opacity:.8}
-.menu-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
-.menu-text strong{font-size:1.08rem;color:var(--text)}
-.menu-text span{font-size:.86rem;color:var(--muted);word-break:keep-all}
+.menu-text{flex:1;min-width:0;font-size:1.3rem;font-weight:900;color:var(--text);word-break:keep-all}
 .menu-chev{flex:none;font-size:1.6rem;color:#b9c6be;line-height:1}
 @media (prefers-reduced-motion:reduce){.menu > *{animation:none}}
 /* 홈 맨 위: 로고 + 자동 추천·설정·사용법 버튼 (위쪽 초록 머리줄 대신) */

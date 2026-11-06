@@ -1,43 +1,42 @@
 /* 홈 화면: 브랜드 가이드보드에서 사람이 들고 있는 휴대폰 화면처럼
-   로고 · 인사말 · 큰 '경기 시작하기' 버튼 · 메뉴 카드(누르면 그 화면으로 들어간다). */
+   로고 · 인사말 · 제일 큰 '매칭 시작하기' 버튼 · 메뉴 카드(누르면 그 화면으로 들어간다). */
 import { useAppState } from '../store';
 import { useUI } from '../ui';
 import Mascot from '../components/Mascot';
-import CourtScene from '../components/CourtScene';
 import RecommendModal from '../modals/RecommendModal';
 import { TeamInfoModal } from '../components/TeamCard';
 import { syncEnabled, useSync } from '../lib/sync';
 
-// 메뉴 카드 아이콘: 이모지 대신 앱 색에 맞춘 선 그림 (모양·색을 통일해서 덜 정신없게)
+// 메뉴 카드 아이콘: 앱 색에 맞춘 간단한 선 그림 3개 (같은 굵기·같은 크기로 통일)
 const ICONS = {
+  // 사람 한 명
   players: (
     <>
-      <circle cx="9" cy="8.5" r="3.2" />
-      <path d="M3.5 19c.6-3.3 2.8-5.2 5.5-5.2s4.9 1.9 5.5 5.2" />
-      <circle cx="16.5" cy="9.5" r="2.6" />
-      <path d="M15.8 13.9c2.4-.2 4.2 1.4 4.7 4.6" />
+      <circle cx="12" cy="8" r="3.5" />
+      <path d="M5 20c0-3.9 3.1-6.5 7-6.5s7 2.6 7 6.5" />
     </>
   ),
+  // 셔틀콕: 깃털 부분(사다리꼴) + 아래 코르크
   shuttles: (
     <>
-      <path d="M8 4.5 12 13l4-8.5" />
-      <path d="M5 6.5 10.5 14M19 6.5 13.5 14" />
-      <path d="M5 6.5c1-1.4 2-2 3-2M19 6.5c-1-1.4-2-2-3-2M8 4.5c1.3-.7 2.6-1 4-1s2.7.3 4 1" />
-      <path d="M9.6 14.5h4.8v2.2a2.4 2.4 0 0 1-4.8 0z" />
+      <path d="M6 4h12l-4 10h-4z" />
+      <path d="M12 4v10" />
+      <path d="M10 14h4v1.5a2 2 0 0 1-4 0z" />
     </>
   ),
+  // 트로피
   records: (
     <>
-      <rect x="5" y="4.5" width="14" height="16" rx="2.5" />
-      <path d="M9 3.5h6v2.5H9z" />
-      <path d="M8.5 11h7M8.5 14.5h7M8.5 18h4" />
+      <path d="M7 4h10v5a5 5 0 0 1-10 0z" />
+      <path d="M7 6H5a2 2 0 0 0 0 4h2.4M17 6h2a2 2 0 0 1 0 4h-2.4" />
+      <path d="M12 14v5M8.5 20h7" />
     </>
   ),
 };
 
 function MenuIcon({ name }) {
   return (
-    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       {ICONS[name]}
     </svg>
   );
@@ -53,13 +52,10 @@ export default function Menu() {
   const { switchView, openModal } = useUI();
   const { team } = useSync();
   const hasRecs = state.pendingRecs.length > 0;
-  const attending = state.players.filter(p => p.active);
-  const shuttleDone = attending.filter(p => p.shuttleDone).length;
-
   const items = [
-    { key: 'players', tone: 'green', title: '참가자', desc: attending.length ? `오늘 ${attending.length}명 왔어요 · 회원 관리` : '오늘 온 사람 체크 · 회원 관리' },
-    { key: 'shuttles', tone: 'orange', title: '콕', desc: attending.length ? `콕 낸 사람 ${shuttleDone} / ${attending.length}명` : '누가 콕을 냈는지 체크해요' },
-    { key: 'records', tone: 'purple', title: '기록', desc: '지난 모임과 경기 기록을 봐요' },
+    { key: 'players', tone: 'green', title: '회원 관리' },
+    { key: 'shuttles', tone: 'orange', title: '셔틀콕' },
+    { key: 'records', tone: 'purple', title: '경기 기록' },
   ];
 
   return (
@@ -83,26 +79,19 @@ export default function Menu() {
       </div>
 
       <button type="button" className="menu-start" onClick={() => switchView('home')}>
-        <span>
-          경기 시작하기
-          <small>{attending.length ? `오늘 참석 ${attending.length}명` : '코트로 가서 오늘 경기를 짜요'}</small>
-        </span>
+        <span>매칭 시작하기</span>
         <span className="menu-arrow" aria-hidden="true">→</span>
         {/* 버튼 오른쪽 뒤에 흐리게 깔리는 셔틀콕 캐릭터 */}
-        <Mascot size={100} lineColor="#fff" className="menu-start-deco" />
+        <Mascot size={140} lineColor="#fff" className="menu-start-deco" />
       </button>
 
       {items.map(it => (
         <button type="button" key={it.key} className="menu-card" onClick={() => switchView(it.key)}>
           <span className={`menu-ico tone-${it.tone}`}><MenuIcon name={it.key} /></span>
-          <span className="menu-text">
-            <strong>{it.title}</strong>
-            <span>{it.desc}</span>
-          </span>
+          <strong className="menu-text">{it.title}</strong>
           <span className="menu-chev" aria-hidden="true">›</span>
         </button>
       ))}
-      <CourtScene />
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useAppState } from '../store';
 import { useUI } from '../ui';
 import { EmptyHint } from '../components/cards';
+import PlayerFormModal from '../modals/PlayerFormModal';
 import { todayStr } from '../lib/utils';
 import { cumulativeRows } from '../lib/cumulative';
 import { shareRanking, rankOf } from '../lib/shareImage';
@@ -18,7 +19,7 @@ function agoLabel(days) {
 
 export default function Cumulative() {
   const state = useAppState();
-  const { toast, warn } = useUI();
+  const { toast, warn, openModal } = useUI();
   const [period, setPeriod] = useState('month');
   const [sortBy, setSortBy] = useState('attend');
   const today = todayStr();
@@ -78,7 +79,7 @@ export default function Cumulative() {
               <thead><tr><th>순위</th><th>이름</th><th>출석</th><th>경기수</th><th>마지막 참석</th></tr></thead>
               <tbody>
                 {sorted.map((r, i) => (
-                  <tr key={r.key}>
+                  <tr key={r.key} className="clickable-row" onClick={() => openModal(<PlayerFormModal playerId={r.key} />)}>
                     <td>{ranks[i]}</td>
                     <td>{r.name} <span className="name-level">{r.level}</span></td>
                     <td className={r.attend === topAttend && topAttend > 0 ? 'rank-1' : ''}>{r.attend}번</td>

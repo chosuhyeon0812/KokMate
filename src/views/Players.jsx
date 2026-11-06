@@ -6,8 +6,8 @@ import { StatusBadge, GenderBadge, EmptyHint } from '../components/cards';
 import PlayerFormModal from '../modals/PlayerFormModal';
 import BulkAddModal from '../modals/BulkAddModal';
 
-const EMPTY_FILTER = { gender: '', level: '', role: '', active: '' };
-// 탭을 옮겨 다녀도 필터가 유지되도록 컴포넌트 밖에 기억해 둔다.
+const EMPTY_FILTER = { q: '', gender: '', level: '', role: '', active: '' };
+// 탭을 옮겨 다녀도 검색어·필터가 유지되도록 컴포넌트 밖에 기억해 둔다.
 let savedFilter = EMPTY_FILTER;
 
 export default function Players() {
@@ -16,13 +16,15 @@ export default function Players() {
   const [filter, setFilterState] = useState(savedFilter);
   const setFilter = f => { savedFilter = f; setFilterState(f); };
 
+  const q = filter.q.trim();
   const filtered = sortByName(state.players).filter(p =>
+    (!q || p.name.includes(q)) &&
     (!filter.gender || p.gender === filter.gender) &&
     (!filter.level || p.level === filter.level) &&
     (!filter.role || roleOf(p) === filter.role) &&
     (!filter.active || (filter.active === 'active' ? p.active : !p.active))
   );
-  const filterActive = filter.gender || filter.level || filter.role || filter.active;
+  const filterActive = q || filter.gender || filter.level || filter.role || filter.active;
 
   const filterSelect = (key, label, options) => (
     <div className="field">
@@ -44,16 +46,19 @@ export default function Players() {
         </div>
       </div>
       {state.players.length > 0 && (
+        <input type="search" className="attend-search" placeholder="🔍  이름 검색" value={filter.q} onChange={e => setFilter({ ...filter, q: e.target.value })} />
+      )}
+      {state.players.length > 0 && (
         <div className="settings-grid" style={{ marginBottom: 14 }}>
           {filterSelect('gender', '성별', [['M', '남성'], ['F', '여성']])}
           {filterSelect('level', '급수', LEVEL_OPTIONS.map(l => [l, l]))}
           {filterSelect('role', '역할', ROLE_OPTIONS)}
           {filterSelect('active', '당일 참석', [['active', '참석(포함)'], ['inactive', '제외']])}
-          {filterActive && <button className="btn btn-ghost btn-sm" onClick={() => setFilter(EMPTY_FILTER)}>필터 초기화</button>}
+          {filterActive && <button className="btn btn-ghost btn-sm" onClick={() => setFilter(EMPTY_FILTER)}>{q ? '검색·필터 초기화' : '필터 초기화'}</button>}
         </div>
       )}
       {state.players.length === 0 ? <EmptyHint>아직 등록된 참가자가 없어요. ‘참가자 추가’로 시작하세요.</EmptyHint> :
-        filtered.length === 0 ? <EmptyHint>조건에 맞는 참가자가 없어요.</EmptyHint> : (
+        filtered.length === 0 ? <EmptyHint>{q ? `"${q}"(이)가 들어간 참가자가 없어요.` : '조건에 맞는 참가자가 없어요.'}</EmptyHint> : (
           <div style={{ overflowX: 'auto' }}>
             <table>
               <thead><tr><th>이름</th><th>성별</th><th>급수</th><th>경기수</th><th>상태</th><th></th></tr></thead>

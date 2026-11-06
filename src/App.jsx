@@ -28,7 +28,7 @@ const VIEWS = [
   { key: 'home', title: '코트', icon: CourtIcon, View: Home },
   { key: 'players', title: '참가자', icon: '👥', View: Players },
   { key: 'shuttles', title: '콕', icon: '🏸', View: Shuttles },
-  { key: 'records', title: '기록', icon: '📋', View: Records },
+  { key: 'records', title: '기록', icon: '🏆', View: Records },
   { key: 'help', title: '사용법', View: Help },
 ];
 const NAV_VIEWS = VIEWS.filter(t => t.icon);

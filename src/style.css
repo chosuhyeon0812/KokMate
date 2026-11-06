@@ -705,9 +705,10 @@ main{padding-bottom:calc(60px + env(safe-area-inset-bottom))}
 .menu-start{
   width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;
   position:relative;overflow:hidden;
-  border:none;border-radius:26px;padding:30px 24px;min-height:150px;margin-bottom:22px;cursor:pointer;
+  border:2.5px solid #0e7a3a;border-radius:26px;padding:30px 24px;min-height:150px;margin-bottom:22px;cursor:pointer;
   background:linear-gradient(135deg,#2ccb68 0%,#1aa852 55%,#128a42 100%);color:#fff;font:inherit;font-size:1.9rem;font-weight:900;text-align:left;
-  box-shadow:0 10px 24px rgba(26,168,82,.28);
+  /* 테두리: 바깥은 진한 초록, 안쪽에 옅은 흰 선 한 줄 → 버튼이 또렷하게 */
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.28),0 10px 24px rgba(26,168,82,.28);
   transition:transform .15s var(--ease), box-shadow .2s ease;
 }
 .menu-start > span{position:relative;z-index:1;word-break:keep-all}

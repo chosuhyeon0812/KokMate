@@ -1,5 +1,6 @@
 /* 홈 화면: 브랜드 가이드보드에서 사람이 들고 있는 휴대폰 화면처럼
    로고 · 인사말 · 제일 큰 '매칭 시작하기' 버튼 · 메뉴 카드(누르면 그 화면으로 들어간다). */
+import { useState } from 'react';
 import { useAppState } from '../store';
 import { useUI } from '../ui';
 import Mascot from '../components/Mascot';
@@ -42,6 +43,29 @@ function MenuIcon({ name }) {
   );
 }
 
+// 홈에 올 때마다 하나씩 바뀌는 인사말. 바로 전에 나온 건 연달아 안 나오게 한다.
+const GREETINGS = [
+  '오늘 코트의 주인공은 바로 나 👈',
+  '오늘도 콕콕! 즐거운 한 판 🏸',
+  '오늘도 한 판 어때요?',
+  '코트가 기다리고 있어요',
+  '오늘의 랠리, 시작해볼까요?',
+  '스매시 한 방, 스트레스도 날려요!',
+  '이기든 지든, 재밌으면 승리!',
+  '오늘의 파트너는 누굴까요? 👀',
+  '오늘은 헛스윙 없는 날!',
+  '내일 근육통은 내일의 내가 🫠',
+  '몸풀기 먼저! 다치면 콕 못 쳐요',
+  '땀 흘릴 준비 됐나요? 💪',
+];
+let lastGreeting = -1;
+function pickGreeting() {
+  let i = Math.floor(Math.random() * GREETINGS.length);
+  if (i === lastGreeting) i = (i + 1) % GREETINGS.length;
+  lastGreeting = i;
+  return GREETINGS[i];
+}
+
 // 인사말 위에 작게 보여주는 오늘 날짜 (예: 11월 4일 수요일)
 function todayLabel(d = new Date()) {
   return `${d.getMonth() + 1}월 ${d.getDate()}일 ${'일월화수목금토'[d.getDay()]}요일`;
@@ -52,10 +76,11 @@ export default function Menu() {
   const { switchView, openModal } = useUI();
   const { team } = useSync();
   const hasRecs = state.pendingRecs.length > 0;
+  const [greeting] = useState(pickGreeting);
   const items = [
-    { key: 'players', tone: 'green', title: '회원 관리' },
     { key: 'shuttles', tone: 'orange', title: '셔틀콕' },
     { key: 'records', tone: 'purple', title: '경기 기록' },
+    { key: 'players', tone: 'green', title: '회원 관리' },
   ];
 
   return (
@@ -75,12 +100,15 @@ export default function Menu() {
       <div className="menu-hello">
         {team && <span className="menu-team">{team.name}</span>}
         <span className="menu-date">{todayLabel()}</span>
-        <p className="menu-greet">오늘도 좋은 매치, 기대할게요!</p>
+        <p className="menu-greet">{greeting}</p>
       </div>
 
       <button type="button" className="menu-start" onClick={() => switchView('home')}>
         <span>매칭 시작하기</span>
-        <span className="menu-arrow" aria-hidden="true">→</span>
+        <span className="menu-arrow" aria-hidden="true">
+          {/* 단순한 › 모양 꺾쇠 (글자 대신 선으로 그려서 동그라미 한가운데 오게) */}
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d="M9.5 6l6 6-6 6" /></svg>
+        </span>
         {/* 버튼 오른쪽 뒤에 흐리게 깔리는 셔틀콕 캐릭터 */}
         <Mascot size={140} lineColor="#fff" className="menu-start-deco" />
       </button>

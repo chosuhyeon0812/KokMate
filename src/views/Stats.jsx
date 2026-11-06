@@ -63,7 +63,7 @@ export default function Stats() {
           <button className="btn btn-outline btn-sm" onClick={reset}>오늘 기록 초기화</button>
         </div>
       </div>
-      {todays.length === 0 ? <EmptyHint>"코트" 화면에서 오늘 참석자를 먼저 선택하세요.</EmptyHint> : (
+      {todays.length === 0 ? <EmptyHint>"매칭" 화면에서 오늘 참석자를 먼저 선택하세요.</EmptyHint> : (
         <>
           <div style={{ overflowX: 'auto' }}>
             <table className="rank-table">

@@ -13,7 +13,7 @@ import { syncEnabled, useSync, WELCOME_DONE_KEY, readInviteCode } from './lib/sy
 import Splash from './components/Splash';
 
 // 홈 메뉴에서 각 화면으로 들어가고, 화면 맨 위 '‹ 홈'으로 돌아온다. (사용법은 홈의 ? 버튼)
-// 모임 중에는 코트·참가자·콕·기록을 자주 오가서, 안쪽 화면 맨 아래 탭 줄(icon 있는 것)로 홈을 거치지 않고 바로 옮긴다.
+// 모임 중에는 매칭·셔틀콕·기록·회원을 자주 오가서, 안쪽 화면 맨 아래 탭 줄(icon 있는 것)로 홈을 거치지 않고 바로 옮긴다.
 // 배드민턴 코트 이모지가 없어서 위에서 본 코트를 직접 그린다. (가운데 네트, 짧은 서비스 라인, 센터 라인)
 const CourtIcon = (
   <svg viewBox="0 0 20 24" width="0.85em" height="1em">
@@ -25,10 +25,11 @@ const CourtIcon = (
 
 const VIEWS = [
   { key: 'menu', View: Menu },
-  { key: 'home', title: '코트', icon: CourtIcon, View: Home },
-  { key: 'players', title: '참가자', icon: '👥', View: Players },
-  { key: 'shuttles', title: '콕', icon: '🏸', View: Shuttles },
+  // title: 화면 맨 위 이름 = 맨 아래 탭 줄 이름. 탭 줄은 이 순서대로.
+  { key: 'home', title: '매칭', icon: CourtIcon, View: Home },
+  { key: 'shuttles', title: '셔틀콕', icon: '🏸', View: Shuttles },
   { key: 'records', title: '기록', icon: '🏆', View: Records },
+  { key: 'players', title: '회원', icon: '👥', View: Players },
   { key: 'help', title: '사용법', View: Help },
 ];
 const NAV_VIEWS = VIEWS.filter(t => t.icon);

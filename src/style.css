@@ -714,6 +714,18 @@ main{padding-bottom:calc(60px + env(safe-area-inset-bottom))}
 .menu-start > span{position:relative;z-index:1;word-break:keep-all}
 .menu-arrow{flex:none;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.22);font-size:1.7rem;line-height:1;transition:transform .2s var(--ease)}
 .menu-start-deco{position:absolute;right:88px;top:50%;margin-top:-70px;opacity:.2;pointer-events:none}
+/* 버튼 위로 비스듬한 빛줄기가 왼쪽에서 오른쪽으로 쭉 지나간다. 1.4초 동안 지나가고 5초 넘게 쉬었다 다시 (너무 자주면 정신없어서) (글자·화살표 밑, 셔틀콕 캐릭터 위) */
+.menu-start::after{
+  content:"";position:absolute;top:0;bottom:0;left:0;width:45%;pointer-events:none;
+  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.1) 30%,rgba(255,255,255,.42) 50%,rgba(255,255,255,.1) 70%,transparent 100%);
+  transform:translateX(-120%) skewX(-20deg);
+  animation:startShine 7s ease-in-out .6s infinite;
+}
+@keyframes startShine{
+  0%{transform:translateX(-120%) skewX(-20deg)}
+  20%,100%{transform:translateX(260%) skewX(-20deg)}
+}
+@media (prefers-reduced-motion:reduce){.menu-start::after{animation:none;display:none}}
 .menu-start:hover .menu-arrow{transform:translateX(4px)}
 .menu-start:active,.menu-card:active{transform:scale(.97)}
 .menu-card{
@@ -769,3 +781,57 @@ main:has(~ .bottom-nav){padding-bottom:calc(110px + env(safe-area-inset-bottom))
 .name-chip.outsider .chip-name,.name-chip.outsider.with-meta .chip-name,
 .player-grid:not(.attend-grid) .player-tile.outsider .tile-name{color:#3d2e00}
 .player-grid:not(.attend-grid) .player-tile.outsider .tile-games{color:#5c4600}
+
+/* ===== 안쪽 화면(코트·참가자·콕·기록·사용법)도 홈처럼: 글자 크고 진하게, 모서리 더 둥글게, 그림자·테두리 옅게 =====
+   원래 값은 위쪽에 그대로 두고 여기서만 덮어쓴다. (되돌리거나 손볼 때 이 묶음만 보면 됨) */
+:root{--radius:22px;--radius-sm:14px;--shadow:0 2px 12px rgba(15,81,50,.06)}
+/* 카드마다 위쪽에 굵은 초록 테두리 → 네모 하나하나가 잘 구분되게 (둥근 모서리를 따라 휘어짐) */
+.card{border:1px solid rgba(15,81,50,.10);border-top:5px solid #2ccb68;padding:20px 20px 19px}
+.card::before{display:none} /* 예전 얇은 초록 줄은 위 테두리로 대신 */
+.card h2{font-size:1.3rem;font-weight:900;margin-bottom:14px}
+.card h3{font-size:1.02rem;font-weight:800}
+.page-head h1{font-size:1.7rem;font-weight:900;color:var(--primary-dark)}
+
+.btn{border-radius:14px;font-size:1rem;font-weight:800}
+.btn-sm,.btn-sm.btn-block{border-radius:12px}
+.btn-sm{font-size:.9rem}
+/* 모임 종료 · 대기 코트 추가 · 휴식 관리 · 공유 같은 테두리 버튼: 흰 바탕 → 옅은 초록 바탕 + 진한 테두리로 더 잘 보이게 */
+.btn-outline{background:var(--primary-pale-2);color:var(--primary-dark);border:2px solid var(--primary);font-weight:900;box-shadow:0 2px 6px rgba(26,168,82,.18)}
+.btn-outline:hover{background:#bfeccf;border-color:var(--primary-dark)}
+.btn-sm.btn-block{font-size:1rem}
+.pill-toggle{border-radius:999px}
+.pill-toggle button{padding:8px 16px;font-size:.92rem;font-weight:800}
+.sort-chips button{font-size:.92rem}
+
+table{font-size:.98rem}
+th{font-size:.8rem;font-weight:800}
+th,td{padding:11px 9px}
+.badge{font-size:.76rem;padding:3px 11px}
+
+.field{font-size:.86rem;font-weight:700}
+.field input,.field select{font-size:.95rem;padding:10px 12px}
+.attend-search{border-radius:16px}
+.empty-hint{font-size:.95rem;border-radius:18px}
+
+.court-card{border-radius:20px}
+.court-title{font-size:.98rem;font-weight:800}
+.history-item,.rec-card{border-radius:18px}
+.fold-item summary .history-head{font-size:1rem;font-weight:800}
+.summary-box{border-radius:18px}
+.summary-box .num{font-weight:900}
+.today-status,.attend-king{border-radius:16px}
+.help-step{border-radius:18px}
+.help-more{border-radius:16px}
+.modal-box{border-radius:24px}
+.sub-toggle .pill-toggle button{padding:10px 18px;font-size:1rem}
+.summary-box .lbl{font-size:.85rem;font-weight:700}
+.court-add{font-size:.95rem;font-weight:700}
+.court-add input{border-radius:12px;font-size:1rem}
+.bench-chip{border-radius:16px}
+/* 표 맨 앞 이름은 진하게 (참가자·콕·누적 표) */
+tbody td:first-child,.shuttle-table td.name-edit{font-weight:800}
+
+@media (max-width:640px){
+  .btn-sm{border-radius:12px;font-size:.9rem}
+  .modal-box,.modal-box.wide{border-radius:24px}
+}

@@ -141,7 +141,7 @@ export default function PlayerPicker({ mode, presetCourt, idx, waitingId, gameId
   const grid = pool.length === 0 ? <EmptyHint>고를 수 있는 참가자가 없어요.</EmptyHint> : (
     <div className="player-grid">
       {outsiderTiles.map(o => (
-        <button key={o} type="button" className={`player-tile outsider${selection.includes(o) ? ' selected' : ''}`} onClick={() => pick(o)}>
+        <button key={o} type="button" aria-pressed={selection.includes(o)} className={`player-tile outsider${selection.includes(o) ? ' selected' : ''}`} onClick={() => pick(o)}>
           <span className="tile-games">레슨자 등</span>
           {selection.includes(o) && <span className="tile-slot">✓</span>}
           <span className="tile-name">외부</span>
@@ -153,7 +153,7 @@ export default function PlayerPicker({ mode, presetCourt, idx, waitingId, gameId
         const longRest = !isPlaying && p.restSince && Date.now() - p.restSince >= LONG_REST_MS;
         const disabled = full && i === -1;
         return (
-          <button key={p.id} type="button" className={`player-tile ${p.gender === 'M' ? 'male' : 'female'}${i !== -1 ? ' selected' : ''}${disabled ? ' disabled' : ''}`} onClick={() => pick(p.id)}>
+          <button key={p.id} type="button" aria-pressed={i !== -1} className={`player-tile ${p.gender === 'M' ? 'male' : 'female'}${i !== -1 ? ' selected' : ''}${disabled ? ' disabled' : ''}`} onClick={() => pick(p.id)}>
             <span className="tile-games">{p.totalGames}경기</span>
             {i !== -1 && <span className="tile-slot">✓</span>}
             <span className="tile-name">{p.name} <span className="tile-level">/ {p.level}</span><GuestTag player={p} /></span>

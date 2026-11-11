@@ -356,7 +356,8 @@ tr:last-child td{border-bottom:none}
   cursor:pointer;text-align:center;display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;
   transition:transform .15s var(--ease), box-shadow .2s ease, border-color .2s ease, background-color .2s ease;
 }
-.player-tile:hover{transform:translateY(-1px);box-shadow:var(--shadow);border-color:var(--primary-light)}
+/* 마우스 있는 기기에서만: 폰에선 누른 뒤에도 hover가 남아 뺀 칸이 떠 보이니까 */
+@media (hover:hover){.player-tile:hover{transform:translateY(-1px);box-shadow:var(--shadow);border-color:var(--primary-light)}}
 .player-tile .tile-name{font-weight:900;font-size:1.85rem;color:var(--text);line-height:1.15;white-space:nowrap;margin-top:6px}
 .player-tile .tile-games{position:absolute;top:6px;left:9px;font-size:.75rem;font-weight:700;color:var(--muted)}
 .player-tile .tile-meta.tile-playing{color:var(--danger);font-weight:800;opacity:1}
@@ -860,5 +861,5 @@ tbody td:first-child,.shuttle-table td.name-edit{font-weight:800}
 .player-grid:not(.attend-grid) .player-tile.selected:hover{transform:scale(1.04);z-index:1}
 .player-grid:not(.attend-grid) .player-tile.selected{animation:tile-pop .2s ease-out}
 @media (prefers-reduced-motion:reduce){.player-grid:not(.attend-grid) .player-tile.selected{animation:none}}
-/* 굵어진 바깥선·커진 칸이 목록 가장자리에서 잘리지 않게 여백 */
-.player-grid:not(.attend-grid){padding:10px}
+/* 굵어진 바깥선·커진 칸이 목록 가장자리나 옆 칸과 겹치지 않게 여백·간격 */
+.player-grid:not(.attend-grid){padding:10px;gap:14px}

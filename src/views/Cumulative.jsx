@@ -32,7 +32,10 @@ export default function Cumulative() {
   };
   const sorted = list.slice().sort(sorters[sortBy]);
   const topAttend = Math.max(0, ...list.map(r => r.attend));
-  const kings = topAttend > 0 ? list.filter(r => r.attend === topAttend).sort(byName) : [];
+  const topGames = Math.max(0, ...list.map(r => r.games));
+  // 출석순이면 출석왕, 경기순이면 경기왕
+  const top = sortBy === 'attend' ? topAttend : topGames;
+  const kings = top > 0 ? list.filter(r => r[sortBy] === top).sort(byName) : [];
   const periodName = PERIODS.find(([k]) => k === period)[1];
   // 출석순이면 출석·경기 수가 둘 다 같아야, 경기순이면 경기·출석이 둘 다 같아야 같은 순위
   const ranks = rankOf(sorted, (a, b) => a.attend === b.attend && a.games === b.games);
@@ -66,7 +69,7 @@ export default function Cumulative() {
       {state.sessionHistory.length === 0 ? <EmptyHint>아직 저장된 모임이 없어요. 모임이 끝나면 "모임 종료"를 눌러 저장하세요.</EmptyHint> : (
         <>
           {kings.length > 0 && (
-            <div className="attend-king">👑 {periodName} 출석왕 <b>{kings.map(r => r.name).join(', ')}</b> <span className="muted">({topAttend}번)</span></div>
+            <div className="attend-king">👑 {periodName} {sortBy === 'attend' ? '출석왕' : '경기왕'} <b>{kings.map(r => r.name).join(', ')}</b> <span className="muted">({top}{sortBy === 'attend' ? '번' : '경기'})</span></div>
           )}
           <div className="section-row" style={{ marginBottom: 8 }}>
             <div className="pill-toggle">
@@ -82,8 +85,8 @@ export default function Cumulative() {
                   <tr key={r.key} className="clickable-row" onClick={() => openModal(<PlayerFormModal playerId={r.key} />)}>
                     <td>{ranks[i]}</td>
                     <td>{r.name} <span className="name-level">{r.level}</span></td>
-                    <td className={r.attend === topAttend && topAttend > 0 ? 'rank-1' : ''}>{r.attend}번</td>
-                    <td>{r.games}</td>
+                    <td className={sortBy === 'attend' && r.attend === topAttend && topAttend > 0 ? 'rank-1' : ''}>{r.attend}번</td>
+                    <td className={sortBy === 'games' && r.games === topGames && topGames > 0 ? 'rank-1' : ''}>{r.games}</td>
                     <td style={r.days == null || r.days >= LONG_ABSENT_DAYS ? { color: 'var(--danger)', fontWeight: 700 } : undefined}>{agoLabel(r.days)}</td>
                   </tr>
                 ))}

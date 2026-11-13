@@ -63,6 +63,15 @@ describe('누적 기록', () => {
     expect(r.last).toBe('2026-10-08');
     expect(r.days).toBe(14);
   });
+
+  test('앱 쓰기 전 출석(priorAttend)은 올해와 전체에 더하고, 이번 달에는 안 더한다', () => {
+    const state = stateWith();
+    state.players[0].priorAttend = 10;
+    expect(row(cumulativeRows(state, 'all', TODAY).rows, '김민수').attend).toBe(13);
+    expect(row(cumulativeRows(state, 'year', TODAY).rows, '김민수').attend).toBe(12);
+    expect(row(cumulativeRows(state, 'month', TODAY).rows, '김민수').attend).toBe(2);
+    expect(row(cumulativeRows(state, 'year', '2027-03-01').rows, '김민수').attend).toBe(0); // 내년 '올해'에는 안 더한다
+  });
 });
 
 describe('순위', () => {

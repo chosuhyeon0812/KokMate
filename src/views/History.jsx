@@ -5,7 +5,6 @@ import { timeStr, durationStr } from '../lib/utils';
 import { playerName } from '../lib/selectors';
 import { EmptyHint, NameChips, OutsiderChips, RankLabel, RankName } from '../components/cards';
 import { shareRanking, rankOf } from '../lib/shareImage';
-import EndGameModal from '../modals/EndGameModal';
 
 function Memos({ memos }) {
   if (!memos.length) return null;
@@ -96,7 +95,7 @@ function SessionHistoryCard() {
 
 export default function History() {
   const state = useAppState();
-  const { toast, openModal, ask } = useUI();
+  const { toast, ask } = useUI();
   const todays = actions.sessionDoneGames(state).sort((a, b) => b.endTime - a.endTime);
   const usedCourts = new Set(state.games.map(g => g.court)).size;
   const players = new Set();
@@ -123,7 +122,10 @@ export default function History() {
           <div className="history-item" key={g.id}>
             <div className="history-head">
               <span>{g.court}번 코트 · {g.gameType}</span>
-              <span>{timeStr(g.startTime)} ~ {timeStr(g.endTime)} ({durationStr(g.startTime, g.endTime)})</span>
+              <span className="history-head-right">
+                {timeStr(g.startTime)} ~ {timeStr(g.endTime)} ({durationStr(g.startTime, g.endTime)})
+                <button className="history-del" aria-label="경기 기록 삭제" onClick={() => removeGame(g)}>✕</button>
+              </span>
             </div>
             <div className="team-line four">
               <NameChips ids={g.teamA.concat(g.teamB)} label={id => playerName(state, id)} />
@@ -136,10 +138,6 @@ export default function History() {
               </div>
             )}
             {g.memo && <div className="history-memo">{g.memo}</div>}
-            <div className="card-actions">
-              <button className="btn btn-outline btn-sm" onClick={() => openModal(<EndGameModal gameId={g.id} />)}>특이사항</button>
-              <button className="btn btn-danger btn-sm" onClick={() => removeGame(g)}>삭제</button>
-            </div>
           </div>
         ))}
       </div>

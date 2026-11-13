@@ -1,7 +1,6 @@
 /* 경기 종료. 팀은 코트에서 가위바위보로 정해서 앱은 승패·점수를 받지 않고, 경기 수만 기록한다.
-   useEndGame: 진행 중 코트에서 한 번에 종료(되돌리기 가능). EndGameModal: 끝난 경기의 특이사항 수정. */
-import { useState } from 'react';
-import { useAppState, getState } from '../store';
+   useEndGame: 진행 중 코트에서 한 번에 종료(되돌리기 가능). */
+import { getState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
 import { playerName, playingPlayerIds, activeGameOnCourt } from '../lib/selectors';
@@ -27,32 +26,4 @@ export function useEndGame() {
     // 대기 코트는 팝업으로 묻지 않고, 대기 코트 카드에서 빈 코트를 골라 시작한다.
     toast(`${game.court}번 코트 경기를 종료했어요.`, { action: { label: '되돌리기', onClick: () => undo(game.id) } });
   };
-}
-
-export default function EndGameModal({ gameId }) {
-  const state = useAppState();
-  const { toast, closeModal } = useUI();
-  const g = state.games.find(x => x.id === gameId);
-  const [memo, setMemo] = useState(g ? g.memo || '' : '');
-  if (!g) return null;
-
-  const submit = () => {
-    // 예전에 기록한 승패·점수는 그대로 두고 특이사항만 바꾼다.
-    actions.editGameResult(gameId, { scoreA: g.scoreA, scoreB: g.scoreB, winner: g.winner, memo: memo.trim() });
-    closeModal();
-    toast('특이사항을 저장했어요.');
-  };
-
-  return (
-    <>
-      <h3>특이사항 · {g.court}번 코트</h3>
-      <div className="form-grid">
-        <label>특이사항 <input type="text" placeholder="예: 민수 발목 통증" value={memo} onChange={e => setMemo(e.target.value)} autoFocus /></label>
-      </div>
-      <div className="modal-actions">
-        <button className="btn btn-ghost" onClick={closeModal}>취소</button>
-        <button className="btn btn-primary" onClick={submit}>저장</button>
-      </div>
-    </>
-  );
 }

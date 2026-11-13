@@ -290,6 +290,9 @@ tr:last-child td{border-bottom:none}
 }
 .history-item:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
 .history-head{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);margin-bottom:6px}
+.history-head-right{display:flex;align-items:center;gap:6px}
+.history-del{flex:none;width:24px;height:24px;margin:-4px -6px -4px 0;border:none;border-radius:50%;background:var(--danger-pale);color:var(--danger);font-size:.72rem;font-weight:800;line-height:1;cursor:pointer}
+.history-del:hover{background:#f7d3d8}
 .fold-item summary{cursor:pointer;list-style:none;position:relative;padding-right:22px}
 .fold-item summary::-webkit-details-marker{display:none}
 .fold-item summary::after{content:"▸";position:absolute;right:2px;top:50%;transform:translateY(-50%);color:var(--muted);transition:transform .15s}

@@ -117,15 +117,6 @@ export function undoEndGame(gameId) {
   });
 }
 
-export function editGameResult(gameId, { scoreA, scoreB, winner, memo }) {
-  update(d => {
-    const g = d.games.find(x => x.id === gameId);
-    applyResult(d, g, -1);
-    Object.assign(g, { scoreA, scoreB, winner, memo });
-    applyResult(d, g, 1);
-  });
-}
-
 // 진행 중인 경기의 선수를 바꾼다. (잘못 넣었을 때)
 export function updateGamePlayers(gameId, selection) {
   update(d => {

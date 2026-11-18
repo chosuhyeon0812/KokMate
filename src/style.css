@@ -502,19 +502,23 @@ tr:last-child td{border-bottom:none}
 .session-end:hover,.session-end:focus-visible{color:var(--danger);border-color:var(--danger);background:var(--danger-pale)}
 .session-end:active{transform:scale(.96)}
 /* 오늘 모임 카드: 참석 인원 한 줄 (누르면 참석자 바꾸기) */
-.attend-summary{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;width:100%;padding:12px 16px;border:2px solid var(--primary);border-radius:16px;background:var(--primary-pale);color:var(--text);font:inherit;text-align:left;cursor:pointer}
+.attend-summary{display:grid;grid-template-columns:1fr auto;align-items:center;gap:2px 12px;width:100%;padding:12px 16px;border:2px solid var(--primary);border-radius:16px;background:var(--primary-pale);color:var(--text);font:inherit;text-align:left;cursor:pointer}
 .attend-summary:hover,.attend-summary:focus-visible{background:var(--primary-pale-2)}
 .attend-summary-main{font-size:1.1rem;font-weight:800}
 .attend-summary-main strong{font-size:1.5rem;font-weight:900;color:var(--primary-dark)}
 .attend-summary-sub{font-size:.92rem;font-weight:700;color:var(--muted)}
-.attend-summary-edit{margin-left:auto;font-size:.95rem;font-weight:800;color:var(--primary-dark);white-space:nowrap}
+/* 위 줄: 참석 ○명 … 바꾸기 ›, 아래 줄: 경기 중 · 대기 코트 · 휴식 (숫자가 늘어도 바꾸기가 혼자 떨어지지 않게) */
+.attend-summary-sub{grid-column:1 / -1}
+.attend-summary-edit{grid-row:1;grid-column:2;font-size:.95rem;font-weight:800;color:var(--primary-dark);white-space:nowrap}
 /* 참석자를 아직 안 골랐을 때: 고른 뒤 한 줄과 같은 옅은 초록 칸에 초록 동그라미 사람 아이콘 */
-.attend-summary.start{align-items:center;gap:12px}
+.attend-summary.start{grid-template-columns:auto 1fr auto;gap:12px}
+.attend-summary.start .attend-summary-edit{grid-column:3}
 .attend-start-ico{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:var(--primary);color:#fff;flex:none}
 .attend-summary.start .attend-summary-main{font-size:1.15rem;font-weight:900;color:var(--primary-dark)}
 .attend-summary.start .attend-summary-edit{font-size:1.5rem;line-height:1}
 .attend-summary.start:active{transform:scale(.98)}
-.bench{display:flex;flex-wrap:wrap;gap:12px}
+/* 대기 중 · 휴식 칸: 경기 만들기 창처럼 바둑판으로 (폰에서는 두 줄) */
+.bench{display:grid;grid-template-columns:repeat(auto-fill,minmax(10rem,1fr));gap:10px}
 /* 대기 중 카드: 이름·급수는 크고 진하게, 경기 수는 왼쪽 위, 쉰 시간은 오른쪽 위 모서리에 작게 */
 .bench-chip{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:8.25rem;min-height:5.5rem;padding:24px 14px 10px;border:1px solid var(--border);border-radius:14px;background:#fff}
 .bench-chip .bench-games{position:absolute;top:5px;left:9px;font-size:.78rem;font-weight:700;color:var(--muted)}
@@ -630,6 +634,7 @@ button.court-add-tile:hover,button.court-add-tile:focus-visible{background:var(-
   .modal-actions{position:sticky;bottom:0;background:#fff;margin:14px -14px 0;padding:12px 14px;border-top:1px solid var(--border)}
   .modal-actions .btn{flex:1}
   .player-grid{max-height:none;overflow:visible;grid-template-columns:repeat(2,1fr)}
+  .bench{grid-template-columns:repeat(2,1fr)}
   .attend-grid{grid-template-columns:repeat(3,1fr);gap:8px}
 
   /* 선택칸 4개 + VS 를 한 줄에 */

@@ -34,7 +34,7 @@ export default function Courts() {
       </div>
       <div className="card">
         <div className="section-row">
-          <h2 className="mb0">대기 코트 <span className="muted" style={{ fontSize: '.8rem', fontWeight: 600 }}>{state.waitingMatches.length}/{MAX_WAITING}</span>
+          <h2 className="mb0">대기 코트 <span className="h2-sub">{state.waitingMatches.length}/{MAX_WAITING}</span>
             <InfoTip>코트가 다 찼을 때 다음 경기 멤버를 미리 정해둘 수 있어요.</InfoTip></h2>
         </div>
         {/* 코트 현황처럼 목록 끝에 점선 '+ 대기 코트 추가' 칸. 다 차면(최대 개수) 칸이 사라진다. */}
@@ -108,7 +108,7 @@ function Bench() {
   return (
     <div className="card">
       <div className="section-row">
-        <h2 className="mb0">쉬는 사람 <span className="muted" style={{ fontSize: '.8rem', fontWeight: 600 }}>{bench.length}명 · 누르면 휴식</span></h2>
+        <h2 className="mb0">쉬는 사람 <span className="h2-sub">{bench.length}명 · 누르면 휴식</span></h2>
       </div>
       {attending.length === 0 ? <EmptyHint>"참석자 선택"에서 오늘 온 사람을 먼저 체크하세요.</EmptyHint> :
         bench.length === 0 ? <EmptyHint>지금 쉬는 사람이 없어요.</EmptyHint> : (
@@ -129,7 +129,8 @@ function Bench() {
       {/* 휴식이 0명이어도 자리를 보여줘서, 여기로 빠진다는 걸 알 수 있게 한다. */}
       {attending.length > 0 && (
         <div className="bench-resting">
-          <div className="bench-resting-title">휴식 {resting}명 <span style={{ fontWeight: 500 }}>· 이름을 누르면 복귀</span></div>
+          {/* 위 '쉬는 사람' 제목과 같은 글자 크기·굵기 */}
+          <h2 className="bench-resting-title">휴식 <span className="h2-sub">{resting}명 · 누르면 복귀</span></h2>
           {resting > 0 && <div className="bench">
             {restingPlayers.map(p => (
               <button type="button" key={p.id} className={`bench-chip resting ${p.gender === 'M' ? 'male' : 'female'}`} title="눌러서 휴식 끝내기"

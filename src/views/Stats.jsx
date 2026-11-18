@@ -53,7 +53,7 @@ export default function Stats() {
   return (
     <div className="card">
       <div className="section-row">
-        <h2 className="mb0">참가자 통계 <span className="muted" style={{ fontSize: '.8rem', fontWeight: 600 }}>오늘 참석자</span></h2>
+        <h2 className="mb0">참가자 통계 <span className="h2-sub">오늘 참석자</span></h2>
         <div className="pill-toggle">
           <button className={sortBy === 'games' ? 'on' : ''} onClick={() => setSortBy('games')}>경기 수순</button>
           <button className={sortBy === 'rest' ? 'on' : ''} onClick={() => setSortBy('rest')}>대기 시간순</button>

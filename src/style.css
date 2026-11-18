@@ -528,7 +528,9 @@ tr:last-child td{border-bottom:none}
 .name-chip .chip-level{font-weight:900;color:#4a5f66}
 .bench-chip .rest-long{color:var(--accent-dark);font-weight:800}
 .bench-resting{margin-top:14px;padding-top:12px;border-top:1px dashed var(--border)}
-.bench-resting-title{font-size:1.05rem;font-weight:700;color:var(--muted);margin-bottom:8px}
+.card h2.bench-resting-title{margin:0 0 10px}
+/* 제목 옆 작은 회색 글자 (쉬는 사람 · 휴식 공통) */
+.h2-sub{font-size:.8rem;font-weight:600;color:var(--muted)}
 /* 휴식 중: 남녀 색 대신 회색으로 위쪽 쉬는 사람과 구분. 흐리게 하지는 않아서 눌러 복귀할 수 있어 보이게 */
 /* 쉬는 사람 · 휴식 칸은 모두 눌러지는 버튼 (쉬는 사람 → 휴식으로 빼기, 휴식 → 복귀) */
 button.bench-chip{font:inherit;color:inherit;cursor:pointer;transition:transform .12s ease, filter .12s ease}

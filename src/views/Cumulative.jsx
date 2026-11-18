@@ -61,7 +61,7 @@ export default function Cumulative() {
   return (
     <div className="card">
       <div className="section-row">
-        <h2 className="mb0">누적 기록 <span className="muted" style={{ fontSize: '.8rem', fontWeight: 600 }}>{periodName} 모임 {sessions.length}번</span></h2>
+        <h2 className="mb0">누적 기록 <span className="h2-sub">{periodName} 모임 {sessions.length}번</span></h2>
         <div className="pill-toggle">
           {PERIODS.map(([k, label]) => <button key={k} className={period === k ? 'on' : ''} onClick={() => setPeriod(k)}>{label}</button>)}
         </div>

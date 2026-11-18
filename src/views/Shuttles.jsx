@@ -21,7 +21,7 @@ export default function Shuttles() {
   return (
     <div className="card">
       <div className="section-row">
-        <h2 className="mb0">콕 관리 <span className="muted" style={{ fontSize: '.8rem', fontWeight: 600 }}>오늘 참석자</span></h2>
+        <h2 className="mb0">콕 관리 <span className="h2-sub">오늘 참석자</span></h2>
         <button className="btn btn-outline btn-sm" onClick={reset}>전체 초기화</button>
       </div>
       {players.length === 0 ? <EmptyHint>"매칭" 화면에서 오늘 참석자를 먼저 선택하세요.</EmptyHint> : (

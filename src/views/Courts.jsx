@@ -2,10 +2,9 @@ import { useState } from 'react';
 import { useAppState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
-import { activeGameOnCourt, availablePlayers, playingPlayerIds, waitingPlayerIds, fairnessCompare, waitLabel, LONG_REST_MS } from '../lib/selectors';
+import { activeGameOnCourt, availablePlayers, fairnessCompare, waitLabel, LONG_REST_MS } from '../lib/selectors';
 import { MAX_WAITING } from '../lib/utils';
-import { LiveCourtCard, WaitingCard, EmptyHint, GuestTag } from '../components/cards';
-import RestManagerModal from '../modals/RestManagerModal';
+import { LiveCourtCard, WaitingCard, EmptyHint, GuestTag, InfoTip } from '../components/cards';
 import PlayerPicker from '../modals/PlayerPicker';
 
 export default function Courts() {
@@ -35,12 +34,19 @@ export default function Courts() {
       </div>
       <div className="card">
         <div className="section-row">
-          <h2 className="mb0">대기 코트 <span className="muted" style={{ fontSize: '.8rem', fontWeight: 600 }}>{state.waitingMatches.length}/{MAX_WAITING}</span></h2>
-          <button className="btn btn-outline btn-sm" disabled={state.waitingMatches.length >= MAX_WAITING} onClick={() => openModal(<PlayerPicker mode="waiting" />, { wide: true })}>대기 코트 추가</button>
+          <h2 className="mb0">대기 코트 <span className="muted" style={{ fontSize: '.8rem', fontWeight: 600 }}>{state.waitingMatches.length}/{MAX_WAITING}</span>
+            <InfoTip>코트가 다 찼을 때 다음 경기 멤버를 미리 정해둘 수 있어요.</InfoTip></h2>
         </div>
-        {state.waitingMatches.length === 0 ? <EmptyHint>코트가 다 찼을 때 다음 경기 멤버를 미리 정해둘 수 있어요.</EmptyHint> : (
-          <div className="court-grid">{state.waitingMatches.map((w, i) => <WaitingCard key={w.id} match={w} no={i + 1} />)}</div>
-        )}
+        {/* 코트 현황처럼 목록 끝에 점선 '+ 대기 코트 추가' 칸. 다 차면(최대 개수) 칸이 사라진다. */}
+        <div className="court-grid">
+          {state.waitingMatches.map((w, i) => <WaitingCard key={w.id} match={w} no={i + 1} />)}
+          {state.waitingMatches.length < MAX_WAITING && (
+            <button type="button" className="court-card court-add-tile" onClick={() => openModal(<PlayerPicker mode="waiting" />, { wide: true })}>
+              <span className="court-add-plus" aria-hidden="true">+</span>
+              <span>대기 코트 추가</span>
+            </button>
+          )}
+        </div>
       </div>
       <Bench />
     </>
@@ -87,43 +93,44 @@ function AddCourtTile({ courts, warn }) {
 // 지금 코트에도 대기 코트에도 없는 사람들. 다음에 넣을 사람을 고르기 쉽게 경기 수가 적고 오래 쉰 순서로 보여준다.
 function Bench() {
   const state = useAppState();
-  const { toast, openModal } = useUI();
+  const { toast } = useUI();
   const attending = state.players.filter(p => p.active);
   const bench = availablePlayers(state).sort(fairnessCompare);
-  const playing = playingPlayerIds(state).size;
-  const waiting = waitingPlayerIds(state).size;
   const restingPlayers = attending.filter(p => p.resting);
   const resting = restingPlayers.length;
+  // 쉬는 사람 칸을 누르면 휴식으로 뺀다. 잘못 눌렀으면 되돌리기로 원래 차례 그대로 돌아온다.
+  const rest = p => {
+    const since = p.restSince;
+    actions.toggleRest(p.id);
+    toast(`${p.name}님을 휴식으로 뺐어요.`, { action: { label: '되돌리기', onClick: () => actions.undoRest(p.id, since) } });
+  };
 
   return (
     <div className="card">
       <div className="section-row">
-        <h2 className="mb0">쉬는 사람 <span className="muted" style={{ fontSize: '.8rem', fontWeight: 600 }}>{bench.length}명 · 다음 차례 순</span></h2>
-        <button className="btn btn-outline btn-sm" onClick={() => openModal(<RestManagerModal />)}>휴식 관리</button>
+        <h2 className="mb0">쉬는 사람 <span className="muted" style={{ fontSize: '.8rem', fontWeight: 600 }}>{bench.length}명 · 누르면 휴식</span></h2>
       </div>
-      {attending.length > 0 && (
-        <div className="headcount">참석 {attending.length} · 경기 중 {playing} · 대기 코트 {waiting} · 휴식 {resting}</div>
-      )}
       {attending.length === 0 ? <EmptyHint>"오늘 참석자 선택"에서 오늘 온 사람을 먼저 체크하세요.</EmptyHint> :
         bench.length === 0 ? <EmptyHint>지금 쉬는 사람이 없어요.</EmptyHint> : (
           <div className="bench">
             {bench.map(p => {
               const long = p.restSince && Date.now() - p.restSince >= LONG_REST_MS;
               return (
-                <div key={p.id} className={`bench-chip ${p.gender === 'M' ? 'male' : 'female'}`}>
+                <button type="button" key={p.id} className={`bench-chip ${p.gender === 'M' ? 'male' : 'female'}`} title="눌러서 휴식으로 빼기" onClick={() => rest(p)}>
                   <span className="bench-games">{p.totalGames}경기</span>
                   <span className="bench-name">{p.name} <span className="bench-level">/ {p.level}</span><GuestTag player={p} /></span>
                   <span className={`bench-wait${long ? ' rest-long' : ''}`}>{waitLabel(p)}</span>
-                </div>
+                </button>
               );
             })}
           </div>
         )}
       {/* 오늘 왔지만 '휴식'으로 빼둔 사람. 경기 배정 대상은 아니라서 아래에 흐리게 따로 보여준다. */}
-      {resting > 0 && (
+      {/* 휴식이 0명이어도 자리를 보여줘서, 여기로 빠진다는 걸 알 수 있게 한다. */}
+      {attending.length > 0 && (
         <div className="bench-resting">
           <div className="bench-resting-title">휴식 {resting}명 <span style={{ fontWeight: 500 }}>· 이름을 누르면 복귀</span></div>
-          <div className="bench">
+          {resting > 0 && <div className="bench">
             {restingPlayers.map(p => (
               <button type="button" key={p.id} className={`bench-chip resting ${p.gender === 'M' ? 'male' : 'female'}`} title="눌러서 휴식 끝내기"
                 onClick={() => { actions.toggleRest(p.id); toast(`${p.name}님 휴식을 끝냈어요.`); }}>
@@ -132,7 +139,7 @@ function Bench() {
                 <span className="bench-wait">휴식</span>
               </button>
             ))}
-          </div>
+          </div>}
         </div>
       )}
     </div>

@@ -249,6 +249,25 @@ export function GuestTag({ player }) {
   return isGuest(player) ? <span className="guest-tag" title="게스트" aria-label="게스트">G</span> : null;
 }
 
+// 제목 옆 작은 ⓘ: 마우스를 올리거나(PC) 누르면(폰) 짧은 안내가 말풍선으로 뜬다. 다른 데를 누르면 닫힌다.
+export function InfoTip({ children }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <span className={`info-tip${open ? ' open' : ''}`}>
+      <button type="button" className="info-tip-btn" aria-label="안내" aria-expanded={open}
+        onClick={() => setOpen(o => !o)} onBlur={() => setOpen(false)}>
+        {/* 글자 i 대신 선 그림: 동그라미 안에 점 하나와 짧은 막대 */}
+        <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
+          <circle cx="10" cy="10" r="8.25" fill="none" stroke="currentColor" strokeWidth="1.6" />
+          <circle cx="10" cy="6.4" r="1.15" fill="currentColor" />
+          <path d="M10 9.2v5.2" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
+        </svg>
+      </button>
+      <span className="info-tip-bubble" role="tooltip">{children}</span>
+    </span>
+  );
+}
+
 export function EmptyHint({ children, style }) {
   return <div className="empty-hint" style={style}>{children}</div>;
 }

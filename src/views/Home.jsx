@@ -2,6 +2,7 @@ import { useAppState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
 import { isGuest } from '../lib/utils';
+import { playingPlayerIds, waitingPlayerIds } from '../lib/selectors';
 import { EmptyHint } from '../components/cards';
 import AttendanceModal from '../modals/AttendanceModal';
 import Courts from './Courts';
@@ -11,6 +12,8 @@ export default function Home() {
   const { toast, warn, openModal, ask } = useUI();
 
   const stale = actions.isSessionStale(state);
+  const attending = state.players.filter(p => p.active);
+  const openAttendance = () => openModal(<AttendanceModal />, { wide: true });
   const saveStale = () => { if (actions.endStaleSession()) toast(`${actions.staleSessionLabel(state)} 모임 기록을 저장했어요.`); };
 
   const endSession = async () => {
@@ -37,7 +40,7 @@ export default function Home() {
       <div className="card">
         <div className="section-row">
           <h2 className="mb0">오늘 모임</h2>
-          <button className="btn btn-outline btn-sm" onClick={endSession}>모임 종료</button>
+          <button type="button" className="session-end" onClick={endSession}>모임 종료</button>
         </div>
         {stale && (
           <EmptyHint style={{ borderColor: 'var(--danger)', background: 'var(--danger-pale)', color: 'var(--danger)', marginBottom: 10 }}>
@@ -45,9 +48,18 @@ export default function Home() {
             <button className="btn btn-outline btn-sm" onClick={saveStale}>지난 모임 저장</button>
           </EmptyHint>
         )}
-        <div className="session-row">
-          <button className="btn btn-primary" onClick={() => openModal(<AttendanceModal />, { wide: true })}>오늘 참석자 선택</button>
-        </div>
+        {/* 참석자를 고르기 전엔 큰 버튼, 고른 뒤엔 오늘 몇 명 왔는지와 지금 어디에 있는지를 한 줄로. 누르면 참석자 바꾸기. */}
+        {attending.length === 0 ? (
+          <div className="session-row">
+            <button className="btn btn-primary" onClick={openAttendance}>오늘 참석자 선택</button>
+          </div>
+        ) : (
+          <button type="button" className="attend-summary" onClick={openAttendance}>
+            <span className="attend-summary-main">참석 <strong>{attending.length}</strong>명</span>
+            <span className="attend-summary-sub">경기 중 {playingPlayerIds(state).size} · 대기 코트 {waitingPlayerIds(state).size} · 휴식 {attending.filter(p => p.resting).length}</span>
+            <span className="attend-summary-edit">바꾸기 ›</span>
+          </button>
+        )}
       </div>
 
       <Courts />

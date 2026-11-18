@@ -223,6 +223,11 @@ export function toggleRest(id) {
   update(d => { const p = playerById(d, id); p.resting = !p.resting; p.restSince = Date.now(); });
 }
 
+// 쉬는 사람 칸을 눌러 휴식으로 뺐다가 되돌릴 때: 원래 쉰 시간(다음 차례 순서)을 그대로 살린다.
+export function undoRest(id, restSince) {
+  update(d => { const p = playerById(d, id); p.resting = false; p.restSince = restSince; });
+}
+
 export function toggleActive(id) {
   update(d => {
     const p = playerById(d, id);

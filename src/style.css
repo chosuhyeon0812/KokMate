@@ -439,9 +439,6 @@ tr:last-child td{border-bottom:none}
   75%{translate:5px}
 }
 
-.checklist{display:flex;flex-direction:column;gap:8px;max-height:340px;overflow-y:auto}
-.checklist .crow{display:flex;align-items:center;justify-content:space-between;padding:9px 11px;border:1px solid var(--border);border-radius:10px;transition:background-color .18s ease}
-.checklist .crow:hover{background:var(--primary-pale)}
 
 .muted{color:var(--muted)}
 .center{text-align:center}
@@ -501,7 +498,17 @@ tr:last-child td{border-bottom:none}
 .session-row{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
 .elapsed{color:var(--primary-dark)}
 .status-dot.live.elapsed{font-size:1rem;font-weight:800;color:var(--primary-dark)}
-.headcount{font-size:1.05rem;color:var(--text);margin:-4px 0 10px}
+/* 모임 종료: 하루 한 번 누르는 버튼이라 눈에 덜 띄게. 차분한 회색 알약, 손 대면 빨간 기운 */
+.session-end{padding:7px 14px;border:1.5px solid #cfd8d3;border-radius:999px;background:#fff;color:var(--muted);font:inherit;font-size:.88rem;font-weight:800;line-height:1.2;cursor:pointer;transition:color .15s ease, border-color .15s ease, background-color .15s ease}
+.session-end:hover,.session-end:focus-visible{color:var(--danger);border-color:var(--danger);background:var(--danger-pale)}
+.session-end:active{transform:scale(.96)}
+/* 오늘 모임 카드: 참석 인원 한 줄 (누르면 참석자 바꾸기) */
+.attend-summary{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;width:100%;padding:12px 16px;border:2px solid var(--primary);border-radius:16px;background:var(--primary-pale);color:var(--text);font:inherit;text-align:left;cursor:pointer}
+.attend-summary:hover,.attend-summary:focus-visible{background:var(--primary-pale-2)}
+.attend-summary-main{font-size:1.1rem;font-weight:800}
+.attend-summary-main strong{font-size:1.5rem;font-weight:900;color:var(--primary-dark)}
+.attend-summary-sub{font-size:.92rem;font-weight:700;color:var(--muted)}
+.attend-summary-edit{margin-left:auto;font-size:.95rem;font-weight:800;color:var(--primary-dark);white-space:nowrap}
 .bench{display:flex;flex-wrap:wrap;gap:12px}
 /* 쉬는 사람 카드: 이름·급수는 크고 진하게, 경기 수는 왼쪽 위, 쉰 시간은 오른쪽 위 모서리에 작게 */
 .bench-chip{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:8.25rem;min-height:5.5rem;padding:24px 14px 10px;border:1px solid var(--border);border-radius:14px;background:#fff}
@@ -518,15 +525,24 @@ tr:last-child td{border-bottom:none}
 .bench-resting{margin-top:14px;padding-top:12px;border-top:1px dashed var(--border)}
 .bench-resting-title{font-size:1.05rem;font-weight:700;color:var(--muted);margin-bottom:8px}
 /* 휴식 중: 남녀 색 대신 회색으로 위쪽 쉬는 사람과 구분. 흐리게 하지는 않아서 눌러 복귀할 수 있어 보이게 */
-.bench-chip.resting,.bench-chip.resting.male,.bench-chip.resting.female{font:inherit;color:inherit;cursor:pointer;background:#eceff1;border:2.5px solid #b0b8bf}
-.bench-chip.resting:hover,.bench-chip.resting:focus-visible{filter:brightness(.95)}
-.bench-chip.resting:active{transform:scale(.96)}
+/* 쉬는 사람 · 휴식 칸은 모두 눌러지는 버튼 (쉬는 사람 → 휴식으로 빼기, 휴식 → 복귀) */
+button.bench-chip{font:inherit;color:inherit;cursor:pointer;transition:transform .12s ease, filter .12s ease}
+button.bench-chip:hover,button.bench-chip:focus-visible{filter:brightness(.95)}
+button.bench-chip:active{transform:scale(.96)}
+.bench-chip.resting,.bench-chip.resting.male,.bench-chip.resting.female{background:#eceff1;border:2.5px solid #b0b8bf}
 .court-add{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--muted);margin-top:10px}
 /* 코트 목록 끝의 점선 '+ 코트 추가' 칸 */
 .court-add-tile{border:2px dashed var(--primary);background:var(--primary-pale);font:inherit;color:var(--primary-dark);min-height:96px}
 button.court-add-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:100%;cursor:pointer;font-weight:800;font-size:.98rem}
 button.court-add-tile:hover,button.court-add-tile:focus-visible{background:var(--primary-pale-2)}
 .court-add-plus{font-size:1.6rem;line-height:1;font-weight:500}
+/* 제목 옆 ⓘ 안내 말풍선 */
+.info-tip{position:relative;display:inline-flex;vertical-align:middle;margin-left:6px}
+.info-tip-btn{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;padding:0;border:none;border-radius:50%;background:none;color:#9fb3a7;cursor:pointer;transition:color .15s ease, background-color .15s ease}
+.info-tip-btn:hover,.info-tip.open .info-tip-btn{color:var(--primary-dark);background:var(--primary-pale)}
+.info-tip-bubble{position:absolute;top:calc(100% + 8px);left:-10px;z-index:20;width:max-content;max-width:min(16rem,70vw);padding:9px 12px;border-radius:12px;background:var(--text);color:#fff;font-size:.85rem;font-weight:600;line-height:1.45;box-shadow:var(--shadow);opacity:0;visibility:hidden;transform:translateY(-3px);transition:opacity .15s ease, transform .15s ease, visibility .15s}
+.info-tip.open .info-tip-bubble{opacity:1;visibility:visible;transform:none}
+@media (hover:hover){.info-tip:hover .info-tip-bubble{opacity:1;visibility:visible;transform:none}}
 .court-add-tile.open{border-color:var(--primary-light);border-style:solid}
 /* 빈 코트 빼기 · 코트 추가 닫기: 회색 동그라미 ✕ (기록 삭제의 빨간 ✕와 달리 지워도 되는 거라 차분하게) */
 .court-remove{flex:none;display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;margin:-2px 0;padding:0;border:none;border-radius:50%;background:#e6ebe8;color:var(--muted);font-size:.75rem;font-weight:800;line-height:1;cursor:pointer}
@@ -813,7 +829,7 @@ main:has(~ .bottom-nav){padding-bottom:calc(110px + env(safe-area-inset-bottom))
 .btn{border-radius:14px;font-size:1rem;font-weight:800}
 .btn-sm,.btn-sm.btn-block{border-radius:12px}
 .btn-sm{font-size:.9rem}
-/* 모임 종료 · 대기 코트 추가 · 휴식 관리 · 공유 같은 테두리 버튼: 흰 바탕 → 옅은 초록 바탕 + 진한 테두리로 더 잘 보이게 */
+/* 공유 같은 테두리 버튼: 흰 바탕 → 옅은 초록 바탕 + 진한 테두리로 더 잘 보이게 */
 .btn-outline{background:var(--primary-pale-2);color:var(--primary-dark);border:2px solid var(--primary);font-weight:900;box-shadow:0 2px 6px rgba(26,168,82,.18)}
 .btn-outline:hover{background:#bfeccf;border-color:var(--primary-dark)}
 .btn-sm.btn-block{font-size:1rem}

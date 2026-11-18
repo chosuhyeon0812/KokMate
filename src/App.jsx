@@ -49,13 +49,22 @@ export default function App() {
   useEffect(() => {
     if (view !== 'menu' && !onSubPage()) window.history.pushState({ page: true }, '');
   }, [view]);
+  // 창(모달)을 열 때도 기록을 하나 쌓아서, '뒤로'를 누르면 화면은 그대로 두고 창만 닫히게 한다.
+  const modalInHistory = useRef(false); // 창 때문에 쌓은 기록이 아직 남아 있는지
+  const skipPop = useRef(false); // 닫기 버튼으로 닫으면서 그 기록을 우리가 직접 지울 때
   useEffect(() => {
-    const onPop = () => { setModal(null); setView('menu'); };
+    const onPop = () => {
+      if (skipPop.current) { skipPop.current = false; return; }
+      if (modalInHistory.current) { modalInHistory.current = false; setModal(null); return; }
+      setModal(null); setView('menu');
+    };
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);
   }, [setView]);
   const goHome = () => { if (onSubPage()) window.history.back(); else setView('menu'); };
-  const [modal, setModal] = useState(null); // { content, wide }
+  const [modal, setModalRaw] = useState(null); // { content, wide }
+  const modalOpen = useRef(false);
+  const setModal = useCallback(m => { modalOpen.current = !!m; setModalRaw(m); }, []);
   const [toastMsg, setToastMsg] = useState(null); // { msg, id }
   const [askDlg, setAskDlg] = useState(null); // { message, title, ok, cancel, danger, resolve }
   const [, setTick] = useState(0);
@@ -92,10 +101,20 @@ export default function App() {
       // opts.action = { label, onClick } 이면 토스트에 버튼(예: 되돌리기)을 달고 누를 시간을 넉넉히 준다.
       toast(msg, opts) { show(msg, 'success', opts && opts.action ? 6000 : 2200, opts && opts.action); },
       warn(msg) { show(msg, 'warn', 3200); },
-      openModal(content, opts) { setModal({ content, wide: !!(opts && opts.wide) }); },
+      openModal(content, opts) {
+        if (!modalInHistory.current) { window.history.pushState({ page: true, modal: true }, ''); modalInHistory.current = true; }
+        setModal({ content, wide: !!(opts && opts.wide) });
+      },
       // 브라우저 기본 confirm 대신 앱 모양의 확인 창. 누른 결과(true/false)를 돌려준다. 열린 모달 위에 겹쳐서 뜬다.
       ask(message, opts = {}) { return new Promise(resolve => setAskDlg({ message, ...opts, resolve })); },
-      closeModal() { setModal(null); },
+      // 닫은 뒤 바로 다른 창을 여는 경우가 있어서, 기록 지우기는 한 박자 늦게 하고 그 사이 새 창이 열렸으면 기록을 그대로 쓴다.
+      closeModal() {
+        setModal(null);
+        setTimeout(() => {
+          if (!modalInHistory.current || modalOpen.current) return;
+          modalInHistory.current = false; skipPop.current = true; window.history.back();
+        }, 0);
+      },
       switchView: setView,
     };
   }, []);

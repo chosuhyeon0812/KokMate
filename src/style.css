@@ -521,8 +521,22 @@ tr:last-child td{border-bottom:none}
 .bench-chip.resting,.bench-chip.resting.male,.bench-chip.resting.female{font:inherit;color:inherit;cursor:pointer;background:#eceff1;border:2.5px solid #b0b8bf}
 .bench-chip.resting:hover,.bench-chip.resting:focus-visible{filter:brightness(.95)}
 .bench-chip.resting:active{transform:scale(.96)}
-.court-add{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--muted);margin-top:13px}
-.court-remove{background:none;border:none;padding:4px 2px;font-size:.75rem;color:var(--muted);text-decoration:underline;cursor:pointer}
+.court-add{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--muted);margin-top:10px}
+/* 코트 목록 끝의 점선 '+ 코트 추가' 칸 */
+.court-add-tile{border:2px dashed var(--primary);background:var(--primary-pale);font:inherit;color:var(--primary-dark);min-height:96px}
+button.court-add-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:100%;cursor:pointer;font-weight:800;font-size:.98rem}
+button.court-add-tile:hover,button.court-add-tile:focus-visible{background:var(--primary-pale-2)}
+.court-add-plus{font-size:1.6rem;line-height:1;font-weight:500}
+.court-add-tile.open{border-color:var(--primary-light);border-style:solid}
+/* 빈 코트 빼기 · 코트 추가 닫기: 회색 동그라미 ✕ (기록 삭제의 빨간 ✕와 달리 지워도 되는 거라 차분하게) */
+.court-remove{flex:none;display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;margin:-2px 0;padding:0;border:none;border-radius:50%;background:#e6ebe8;color:var(--muted);font-size:.75rem;font-weight:800;line-height:1;cursor:pointer}
+/* 진행 중 코트 오른쪽 위 작은 '종료' 버튼 */
+/* 빈 코트의 ✕와 높이(28px)를 맞춰서, 빈 코트와 진행 중 코트의 제목 줄 높이가 같게 */
+.court-title-right{display:inline-flex;align-items:center;gap:10px}
+.court-end{flex:none;display:inline-flex;align-items:center;justify-content:center;height:28px;margin:-2px 0;padding:0 13px;border:none;border-radius:999px;background:var(--primary);color:#fff;font:inherit;font-size:.86rem;font-weight:800;line-height:1;letter-spacing:.02em;cursor:pointer;box-shadow:0 2px 6px rgba(26,168,82,.25)}
+.court-end:hover,.court-end:focus-visible{background:var(--primary-dark)}
+.court-end:active{transform:scale(.95)}
+.court-remove:hover,.court-remove:focus-visible{background:#d5ddd8;color:var(--text,#333)}
 .court-add input{
   width:84px;padding:8px 10px;border:1.5px solid var(--border);border-radius:10px;font-size:.95rem;text-align:center;
 }

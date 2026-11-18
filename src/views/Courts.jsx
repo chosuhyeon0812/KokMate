@@ -11,18 +11,7 @@ import PlayerPicker from '../modals/PlayerPicker';
 export default function Courts() {
   const state = useAppState();
   const { openModal, warn } = useUI();
-  const [courtInput, setCourtInput] = useState('');
   const courts = state.settings.courts;
-
-  // 체육관에서 배정받은 코트 번호를 그대로 등록한다. (1번부터 순서대로 쓰는 게 아니라서)
-  const addCourt = e => {
-    e.preventDefault();
-    const n = Number(courtInput);
-    if (!Number.isInteger(n) || n < 1 || n > 99) { warn('코트 번호를 숫자로 적어 주세요. (1~99)'); return; }
-    if (courts.includes(n)) { warn(`${n}번 코트는 이미 등록되어 있어요.`); return; }
-    actions.addCourt(n);
-    setCourtInput('');
-  };
 
   return (
     <>
@@ -30,25 +19,19 @@ export default function Courts() {
         <div className="section-row">
           <h2 className="mb0">코트 현황</h2>
         </div>
-        {courts.length === 0 ? <EmptyHint>오늘 쓰는 코트 번호를 아래에서 등록하세요. (예: 3번, 5번)</EmptyHint> : (
-          <div className="court-grid">
-            {courts.map(c => {
-              const g = activeGameOnCourt(state, c);
-              if (g) return <LiveCourtCard key={c} game={g} />;
-              return (
-                <div className="court-card empty" key={c}>
-                  <div className="court-title"><span>{c}번 코트</span><button type="button" className="court-remove" onClick={() => actions.removeCourt(c)}>코트 빼기</button></div>
-                  <button className="btn btn-primary btn-sm btn-block" style={{ marginTop: 10 }} onClick={() => openModal(<PlayerPicker mode="manual" presetCourt={c} />, { wide: true })}>경기 만들기</button>
-                </div>
-              );
-            })}
-          </div>
-        )}
-        <form className="court-add" onSubmit={addCourt}>
-          <label htmlFor="court-add">코트 번호</label>
-          <input id="court-add" type="number" min="1" max="99" inputMode="numeric" placeholder="예: 3" value={courtInput} onChange={e => setCourtInput(e.target.value)} />
-          <button className="btn btn-ghost" type="submit">코트 추가</button>
-        </form>
+        <div className="court-grid">
+          {courts.map(c => {
+            const g = activeGameOnCourt(state, c);
+            if (g) return <LiveCourtCard key={c} game={g} />;
+            return (
+              <div className="court-card empty" key={c}>
+                <div className="court-title"><span>{c}번 코트</span><button type="button" className="court-remove" aria-label={`${c}번 코트 빼기`} title="코트 빼기" onClick={() => actions.removeCourt(c)}>✕</button></div>
+                <button className="btn btn-primary btn-sm btn-block" style={{ marginTop: 10 }} onClick={() => openModal(<PlayerPicker mode="manual" presetCourt={c} />, { wide: true })}>경기 만들기</button>
+              </div>
+            );
+          })}
+          <AddCourtTile courts={courts} warn={warn} />
+        </div>
       </div>
       <div className="card">
         <div className="section-row">
@@ -61,6 +44,43 @@ export default function Courts() {
       </div>
       <Bench />
     </>
+  );
+}
+
+// 코트 목록 맨 끝의 점선 '+ 코트' 칸. 누르면 그 자리에서 번호를 적는 칸으로 바뀐다.
+// 체육관에서 코트를 여러 개 한꺼번에 받으니까, 추가해도 닫지 않고 다음 번호를 바로 적게 한다. (✕로 닫기)
+// 체육관에서 배정받은 코트 번호를 그대로 등록한다. (1번부터 순서대로 쓰는 게 아니라서)
+function AddCourtTile({ courts, warn }) {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState('');
+  const close = () => { setOpen(false); setValue(''); };
+
+  const submit = e => {
+    e.preventDefault();
+    const n = Number(value);
+    if (!value.trim() || !Number.isInteger(n) || n < 1 || n > 99) { warn('코트 번호를 숫자로 적어 주세요. (1~99)'); return; }
+    if (courts.includes(n)) { warn(`${n}번 코트는 이미 등록되어 있어요.`); return; }
+    actions.addCourt(n);
+    setValue('');
+  };
+
+  if (!open) {
+    return (
+      <button type="button" className="court-card court-add-tile" onClick={() => setOpen(true)}>
+        <span className="court-add-plus" aria-hidden="true">+</span>
+        <span>코트 추가</span>
+      </button>
+    );
+  }
+  return (
+    <form className="court-card court-add-tile open" onSubmit={submit} onKeyDown={e => { if (e.key === 'Escape') close(); }}>
+      <div className="court-title"><span>코트 추가</span><button type="button" className="court-remove" onClick={close} aria-label="닫기">✕</button></div>
+      <div className="court-add">
+        <input type="number" min="1" max="99" inputMode="numeric" placeholder="번호" aria-label="코트 번호" autoFocus value={value} onChange={e => setValue(e.target.value)} />
+        <span>번</span>
+        <button className="btn btn-primary btn-sm" type="submit">추가</button>
+      </div>
+    </form>
   );
 }
 

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAppState } from '../store';
+import { useAppState, getState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
 import { starStr, isGuest } from '../lib/utils';
@@ -72,12 +72,11 @@ export function TeamLine({ teamA, teamB, label, style, live, meta = true }) {
   );
 }
 
-// 진행 중 코트의 '경기 관리' 창: 종료 / 선수 바꾸기 / 코트 바꾸기 / 취소
+// 진행 중 코트의 '경기 관리' 창: 한 게임 더 / 선수 바꾸기 / 코트 바꾸기 / 취소 (종료는 카드 오른쪽 위 버튼)
 function LiveGameMenu({ gameId }) {
   const state = useAppState();
-  const { openModal, closeModal, toast, ask } = useUI();
+  const { openModal, closeModal, toast, warn, ask } = useUI();
   const [movingCourt, setMovingCourt] = useState(false);
-  const endGame = useEndGame();
   const g = state.games.find(x => x.id === gameId && x.status === 'progress');
   if (!g) return null;
 
@@ -86,6 +85,20 @@ function LiveGameMenu({ gameId }) {
     closeModal();
     actions.deleteGame(g.id);
     toast(`${g.court}번 코트 경기를 취소했어요.`);
+  };
+
+  // 지금 경기는 기록(경기 수 +1)하고 같은 코트·같은 멤버로 새 경기를 0분부터. 새 경기가 그대로일 때만 되돌릴 수 있다.
+  const replay = () => {
+    const court = g.court;
+    closeModal();
+    const newId = actions.replayGame(g.id);
+    toast(`${court}번 코트에서 같은 멤버로 한 게임 더 시작했어요.`, { action: { label: '되돌리기', onClick: () => {
+      const now = getState();
+      const ng = now.games.find(x => x.id === newId);
+      if (!ng || ng.status !== 'progress') { warn('새 경기가 이미 끝나거나 바뀌어서 되돌릴 수 없어요.'); return; }
+      actions.undoReplayGame(g.id, newId);
+      toast(`${court}번 코트를 원래 경기로 되돌렸어요.`);
+    } } });
   };
 
   const move = court => {
@@ -115,7 +128,7 @@ function LiveGameMenu({ gameId }) {
     <>
       <h3>{g.court}번 코트 경기</h3>
       <div className="game-menu">
-        <button className="btn btn-accent" onClick={() => { closeModal(); endGame(g); }}>경기 종료</button>
+        <button className="btn btn-accent" onClick={replay}>같은 멤버로 한 게임 더</button>
         <button className="btn btn-outline" onClick={() => openModal(<PlayerPicker mode="editGame" gameId={g.id} />, { wide: true })}>선수 바꾸기</button>
         <button className="btn btn-outline" onClick={() => setMovingCourt(true)}>코트 바꾸기</button>
         <button className="btn btn-danger" onClick={cancel}>경기 취소</button>
@@ -128,12 +141,17 @@ function LiveGameMenu({ gameId }) {
 export function LiveCourtCard({ game: g }) {
   const state = useAppState();
   const { openModal } = useUI();
+  const endGame = useEndGame();
 
   return (
     <div className="court-card playing">
       <div className="court-title">
         <span>{g.court}번 코트</span>
-        <span className="status-dot live elapsed"><span className="dot"></span>{elapsedLabel(g.startTime)}</span>
+        {/* 제일 자주 하는 경기 종료는 오른쪽 위 작은 버튼으로 바로 (되돌리기 가능). '경기 관리' 창 안에도 그대로 있다. */}
+        <span className="court-title-right">
+          <span className="status-dot live elapsed"><span className="dot"></span>{elapsedLabel(g.startTime)}</span>
+          <button type="button" className="court-end" aria-label={`${g.court}번 코트 경기 종료`} onClick={() => endGame(g)}>종료</button>
+        </span>
       </div>
       <TeamLine teamA={g.teamA} teamB={g.teamB} label={id => playerName(state, id)} live />
       <div className="card-actions">

@@ -1,6 +1,6 @@
 // 경기 시작 / 종료 / 되돌리기 / 취소
 import { describe, test, expect } from 'vitest';
-import { startGame, endGame, undoEndGame, deleteGame, moveGame } from '../src/actions';
+import { startGame, endGame, undoEndGame, deleteGame, moveGame, replayGame, undoReplayGame } from '../src/actions';
 import { setup, getState, player } from './helpers';
 
 const four = ['a', 'b', 'c', 'd'];
@@ -37,6 +37,26 @@ describe('경기', () => {
     undoEndGame(id);
     expect(four.map(gamesOf)).toEqual([0, 0, 0, 0]);
     expect(getState().games[0].status).toBe('progress');
+  });
+
+  test('한 게임 더: 지금 경기는 기록되고(경기 수 +1) 같은 코트·같은 팀으로 새 경기가 시작된다', () => {
+    const id = startOne();
+    const newId = replayGame(id);
+    const [old, next] = getState().games;
+    expect(old.status).toBe('done');
+    expect(next.id).toBe(newId);
+    expect(next.status).toBe('progress');
+    expect(next.court).toBe(1);
+    expect(next.teamA.concat(next.teamB)).toEqual(four);
+    expect(four.map(gamesOf)).toEqual([1, 1, 1, 1]);
+  });
+
+  test('한 게임 더를 되돌리면 새 경기는 사라지고 원래 경기가 다시 진행 중, 경기 수도 원래대로', () => {
+    const id = startOne();
+    const newId = replayGame(id);
+    undoReplayGame(id, newId);
+    expect(getState().games.map(g => [g.id, g.status])).toEqual([[id, 'progress']]);
+    expect(four.map(gamesOf)).toEqual([0, 0, 0, 0]);
   });
 
   test('진행 중인 경기를 취소하면 기록 없이 사라지고 경기 수도 그대로다', () => {

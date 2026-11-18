@@ -117,6 +117,30 @@ export function undoEndGame(gameId) {
   });
 }
 
+// 같은 멤버로 한 게임 더: 지금 경기는 끝난 걸로 기록하고(경기 수 +1), 같은 코트에서 같은 팀으로 새 경기를 0분부터 시작한다.
+// 되돌리기용으로 새 경기 id를 돌려준다.
+export function replayGame(gameId) {
+  let newId = null;
+  update(d => {
+    const g = d.games.find(x => x.id === gameId);
+    Object.assign(g, { scoreA: null, scoreB: null, winner: null, endTime: Date.now(), status: 'done' });
+    applyResult(d, g, 1);
+    startGameIn(d, g.court, g.teamA.slice(), g.teamB.slice(), g.gameType);
+    newId = d.games[d.games.length - 1].id;
+  });
+  return newId;
+}
+
+// 한 게임 더 되돌리기: 새로 시작한 경기를 지우고 원래 경기를 다시 진행 중으로
+export function undoReplayGame(gameId, newGameId) {
+  update(d => {
+    d.games = d.games.filter(x => x.id !== newGameId);
+    const g = d.games.find(x => x.id === gameId);
+    applyResult(d, g, -1);
+    Object.assign(g, { endTime: null, status: 'progress' });
+  });
+}
+
 // 진행 중인 경기의 선수를 바꾼다. (잘못 넣었을 때)
 export function updateGamePlayers(gameId, selection) {
   update(d => {

@@ -529,6 +529,20 @@ tr:last-child td{border-bottom:none}
 .bench-chip .rest-long{color:var(--accent-dark);font-weight:800}
 .bench-resting{margin-top:14px;padding-top:12px;border-top:1px dashed var(--border)}
 .card h2.bench-resting-title{margin:0 0 10px}
+/* 지난 모임 달력 */
+.cal-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.cal-title{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:1.1rem;font-weight:900;color:var(--text)}
+.cal-nav{width:40px;height:40px;border:none;border-radius:50%;background:var(--primary-pale);color:var(--primary-dark);font:inherit;font-size:1.5rem;font-weight:700;line-height:1;cursor:pointer}
+.cal-nav:hover,.cal-nav:focus-visible{background:var(--primary-pale-2)}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:12px}
+.cal-w{text-align:center;font-size:.8rem;font-weight:800;color:var(--muted);padding:4px 0}
+.cal-w.sun{color:#d4405a}.cal-w.sat{color:#2f6fca}
+.cal-d{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:46px;border-radius:12px;font-size:.95rem;font-weight:700;color:#9aaba1}
+button.cal-d{border:none;background:var(--primary-pale);color:var(--primary-dark);font:inherit;font-weight:900;cursor:pointer;padding:2px 0}
+button.cal-d:hover,button.cal-d:focus-visible{background:var(--primary-pale-2)}
+button.cal-d.on{background:var(--primary);color:#fff}
+.cal-num{font-size:1rem;line-height:1.1}
+.cal-games{font-size:.66rem;font-weight:800;opacity:.85;white-space:nowrap}
 /* 제목 옆 작은 회색 글자 (대기 중 · 휴식 공통) */
 .h2-sub{font-size:.8rem;font-weight:600;color:var(--muted)}
 /* 휴식 중: 남녀 색 대신 회색으로 위쪽 대기 중과 구분. 흐리게 하지는 않아서 눌러 복귀할 수 있어 보이게 */

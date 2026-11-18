@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useAppState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
@@ -27,9 +28,39 @@ function dateLabel(date) {
   return `${m}월 ${d}일 (${'일월화수목금토'[new Date(y, m - 1, d).getDay()]})`;
 }
 
+// 지난 모임 달력: 한 달씩 넘겨 보고, 모임이 있던 날(초록 동그라미)을 누르면 아래에서 그날 기록이 펼쳐진다.
+function MonthCalendar({ year, month, byDate, selected, onPick }) {
+  const first = new Date(year, month - 1, 1).getDay();
+  const days = new Date(year, month, 0).getDate();
+  const pad = n => String(n).padStart(2, '0');
+  const cells = Array.from({ length: first }, () => null).concat(Array.from({ length: days }, (_, i) => i + 1));
+  return (
+    <div className="cal">
+      {'일월화수목금토'.split('').map((w, i) => <div key={w} className={`cal-w${i === 0 ? ' sun' : i === 6 ? ' sat' : ''}`}>{w}</div>)}
+      {cells.map((d, i) => {
+        if (!d) return <div key={`e${i}`} />;
+        const date = `${year}-${pad(month)}-${pad(d)}`;
+        const list = byDate[date];
+        if (!list) return <div key={date} className="cal-d">{d}</div>;
+        const games = list.reduce((n, s) => n + s.totalGames, 0);
+        return (
+          <button type="button" key={date} className={`cal-d has${selected === date ? ' on' : ''}`} onClick={() => onPick(date)} aria-label={`${dateLabel(date)} 모임 기록`}>
+            <span className="cal-num">{d}</span>
+            <span className="cal-games">{games}경기</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 function SessionHistoryCard() {
   const state = useAppState();
   const { ask, toast, warn } = useUI();
+  // 처음엔 가장 최근 모임이 있는 달을 보여준다.
+  const latest = state.sessionHistory.reduce((a, s) => (s.date > a ? s.date : a), '');
+  const [ym, setYm] = useState(() => (latest ? latest.slice(0, 7) : null));
+  const [picked, setPicked] = useState(null);
   if (state.sessionHistory.length === 0) {
     return (
       <div className="card">
@@ -62,12 +93,33 @@ function SessionHistoryCard() {
 
   const remove = async id => { if (await ask('삭제하면 되돌릴 수 없어요.', { title: '저장된 모임 기록을 삭제할까요?', ok: '삭제', danger: true })) actions.deleteSessionRecord(id); };
 
+  const curYm = ym || latest.slice(0, 7);
+  const [year, month] = curYm.split('-').map(Number);
+  const moveMonth = diff => {
+    const d = new Date(year, month - 1 + diff, 1);
+    setYm(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`);
+    setPicked(null);
+  };
+  const inMonth = state.sessionHistory.filter(s => s.date.startsWith(curYm)).sort((a, b) => b.date.localeCompare(a.date));
+  const byDate = {};
+  inMonth.forEach(s => { (byDate[s.date] = byDate[s.date] || []).push(s); });
+  const monthGames = inMonth.reduce((n, s) => n + s.totalGames, 0);
+  // 날짜를 누르면 그날만, 다시 누르면 그 달 전체 목록으로
+  const shown = picked ? inMonth.filter(s => s.date === picked) : inMonth;
+
   return (
     <div className="card">
       <h2>지난 모임 기록</h2>
-      {state.sessionHistory.map(s => { const { list, ranks } = rankingOf(s); return (
-        // 모임이 쌓이면 길어지므로 한 줄 요약으로 접어두고, 누르면 참가자별 경기 수와 메모가 펼쳐진다.
-        <details className="history-item fold-item" key={s.id}>
+      <div className="cal-head">
+        <button type="button" className="cal-nav" aria-label="지난달" onClick={() => moveMonth(-1)}>‹</button>
+        <div className="cal-title">{year}년 {month}월<span className="h2-sub">모임 {inMonth.length}번 · 경기 {monthGames}번</span></div>
+        <button type="button" className="cal-nav" aria-label="다음달" onClick={() => moveMonth(1)}>›</button>
+      </div>
+      <MonthCalendar year={year} month={month} byDate={byDate} selected={picked} onPick={d => setPicked(p => (p === d ? null : d))} />
+      {inMonth.length === 0 && <EmptyHint>이 달에는 저장된 모임이 없어요.</EmptyHint>}
+      {shown.map(s => { const { list, ranks } = rankingOf(s); return (
+        // 모임이 쌓이면 길어지므로 한 줄 요약으로 접어두고, 누르면 참가자별 경기 수와 메모가 펼쳐진다. 달력에서 고른 날은 펼친 채로.
+        <details className="history-item fold-item" key={`${s.id}-${picked === s.date}`} open={picked === s.date}>
           <summary>
             <div className="history-head"><span>{dateLabel(s.date)}</span></div>
             <div className="fold-line"><span>코트 <b>{s.usedCourts}</b>개</span><span>경기 <b>{s.totalGames}</b>번</span><span>인원 <b>{s.participants.length}</b>명</span>{s.memos.length > 0 && <span>📝</span>}</div>

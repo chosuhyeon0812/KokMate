@@ -2,7 +2,7 @@ import { useAppState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
 import { sortByName } from '../lib/utils';
-import { GenderBadge, EmptyHint, InfoTip } from '../components/cards';
+import { EmptyHint, InfoTip } from '../components/cards';
 import PlayerFormModal from '../modals/PlayerFormModal';
 
 export default function Shuttles() {
@@ -27,17 +27,16 @@ export default function Shuttles() {
       {players.length === 0 ? <EmptyHint>"매칭" 화면에서 오늘 참석자를 먼저 선택하세요.</EmptyHint> : (
         <>
           <div className="summary-grid">
-            <div className="summary-box"><div className="num">{doneCount} / {players.length}</div><div className="lbl">콕 제출</div></div>
+            <div className="summary-box"><div className="num">{doneCount} / {players.length}</div></div>
           </div>
           <div style={{ overflowX: 'auto' }}>
             <table className="shuttle-table">
-              <thead><tr><th>이름</th><th>성별</th><th>콕</th><th>비고<InfoTip align="right">예: 게스트 현금, 계좌 입금</InfoTip></th></tr></thead>
+              <thead><tr><th>이름</th><th>콕</th><th>비고<InfoTip align="right">예: 게스트 현금, 계좌 입금</InfoTip></th></tr></thead>
               <tbody>
                 {players.map(p => (
                   <tr key={p.id}>
                     {/* 이름을 누르면 참가자 탭과 같은 수정 창 (콕 버튼·비고 칸은 따로 눌리게 이름 칸만) */}
-                    <td className="name-edit" onClick={() => openModal(<PlayerFormModal playerId={p.id} />)}>{p.name}</td>
-                    <td><GenderBadge gender={p.gender} /></td>
+                    <td className="name-edit" onClick={() => openModal(<PlayerFormModal playerId={p.id} />)}><span className={`gender-dot ${p.gender === 'M' ? 'male' : 'female'}`} />{p.name}</td>
                     <td>
                       <button className={`shuttle-toggle${p.shuttleDone ? ' on' : ''}`} aria-pressed={p.shuttleDone} aria-label={`${p.name} 콕 ${p.shuttleDone ? '제출함' : '아직 안 냄'}`} onClick={() => actions.toggleShuttle(p.id)}>
                         {p.shuttleDone ? '✓' : '−'}

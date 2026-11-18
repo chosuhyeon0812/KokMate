@@ -209,7 +209,8 @@ export function WaitingCard({ match: w, no }) {
 
   return (
     <div className="court-card">
-      <div className="court-title"><span><span className="wait-no">대기 {no}</span></span><span className="status-dot" style={{ color: 'var(--accent-dark)' }}>🕒 대기</span></div>
+      {/* 진행 중 코트처럼: 오른쪽 위 ✕로 빼고, 아래는 큰 시작 버튼 + 작은 수정 */}
+      <div className="court-title"><span><span className="wait-no">대기 {no}</span></span><button type="button" className="court-remove" aria-label={`대기 ${no}번 삭제`} title="대기 코트 빼기" onClick={() => actions.deleteWaitingMatch(w.id)}>✕</button></div>
       <TeamLine teamA={w.teamA} teamB={w.teamB} label={id => playerName(state, id)} />
       {hasPlaying && <div className="muted center" style={{ fontSize: '.72rem', marginTop: 2 }}>"경기 중" 선수가 있어요. 그 경기가 끝난 뒤 넣어 주세요.</div>}
       {/* 빈 코트가 여러 개면 번호 버튼만 한 줄로 모아서, 코트가 많아도 카드가 길어지지 않게 한다. */}
@@ -219,11 +220,10 @@ export function WaitingCard({ match: w, no }) {
           {free.map(c => <button key={c} className="btn btn-primary btn-sm" disabled={hasPlaying} onClick={() => start(c)}>{c}번</button>)}
         </div>
       )}
-      <div className="card-actions">
-        {free.length === 0 && <button className="btn btn-primary btn-sm" disabled>빈 코트 없음</button>}
-        {free.length === 1 && <button className="btn btn-primary btn-sm" disabled={hasPlaying} onClick={() => start(free[0])}>{free[0]}번 코트에서 시작</button>}
-        <button className="btn btn-outline btn-sm" onClick={() => openModal(<PlayerPicker mode="editWaiting" waitingId={w.id} />, { wide: true })}>수정</button>
-        <button className="btn btn-danger btn-sm" onClick={() => actions.deleteWaitingMatch(w.id)}>삭제</button>
+      <div className="card-actions wait-actions">
+        {free.length === 0 && <button className="btn btn-primary btn-sm wait-start" disabled>빈 코트 없음</button>}
+        {free.length === 1 && <button className="btn btn-primary btn-sm wait-start" disabled={hasPlaying} onClick={() => start(free[0])}>{free[0]}번 코트에서 시작</button>}
+        <button type="button" className="soft-pill" onClick={() => openModal(<PlayerPicker mode="editWaiting" waitingId={w.id} />, { wide: true })}>수정</button>
       </div>
     </div>
   );
@@ -237,10 +237,6 @@ export function StatusBadge({ player: p, showTime = true }) {
   if (p.resting) return <span className="badge badge-rest">휴식{dur ? ' · ' + dur : ''}</span>;
   if (playingPlayerIds(state).has(p.id)) return <span className="badge badge-playing">경기 중</span>;
   return <span className="badge badge-active">대기{dur ? ' · ' + dur : ''}</span>;
-}
-
-export function GenderBadge({ gender }) {
-  return <span className={`badge ${gender === 'M' ? 'badge-male' : 'badge-female'}`}>{gender === 'M' ? '남자' : '여자'}</span>;
 }
 
 // 이름 옆에 붙는 작은 동그라미 'G' = 게스트 (모임 종료하면 명단에서 빠지는 사람)

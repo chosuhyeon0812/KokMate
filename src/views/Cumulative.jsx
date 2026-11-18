@@ -78,7 +78,7 @@ export default function Cumulative() {
             <ShareButton onClick={shareCumulativeImage} />
           </div>
           <div style={{ overflowX: 'auto' }}>
-            <table>
+            <table className="rank-table">
               <thead><tr><th>순위</th><th>이름</th><th>출석</th><th>경기수</th><th>마지막 참석</th></tr></thead>
               <tbody>
                 {sorted.map((r, i) => (

@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useAppState } from '../store';
 import { useUI } from '../ui';
-import { sortByName, LEVEL_OPTIONS, roleOf, roleLabel } from '../lib/utils';
-import { StatusBadge, GenderBadge, EmptyHint } from '../components/cards';
+import { sortByName, LEVEL_OPTIONS, ROLE_OPTIONS, roleOf, roleLabel } from '../lib/utils';
+import { EmptyHint } from '../components/cards';
 import PlayerFormModal from '../modals/PlayerFormModal';
 
-const EMPTY_FILTER = { q: '', gender: '', level: '', active: '' };
+const EMPTY_FILTER = { q: '', gender: '', level: '', role: '' };
 // 탭을 옮겨 다녀도 검색어·필터가 유지되도록 컴포넌트 밖에 기억해 둔다.
 let savedFilter = EMPTY_FILTER;
 
@@ -20,9 +20,9 @@ export default function Players() {
     (!q || p.name.includes(q)) &&
     (!filter.gender || p.gender === filter.gender) &&
     (!filter.level || p.level === filter.level) &&
-    (!filter.active || (filter.active === 'active' ? p.active : !p.active))
+    (!filter.role || roleOf(p) === filter.role)
   );
-  const filterActive = q || filter.gender || filter.level || filter.active;
+  const filterActive = q || filter.gender || filter.level || filter.role;
 
   const filterSelect = (key, label, options) => (
     <div className="field">
@@ -39,6 +39,13 @@ export default function Players() {
       <div className="section-row">
         <h2 className="mb0">참가자 ({filterActive ? `${filtered.length}/${state.players.length}` : state.players.length}명)</h2>
         <div className="row-actions">
+          {/* 이름 검색: '+ 추가' 옆 같은 높이의 작은 둥근 칸 */}
+          {state.players.length > 0 && (
+            <label className="search-pill">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5" /><path d="M16 16l4 4" /></svg>
+              <input type="search" aria-label="이름 검색" value={filter.q} onChange={e => setFilter({ ...filter, q: e.target.value })} />
+            </label>
+          )}
           <button type="button" className="add-pill" aria-label="참가자 추가" onClick={() => openModal(<PlayerFormModal />)}>
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
             추가
@@ -46,34 +53,23 @@ export default function Players() {
         </div>
       </div>
       {state.players.length > 0 && (
-        <input type="search" className="attend-search" placeholder="🔍  이름 검색" value={filter.q} onChange={e => setFilter({ ...filter, q: e.target.value })} />
-      )}
-      {state.players.length > 0 && (
         <div className="settings-grid" style={{ marginBottom: 14 }}>
           {filterSelect('gender', '성별', [['M', '남성'], ['F', '여성']])}
           {filterSelect('level', '급수', LEVEL_OPTIONS.map(l => [l, l]))}
-          {filterSelect('active', '당일 참석', [['active', '참석(포함)'], ['inactive', '제외']])}
+          {filterSelect('role', '역할', ROLE_OPTIONS)}
           {filterActive && <button className="btn btn-ghost btn-sm" onClick={() => setFilter(EMPTY_FILTER)}>{q ? '검색·필터 초기화' : '필터 초기화'}</button>}
         </div>
       )}
       {state.players.length === 0 ? <EmptyHint>아직 등록된 참가자가 없어요. 오른쪽 위 ‘추가’로 시작하세요.</EmptyHint> :
         filtered.length === 0 ? <EmptyHint>{q ? `"${q}"(이)가 들어간 참가자가 없어요.` : '조건에 맞는 참가자가 없어요.'}</EmptyHint> : (
-          <div style={{ overflowX: 'auto' }}>
-            <table>
-              <thead><tr><th>이름</th><th>성별</th><th>급수</th><th>경기수</th><th>상태</th><th></th></tr></thead>
-              <tbody>
-                {filtered.map(p => (
-                  <tr key={p.id} className="clickable-row" onClick={() => openModal(<PlayerFormModal playerId={p.id} />)}>
-                    <td>{p.name}{roleOf(p) !== 'member' && <> <span className={`badge badge-role-${roleOf(p)}`}>{roleLabel(roleOf(p))}</span></>}</td>
-                    <td><GenderBadge gender={p.gender} /></td>
-                    <td><span className="badge badge-level">{p.level}</span></td>
-                    <td>{p.totalGames}</td>
-                    <td><StatusBadge player={p} /></td>
-                    <td className="row-chevron">›</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          // 매칭 화면 '대기 중' 칸과 같은 파랑·분홍 네모. 왼쪽 위에 역할(일반 회원은 비움), 누르면 수정 창.
+          <div className="bench member-grid">
+            {filtered.map(p => (
+              <button type="button" key={p.id} className={`bench-chip ${p.gender === 'M' ? 'male' : 'female'}`} onClick={() => openModal(<PlayerFormModal playerId={p.id} />)}>
+                {roleOf(p) !== 'member' && <span className={`bench-games role-text ${roleOf(p)}`}>{roleLabel(roleOf(p))}</span>}
+                <span className="bench-name">{p.name} <span className="bench-level">/ {p.level}</span></span>
+              </button>
+            ))}
           </div>
         )}
     </div>

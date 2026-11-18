@@ -4,42 +4,13 @@ import { useState } from 'react';
 import { useAppState } from '../store';
 import { useUI } from '../ui';
 import Mascot from '../components/Mascot';
+import Icon from '../components/Icons';
 import RecommendModal from '../modals/RecommendModal';
 import { useSync } from '../lib/sync';
 
-// 메뉴 카드 아이콘: 앱 색에 맞춘 간단한 선 그림 3개 (같은 굵기·같은 크기로 통일)
-const ICONS = {
-  // 사람 한 명
-  players: (
-    <>
-      <circle cx="12" cy="8" r="3.5" />
-      <path d="M5 20c0-3.9 3.1-6.5 7-6.5s7 2.6 7 6.5" />
-    </>
-  ),
-  // 셔틀콕: 깃털 부분(사다리꼴) + 아래 코르크
-  shuttles: (
-    <>
-      <path d="M6 4h12l-4 10h-4z" />
-      <path d="M12 4v10" />
-      <path d="M10 14h4v1.5a2 2 0 0 1-4 0z" />
-    </>
-  ),
-  // 트로피
-  records: (
-    <>
-      <path d="M7 4h10v5a5 5 0 0 1-10 0z" />
-      <path d="M7 6H5a2 2 0 0 0 0 4h2.4M17 6h2a2 2 0 0 1 0 4h-2.4" />
-      <path d="M12 14v5M8.5 20h7" />
-    </>
-  ),
-};
-
+// 메뉴 카드 아이콘은 아래 탭 줄과 같은 선 그림 (components/Icons)
 function MenuIcon({ name }) {
-  return (
-    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      {ICONS[name]}
-    </svg>
-  );
+  return <Icon name={name} size={28} />;
 }
 
 // 홈에 올 때마다 하나씩 바뀌는 인사말. 바로 전에 나온 건 연달아 안 나오게 한다.
@@ -91,8 +62,8 @@ export default function Menu() {
         </div>
         {/* 예전 위쪽 초록 머리줄에 있던 버튼들. 자동 추천은 잘 안 써서 숨겨둔 기능이라 추천이 남아 있으면 작은 점으로 알려준다 */}
         <div className="menu-actions">
-          <button type="button" className="round-btn sparkle-btn" title="자동 추천" aria-label="자동 추천" onClick={() => openModal(<RecommendModal />, { wide: true })}>✨{hasRecs && <span className="sparkle-dot" />}</button>
-          <button type="button" className="round-btn" title="설정" aria-label="설정" onClick={() => switchView('settings')}>⚙️</button>
+          <button type="button" className="round-btn sparkle-btn" title="자동 추천" aria-label="자동 추천" onClick={() => openModal(<RecommendModal />, { wide: true })}><Icon name="sparkle" size={20} />{hasRecs && <span className="sparkle-dot" />}</button>
+          <button type="button" className="round-btn" title="설정" aria-label="설정" onClick={() => switchView('settings')}><Icon name="settings" size={20} /></button>
           <button type="button" className="round-btn" title="사용법" aria-label="사용법" onClick={() => switchView('help')}>?</button>
         </div>
       </div>

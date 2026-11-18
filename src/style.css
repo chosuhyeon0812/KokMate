@@ -497,10 +497,10 @@ tr:last-child td{border-bottom:none}
 .sub-toggle{display:flex;justify-content:center;margin-bottom:14px}
 .elapsed{color:var(--primary-dark)}
 .status-dot.live.elapsed{font-size:1rem;font-weight:800;color:var(--primary-dark)}
-/* 모임 종료: 하루 한 번 누르는 버튼이라 눈에 덜 띄게. 차분한 회색 알약, 손 대면 빨간 기운 */
-.session-end{padding:7px 14px;border:1.5px solid #cfd8d3;border-radius:999px;background:#fff;color:var(--muted);font:inherit;font-size:.88rem;font-weight:800;line-height:1.2;cursor:pointer;transition:color .15s ease, border-color .15s ease, background-color .15s ease}
-.session-end:hover,.session-end:focus-visible{color:var(--danger);border-color:var(--danger);background:var(--danger-pale)}
-.session-end:active{transform:scale(.96)}
+/* 모임 종료 · 초기화 · 삭제처럼 가끔 누르는 버튼: 눈에 덜 띄게 차분한 회색 알약, 손 대면 빨간 기운 */
+.quiet-pill{display:inline-flex;align-items:center;height:36px;padding:0 15px;border:1.5px solid #cfd8d3;border-radius:999px;background:#fff;color:var(--muted);font:inherit;font-size:.88rem;font-weight:800;line-height:1.2;cursor:pointer;transition:color .15s ease, border-color .15s ease, background-color .15s ease}
+.quiet-pill:hover,.quiet-pill:focus-visible{color:var(--danger);border-color:var(--danger);background:var(--danger-pale)}
+.quiet-pill:active{transform:scale(.96)}
 /* 오늘 모임 카드: 참석 인원 한 줄 (누르면 참석자 바꾸기) */
 .attend-summary{display:grid;grid-template-columns:1fr auto;align-items:center;gap:2px 12px;width:100%;padding:12px 16px;border:2px solid var(--primary);border-radius:16px;background:var(--primary-pale);color:var(--text);font:inherit;text-align:left;cursor:pointer}
 .attend-summary:hover,.attend-summary:focus-visible{background:var(--primary-pale-2)}
@@ -535,7 +535,7 @@ tr:last-child td{border-bottom:none}
 .card h2.bench-resting-title{margin:0 0 10px}
 /* 지난 모임 달력 */
 .cal-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
-.cal-title{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:1.1rem;font-weight:900;color:var(--text)}
+.cal-title{font-size:1.1rem;font-weight:900;color:var(--text)}
 .cal-nav{width:40px;height:40px;border:none;border-radius:50%;background:var(--primary-pale);color:var(--primary-dark);font:inherit;font-size:1.5rem;font-weight:700;line-height:1;cursor:pointer}
 .cal-nav:hover,.cal-nav:focus-visible{background:var(--primary-pale-2)}
 .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:12px}
@@ -561,11 +561,20 @@ button.bench-chip:active{transform:scale(.96)}
 button.court-add-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:100%;cursor:pointer;font-weight:800;font-size:.98rem}
 button.court-add-tile:hover,button.court-add-tile:focus-visible{background:var(--primary-pale-2)}
 .court-add-plus{font-size:1.6rem;line-height:1;font-weight:500}
+/* 순위표 '공유': 옅은 초록 알약 + 화살표 (추가 버튼과 같은 높이) */
+.share-pill{display:inline-flex;align-items:center;gap:5px;height:36px;padding:0 15px 0 12px;border:1.5px solid var(--primary);border-radius:999px;background:var(--primary-pale);color:var(--primary-dark);font:inherit;font-size:.92rem;font-weight:900;cursor:pointer;transition:background-color .15s ease, transform .1s ease}
+.share-pill:hover,.share-pill:focus-visible{background:var(--primary-pale-2)}
+.share-pill:active{transform:scale(.96)}
+/* 회원 화면 '+ 추가': 둥근 알약 버튼 */
+.add-pill{display:inline-flex;align-items:center;gap:5px;height:36px;padding:0 16px 0 12px;border:none;border-radius:999px;background:var(--primary);color:#fff;font:inherit;font-size:.95rem;font-weight:900;cursor:pointer;box-shadow:0 3px 10px rgba(26,168,82,.28);transition:background-color .15s ease, transform .1s ease}
+.add-pill:hover,.add-pill:focus-visible{background:var(--primary-dark)}
+.add-pill:active{transform:scale(.96)}
 /* 제목 옆 ⓘ 안내 말풍선 */
 .info-tip{position:relative;display:inline-flex;vertical-align:middle;margin-left:6px}
 .info-tip-btn{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;padding:0;border:none;border-radius:50%;background:none;color:#9fb3a7;cursor:pointer;transition:color .15s ease, background-color .15s ease}
 .info-tip-btn:hover,.info-tip.open .info-tip-btn{color:var(--primary-dark);background:var(--primary-pale)}
 .info-tip-bubble{position:absolute;top:calc(100% + 8px);left:-10px;z-index:20;width:max-content;max-width:min(16rem,70vw);padding:9px 12px;border-radius:12px;background:var(--text);color:#fff;font-size:.85rem;font-weight:600;line-height:1.45;box-shadow:var(--shadow);opacity:0;visibility:hidden;transform:translateY(-3px);transition:opacity .15s ease, transform .15s ease, visibility .15s}
+.info-tip.right .info-tip-bubble{left:auto;right:-6px}
 .info-tip.open .info-tip-bubble{opacity:1;visibility:visible;transform:none}
 @media (hover:hover){.info-tip:hover .info-tip-bubble{opacity:1;visibility:visible;transform:none}}
 .court-add-tile.open{border-color:var(--primary-light);border-style:solid}
@@ -601,14 +610,6 @@ button.court-add-tile:hover,button.court-add-tile:focus-visible{background:var(-
 .today-status{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:14px;padding:10px 12px;background:var(--primary-pale);border-radius:12px}
 .today-status .field-label{width:100%;margin:0}
 
-.bulk-input{
-  width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;
-  font-family:inherit;font-size:.92rem;line-height:1.6;resize:vertical;
-}
-.bulk-input:focus{outline:none;border-color:var(--primary-light)}
-.bulk-preview{display:flex;flex-direction:column;gap:6px;margin-top:10px;font-size:.84rem}
-.bulk-ok{color:var(--success);font-weight:700}
-.bulk-errors{color:var(--danger);background:var(--danger-pale);padding:8px 10px;border-radius:10px}
 
 /* ===== 휴대폰 화면 (체육관에서 폰으로 보는 경우) ===== */
 @media (max-width:520px){

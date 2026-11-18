@@ -5,8 +5,7 @@ import { useAppState } from '../store';
 import { useUI } from '../ui';
 import Mascot from '../components/Mascot';
 import RecommendModal from '../modals/RecommendModal';
-import { TeamInfoModal } from '../components/TeamCard';
-import { syncEnabled, useSync } from '../lib/sync';
+import { useSync } from '../lib/sync';
 
 // 메뉴 카드 아이콘: 앱 색에 맞춘 간단한 선 그림 3개 (같은 굵기·같은 크기로 통일)
 const ICONS = {
@@ -93,7 +92,7 @@ export default function Menu() {
         {/* 예전 위쪽 초록 머리줄에 있던 버튼들. 자동 추천은 잘 안 써서 숨겨둔 기능이라 추천이 남아 있으면 작은 점으로 알려준다 */}
         <div className="menu-actions">
           <button type="button" className="round-btn sparkle-btn" title="자동 추천" aria-label="자동 추천" onClick={() => openModal(<RecommendModal />, { wide: true })}>✨{hasRecs && <span className="sparkle-dot" />}</button>
-          {syncEnabled && <button type="button" className="round-btn" title="설정" aria-label="설정" onClick={() => openModal(<TeamInfoModal />)}>⚙️</button>}
+          <button type="button" className="round-btn" title="설정" aria-label="설정" onClick={() => switchView('settings')}>⚙️</button>
           <button type="button" className="round-btn" title="사용법" aria-label="사용법" onClick={() => switchView('help')}>?</button>
         </div>
       </div>

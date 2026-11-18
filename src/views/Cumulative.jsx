@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useAppState } from '../store';
 import { useUI } from '../ui';
-import { EmptyHint } from '../components/cards';
+import { EmptyHint, ShareButton } from '../components/cards';
 import PlayerFormModal from '../modals/PlayerFormModal';
 import { todayStr } from '../lib/utils';
 import { cumulativeRows } from '../lib/cumulative';
@@ -75,7 +75,7 @@ export default function Cumulative() {
             <div className="pill-toggle">
               {SORTS.map(([k, label]) => <button key={k} className={sortBy === k ? 'on' : ''} onClick={() => setSortBy(k)}>{label}</button>)}
             </div>
-            <button className="btn btn-outline btn-sm" onClick={shareCumulativeImage}>공유</button>
+            <ShareButton onClick={shareCumulativeImage} />
           </div>
           <div style={{ overflowX: 'auto' }}>
             <table>

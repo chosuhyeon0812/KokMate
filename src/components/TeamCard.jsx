@@ -187,7 +187,7 @@ export function NoTeam({ initialCode }) {
 }
 
 // 글자 크기: 이 폰에서만 바뀐다. (다른 사람 폰은 그대로)
-function FontSizeSetting() {
+export function FontSizeSetting() {
   const [scale, setScale] = useState(readFontScale);
   const pick = v => { setScale(v); saveFontScale(v); };
   return (
@@ -197,20 +197,6 @@ function FontSizeSetting() {
         {FONT_SIZES.map(([v, label]) => <button key={v} type="button" className={scale === v ? 'on' : ''} onClick={() => pick(v)}>{label}</button>)}
       </div>
     </div>
-  );
-}
-
-// 오른쪽 위 ⚙️ 설정 버튼을 눌렀을 때 뜨는 창. 팀이 없으면 팀 만들기 / 참여를 보여준다.
-export function TeamInfoModal() {
-  const { team, status } = useSync();
-  const { closeModal } = useUI();
-  return (
-    <>
-      <h3>설정</h3>
-      <FontSizeSetting />
-      {team ? <JoinedTeam team={team} status={status} /> : <NoTeam />}
-      <div className="modal-actions"><button className="btn btn-ghost" onClick={closeModal}>닫기</button></div>
-    </>
   );
 }
 

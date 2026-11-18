@@ -6,6 +6,7 @@ import Players from './views/Players';
 import Shuttles from './views/Shuttles';
 import Records from './views/Records';
 import Help from './views/Help';
+import Settings from './views/Settings';
 import Welcome from './views/Welcome';
 import { isFreshDevice, getState } from './store';
 import { isSessionStale, endStaleSession, staleSessionLabel } from './actions';
@@ -31,6 +32,7 @@ const VIEWS = [
   { key: 'records', title: '기록', icon: '🏆', View: Records },
   { key: 'players', title: '회원', icon: '👥', View: Players },
   { key: 'help', title: '사용법', View: Help },
+  { key: 'settings', title: '설정', View: Settings },
 ];
 const NAV_VIEWS = VIEWS.filter(t => t.icon);
 const viewIndex = key => VIEWS.findIndex(t => t.key === key);

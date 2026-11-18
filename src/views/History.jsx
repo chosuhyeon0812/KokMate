@@ -4,8 +4,9 @@ import { useUI } from '../ui';
 import * as actions from '../actions';
 import { timeStr, durationStr } from '../lib/utils';
 import { playerName } from '../lib/selectors';
-import { EmptyHint, NameChips, OutsiderChips, RankLabel, RankName } from '../components/cards';
+import { EmptyHint, NameChips, OutsiderChips, RankLabel, RankName, ShareButton } from '../components/cards';
 import { shareRanking, rankOf } from '../lib/shareImage';
+import Stats from './Stats';
 
 function Memos({ memos }) {
   if (!memos.length) return null;
@@ -54,7 +55,7 @@ function MonthCalendar({ year, month, byDate, selected, onPick }) {
   );
 }
 
-function SessionHistoryCard() {
+export function SessionHistoryCard() {
   const state = useAppState();
   const { ask, toast, warn } = useUI();
   // 처음엔 가장 최근 모임이 있는 달을 보여준다.
@@ -70,7 +71,7 @@ function SessionHistoryCard() {
     );
   }
 
-  // 지난 모임 순위: 많이 친 사람부터, 같은 경기 수는 같은 순위 (통계 탭과 같은 모양)
+  // 지난 모임 순위: 많이 친 사람부터, 같은 경기 수는 같은 순위 (오늘 순위와 같은 모양)
   const rankingOf = s => {
     const list = s.participants.slice().sort((a, b) => b.totalGames - a.totalGames || a.name.localeCompare(b.name, 'ko'));
     return { list, ranks: rankOf(list, (a, b) => a.totalGames === b.totalGames) };
@@ -103,7 +104,6 @@ function SessionHistoryCard() {
   const inMonth = state.sessionHistory.filter(s => s.date.startsWith(curYm)).sort((a, b) => b.date.localeCompare(a.date));
   const byDate = {};
   inMonth.forEach(s => { (byDate[s.date] = byDate[s.date] || []).push(s); });
-  const monthGames = inMonth.reduce((n, s) => n + s.totalGames, 0);
   // 날짜를 누르면 그날만, 다시 누르면 그 달 전체 목록으로
   const shown = picked ? inMonth.filter(s => s.date === picked) : inMonth;
 
@@ -112,7 +112,7 @@ function SessionHistoryCard() {
       <h2>지난 모임 기록</h2>
       <div className="cal-head">
         <button type="button" className="cal-nav" aria-label="지난달" onClick={() => moveMonth(-1)}>‹</button>
-        <div className="cal-title">{year}년 {month}월<span className="h2-sub">모임 {inMonth.length}번 · 경기 {monthGames}번</span></div>
+        <div className="cal-title">{year}년 {month}월</div>
         <button type="button" className="cal-nav" aria-label="다음달" onClick={() => moveMonth(1)}>›</button>
       </div>
       <MonthCalendar year={year} month={month} byDate={byDate} selected={picked} onPick={d => setPicked(p => (p === d ? null : d))} />
@@ -136,8 +136,8 @@ function SessionHistoryCard() {
           </div>
           <Memos memos={s.memos} />
           <div className="card-actions">
-            <button className="btn btn-outline btn-sm" onClick={() => share(s)}>공유</button>
-            <button className="btn btn-danger btn-sm" onClick={() => remove(s.id)}>이 기록 삭제</button>
+            <ShareButton onClick={() => share(s)} />
+            <button type="button" className="quiet-pill" onClick={() => remove(s.id)}>삭제</button>
           </div>
         </details>
       ); })}
@@ -168,8 +168,9 @@ export default function History() {
         <SummaryGrid totalGames={todays.length} usedCourts={usedCourts} participants={players.size} />
         <Memos memos={memos} />
       </div>
+      <Stats />
       <div className="card">
-        <h2>경기 기록</h2>
+        <h2>끝난 경기</h2>
         {todays.length === 0 ? <EmptyHint>오늘 끝난 경기가 아직 없어요.</EmptyHint> : todays.map(g => (
           <div className="history-item" key={g.id}>
             <div className="history-head">
@@ -193,7 +194,6 @@ export default function History() {
           </div>
         ))}
       </div>
-      <SessionHistoryCard />
     </>
   );
 }

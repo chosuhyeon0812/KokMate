@@ -2,7 +2,7 @@ import { useAppState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
 import { sortByName } from '../lib/utils';
-import { GenderBadge, EmptyHint } from '../components/cards';
+import { GenderBadge, EmptyHint, InfoTip } from '../components/cards';
 import PlayerFormModal from '../modals/PlayerFormModal';
 
 export default function Shuttles() {
@@ -22,7 +22,7 @@ export default function Shuttles() {
     <div className="card">
       <div className="section-row">
         <h2 className="mb0">콕 관리</h2>
-        <button className="btn btn-outline btn-sm" onClick={reset}>전체 초기화</button>
+        <button type="button" className="quiet-pill" onClick={reset}>전체 초기화</button>
       </div>
       {players.length === 0 ? <EmptyHint>"매칭" 화면에서 오늘 참석자를 먼저 선택하세요.</EmptyHint> : (
         <>
@@ -31,7 +31,7 @@ export default function Shuttles() {
           </div>
           <div style={{ overflowX: 'auto' }}>
             <table className="shuttle-table">
-              <thead><tr><th>이름</th><th>성별</th><th>콕</th><th>비고</th></tr></thead>
+              <thead><tr><th>이름</th><th>성별</th><th>콕</th><th>비고<InfoTip align="right">예: 게스트 현금, 계좌 입금</InfoTip></th></tr></thead>
               <tbody>
                 {players.map(p => (
                   <tr key={p.id}>
@@ -44,7 +44,7 @@ export default function Shuttles() {
                       </button>
                     </td>
                     <td>
-                      <input className="shuttle-note" type="text" placeholder="예: 게스트 현금, 계좌 입금"
+                      <input className="shuttle-note" type="text" aria-label={`${p.name} 비고`}
                         value={p.shuttleNote || ''} onChange={e => actions.setShuttleNote(p.id, e.target.value)} />
                     </td>
                   </tr>

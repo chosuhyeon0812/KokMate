@@ -1,6 +1,6 @@
 /* 상태를 바꾸는 동작들. 입력 검증과 안내 메시지(toast)는 화면 쪽에서 처리한다. */
 import { update, getState } from './store';
-import { uid, todayStr, newMember, isGuest } from './lib/utils';
+import { uid, todayStr, isGuest } from './lib/utils';
 import { playerById, deriveGameType } from './lib/selectors';
 import { generateRecommendations, scoreSplit } from './lib/matching';
 
@@ -201,13 +201,6 @@ export function savePlayer(id, fields) {
   update(d => {
     if (id) Object.assign(playerById(d, id), fields);
     else d.players.push({ id: uid('p'), ...fields, active: true, resting: false, totalGames: 0, wins: 0, losses: 0, shuttleDone: false, restSince: Date.now() });
-  });
-}
-
-// 여러 명 한 번에 등록. 회원 명단 등록용이라 오늘 참석자로는 넣지 않는다. (오늘 참석자 선택에서 체크)
-export function addPlayers(list) {
-  update(d => {
-    list.forEach(m => d.players.push(newMember(m)));
   });
 }
 

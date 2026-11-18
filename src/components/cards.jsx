@@ -249,11 +249,24 @@ export function GuestTag({ player }) {
   return isGuest(player) ? <span className="guest-tag" title="게스트" aria-label="게스트">G</span> : null;
 }
 
+// 순위표 '공유' 버튼: 위로 나가는 화살표 + 공유 (오늘 순위 · 지난 모임 · 누적 공통)
+export function ShareButton({ onClick }) {
+  return (
+    <button type="button" className="share-pill" onClick={onClick}>
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M12 15V4M7.5 8.5 12 4l4.5 4.5" /><path d="M5 13v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5" />
+      </svg>
+      공유
+    </button>
+  );
+}
+
 // 제목 옆 작은 ⓘ: 마우스를 올리거나(PC) 누르면(폰) 짧은 안내가 말풍선으로 뜬다. 다른 데를 누르면 닫힌다.
-export function InfoTip({ children }) {
+// align="right"면 말풍선을 오른쪽 끝에 맞춘다. (표 맨 오른쪽 칸처럼 오른쪽에 자리가 없을 때)
+export function InfoTip({ children, align }) {
   const [open, setOpen] = useState(false);
   return (
-    <span className={`info-tip${open ? ' open' : ''}`}>
+    <span className={`info-tip${align === 'right' ? ' right' : ''}${open ? ' open' : ''}`}>
       <button type="button" className="info-tip-btn" aria-label="안내" aria-expanded={open}
         onClick={() => setOpen(o => !o)} onBlur={() => setOpen(false)}>
         {/* 글자 i 대신 선 그림: 동그라미 안에 점 하나와 짧은 막대 */}

@@ -1,4 +1,4 @@
-/* 공유·백업 탭: 팀 공유, 전체 데이터를 파일로 저장(카톡 등으로 보내기 포함), 백업 파일 불러오기 */
+/* 설정 화면의 공유·백업: 팀 공유, 전체 데이터를 파일로 저장(카톡 등으로 보내기 포함), 백업 파일 불러오기 */
 import { useRef, useState } from 'react';
 import { useAppState, getState, replaceState, update } from '../store';
 import { useUI } from '../ui';

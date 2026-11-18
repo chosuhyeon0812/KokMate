@@ -40,7 +40,7 @@ export default function Home() {
       <div className="card">
         <div className="section-row">
           <h2 className="mb0">오늘 모임</h2>
-          <button type="button" className="session-end" onClick={endSession}>모임 종료</button>
+          <button type="button" className="quiet-pill" onClick={endSession}>모임 종료</button>
         </div>
         {stale && (
           <EmptyHint style={{ borderColor: 'var(--danger)', background: 'var(--danger-pale)', color: 'var(--danger)', marginBottom: 10 }}>

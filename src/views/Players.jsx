@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import { useAppState } from '../store';
 import { useUI } from '../ui';
-import { sortByName, LEVEL_OPTIONS, ROLE_OPTIONS, roleOf, roleLabel } from '../lib/utils';
+import { sortByName, LEVEL_OPTIONS, roleOf, roleLabel } from '../lib/utils';
 import { StatusBadge, GenderBadge, EmptyHint } from '../components/cards';
 import PlayerFormModal from '../modals/PlayerFormModal';
-import BulkAddModal from '../modals/BulkAddModal';
 
-const EMPTY_FILTER = { q: '', gender: '', level: '', role: '', active: '' };
+const EMPTY_FILTER = { q: '', gender: '', level: '', active: '' };
 // 탭을 옮겨 다녀도 검색어·필터가 유지되도록 컴포넌트 밖에 기억해 둔다.
 let savedFilter = EMPTY_FILTER;
 
@@ -21,10 +20,9 @@ export default function Players() {
     (!q || p.name.includes(q)) &&
     (!filter.gender || p.gender === filter.gender) &&
     (!filter.level || p.level === filter.level) &&
-    (!filter.role || roleOf(p) === filter.role) &&
     (!filter.active || (filter.active === 'active' ? p.active : !p.active))
   );
-  const filterActive = q || filter.gender || filter.level || filter.role || filter.active;
+  const filterActive = q || filter.gender || filter.level || filter.active;
 
   const filterSelect = (key, label, options) => (
     <div className="field">
@@ -41,8 +39,10 @@ export default function Players() {
       <div className="section-row">
         <h2 className="mb0">참가자 ({filterActive ? `${filtered.length}/${state.players.length}` : state.players.length}명)</h2>
         <div className="row-actions">
-          <button className="btn btn-outline btn-sm" onClick={() => openModal(<BulkAddModal />)}>여러 명 추가</button>
-          <button className="btn btn-primary btn-sm" onClick={() => openModal(<PlayerFormModal />)}>참가자 추가</button>
+          <button type="button" className="add-pill" aria-label="참가자 추가" onClick={() => openModal(<PlayerFormModal />)}>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+            추가
+          </button>
         </div>
       </div>
       {state.players.length > 0 && (
@@ -52,12 +52,11 @@ export default function Players() {
         <div className="settings-grid" style={{ marginBottom: 14 }}>
           {filterSelect('gender', '성별', [['M', '남성'], ['F', '여성']])}
           {filterSelect('level', '급수', LEVEL_OPTIONS.map(l => [l, l]))}
-          {filterSelect('role', '역할', ROLE_OPTIONS)}
           {filterSelect('active', '당일 참석', [['active', '참석(포함)'], ['inactive', '제외']])}
           {filterActive && <button className="btn btn-ghost btn-sm" onClick={() => setFilter(EMPTY_FILTER)}>{q ? '검색·필터 초기화' : '필터 초기화'}</button>}
         </div>
       )}
-      {state.players.length === 0 ? <EmptyHint>아직 등록된 참가자가 없어요. ‘참가자 추가’로 시작하세요.</EmptyHint> :
+      {state.players.length === 0 ? <EmptyHint>아직 등록된 참가자가 없어요. 오른쪽 위 ‘추가’로 시작하세요.</EmptyHint> :
         filtered.length === 0 ? <EmptyHint>{q ? `"${q}"(이)가 들어간 참가자가 없어요.` : '조건에 맞는 참가자가 없어요.'}</EmptyHint> : (
           <div style={{ overflowX: 'auto' }}>
             <table>

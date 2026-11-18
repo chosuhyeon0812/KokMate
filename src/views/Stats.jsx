@@ -1,8 +1,7 @@
-import { useState } from 'react';
 import { useAppState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
-import { StatusBadge, EmptyHint, RankLabel, RankName } from '../components/cards';
+import { StatusBadge, EmptyHint, RankLabel, RankName, ShareButton } from '../components/cards';
 import PlayerFormModal from '../modals/PlayerFormModal';
 import { playingPlayerIds, shortWait, LONG_REST_MS } from '../lib/selectors';
 import { todayStr } from '../lib/utils';
@@ -11,23 +10,18 @@ import { shareRanking, rankOf } from '../lib/shareImage';
 export default function Stats() {
   const state = useAppState();
   const { toast, warn, ask, openModal } = useUI();
-  const [sortBy, setSortBy] = useState('games');
   const playing = playingPlayerIds(state);
   // 쉬고 있는 시점. 경기 중이거나 오늘 빠진 사람은 쉬는 중이 아니라 null
   const restFrom = p => (p.active && !playing.has(p.id) && p.restSince) || null;
-  // 대기 시간순: 다음 경기에 넣을 사람을 고르는 용도라 대기 → 휴식 → 경기 중/빠진 사람 순서로, 같은 무리 안에서는 오래 쉰 사람 먼저
-  const group = p => (!restFrom(p) ? 2 : p.resting ? 1 : 0);
-  const byRest = (a, b) => group(a) - group(b) || (restFrom(a) ?? 0) - (restFrom(b) ?? 0) || a.totalGames - b.totalGames;
   // 오늘 온 사람만 보여준다. 먼저 가서 불참으로 바꾼 사람도 오늘 뛴 경기가 있으면 남긴다.
   const todays = state.players.filter(p => p.active || p.totalGames > 0);
-  // 경기 수순은 사진(오늘 경기 순위)과 똑같이 많이 친 사람부터, 같은 경기 수는 같은 순위.
+  // 사진(오늘 경기 순위)과 똑같이 많이 친 사람부터, 같은 경기 수는 같은 순위.
   const byGames = (a, b) => b.totalGames - a.totalGames || a.name.localeCompare(b.name, 'ko');
-  const sorted = todays.slice().sort(sortBy === 'rest' ? byRest : byGames);
+  const sorted = todays.slice().sort(byGames);
   const ranks = rankOf(sorted, (a, b) => a.totalGames === b.totalGames);
   // 다음 매칭 우선 표시는 지금 참석 중인 사람끼리만 비교한다.
   const minGames = Math.min(...todays.filter(p => p.active).map(p => p.totalGames));
 
-  // 사진은 '오늘 몇 판 쳤나' 자랑용이라 대기 시간순으로 보고 있어도 경기 수순으로 만든다.
   const shareTodayImage = async () => {
     const list = todays.slice().sort(byGames);
     const ranks = rankOf(list, (a, b) => a.totalGames === b.totalGames);
@@ -53,14 +47,10 @@ export default function Stats() {
   return (
     <div className="card">
       <div className="section-row">
-        <h2 className="mb0">참가자 통계 <span className="h2-sub">오늘 참석자</span></h2>
-        <div className="pill-toggle">
-          <button className={sortBy === 'games' ? 'on' : ''} onClick={() => setSortBy('games')}>경기 수순</button>
-          <button className={sortBy === 'rest' ? 'on' : ''} onClick={() => setSortBy('rest')}>대기 시간순</button>
-        </div>
+        <h2 className="mb0">오늘 순위</h2>
         <div className="row-actions">
-          {todays.length > 0 && <button className="btn btn-outline btn-sm" onClick={shareTodayImage}>공유</button>}
-          <button className="btn btn-outline btn-sm" onClick={reset}>오늘 기록 초기화</button>
+          {todays.length > 0 && <ShareButton onClick={shareTodayImage} />}
+          <button type="button" className="quiet-pill" onClick={reset}>초기화</button>
         </div>
       </div>
       {todays.length === 0 ? <EmptyHint>"매칭" 화면에서 오늘 참석자를 먼저 선택하세요.</EmptyHint> : (
@@ -70,12 +60,12 @@ export default function Stats() {
               <thead><tr><th>순위</th><th>이름</th><th>경기수</th><th>대기 시간</th><th>상태</th></tr></thead>
               <tbody>
                 {sorted.map((p, i) => {
-                  const isMin = sortBy === 'games' && p.active && p.totalGames === minGames;
+                  const isMin = p.active && p.totalGames === minGames;
                   const from = restFrom(p);
                   const long = from && Date.now() - from >= LONG_REST_MS;
                   return (
                     <tr key={p.id} className="clickable-row" style={isMin ? { background: 'var(--primary-pale)' } : undefined} onClick={() => openModal(<PlayerFormModal playerId={p.id} />)}>
-                      <td className="rank-cell">{sortBy === 'games' ? <RankLabel rank={ranks[i]} /> : i + 1}</td>
+                      <td className="rank-cell"><RankLabel rank={ranks[i]} /></td>
                       <td><RankName person={p} /></td>
                       <td className={isMin ? 'rank-1' : ''}>{p.totalGames}</td>
                       <td style={long ? { color: 'var(--accent-dark)', fontWeight: 800 } : undefined}>{from ? shortWait(p) : '-'}</td>
@@ -85,10 +75,6 @@ export default function Stats() {
                 })}
               </tbody>
             </table>
-          </div>
-          <div className="muted mt8" style={{ fontSize: '.78rem' }}>
-            {sortBy === 'games' ? '🟩 배경 표시 = 경기 수가 가장 적어 다음 매칭에서 우선 고려되는 참가자 · ' : ''}
-            대기 시간은 마지막 경기가 끝난 뒤부터예요. 20분이 넘으면 진하게 표시돼요.
           </div>
         </>
       )}

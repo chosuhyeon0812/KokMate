@@ -695,9 +695,9 @@ button.court-add-tile:hover,button.court-add-tile:focus-visible{background:var(-
 .player-grid:not(.attend-grid) .player-tile.selected{border:3.5px solid #fff;box-shadow:0 0 0 3px var(--primary)}
 .player-grid:not(.attend-grid) .player-tile .tile-slot{background:#fff;color:var(--primary)}
 
-/* 검은 글씨가 잘 읽히도록 바탕은 밝게. 너무 쨍하면 눈이 아파서 부드러운 파랑·분홍 + 조금 진한 테두리로 남녀 구분 */
-.name-chip.with-meta.male,.bench-chip.male,.player-grid:not(.attend-grid) .player-tile.male{background:#d3e5fc;border:2.5px solid #86b4ec}
-.name-chip.with-meta.female,.bench-chip.female,.player-grid:not(.attend-grid) .player-tile.female{background:#fcd9e8;border:2.5px solid #eb9cc0}
+/* 검은 글씨가 잘 읽히도록 바탕은 밝고 쨍한 파랑·분홍으로. 연하게 하면 체육관에서 남녀가 잘 안 보여서 별로라는 말을 들음 → 진하게 유지 */
+.name-chip.with-meta.male,.bench-chip.male,.player-grid:not(.attend-grid) .player-tile.male{background:#7db3f5;border:2.5px solid #5a9be8}
+.name-chip.with-meta.female,.bench-chip.female,.player-grid:not(.attend-grid) .player-tile.female{background:#f79cc4;border:2.5px solid #ec77ab}
 .name-chip.with-meta .chip-name,.bench-chip .bench-name,.player-grid:not(.attend-grid) .player-tile .tile-name{color:#111}
 .name-chip.with-meta .chip-level,.bench-chip .bench-level,.player-grid:not(.attend-grid) .player-tile .tile-level{color:#2b2b2b}
 .name-chip.with-meta .chip-games,.bench-chip .bench-games,.player-grid:not(.attend-grid) .player-tile .tile-games,
@@ -880,7 +880,7 @@ table{font-size:.98rem}
 th{font-size:.8rem;font-weight:800}
 th,td{padding:11px 9px}
 /* 표 제목줄은 크고 진하게 (콕 관리 · 기록의 순위표) */
-.shuttle-table th,.rank-table th{font-size:1rem;font-weight:900;color:var(--text);letter-spacing:0}
+.shuttle-table th,.rank-table th{font-size:1rem;font-weight:900;color:var(--text);letter-spacing:0;white-space:nowrap}
 .badge{font-size:.76rem;padding:3px 11px}
 
 .field{font-size:.86rem;font-weight:700}

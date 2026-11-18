@@ -515,7 +515,7 @@ tr:last-child td{border-bottom:none}
 .attend-summary.start .attend-summary-edit{font-size:1.5rem;line-height:1}
 .attend-summary.start:active{transform:scale(.98)}
 .bench{display:flex;flex-wrap:wrap;gap:12px}
-/* 쉬는 사람 카드: 이름·급수는 크고 진하게, 경기 수는 왼쪽 위, 쉰 시간은 오른쪽 위 모서리에 작게 */
+/* 대기 중 카드: 이름·급수는 크고 진하게, 경기 수는 왼쪽 위, 쉰 시간은 오른쪽 위 모서리에 작게 */
 .bench-chip{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:8.25rem;min-height:5.5rem;padding:24px 14px 10px;border:1px solid var(--border);border-radius:14px;background:#fff}
 .bench-chip .bench-games{position:absolute;top:5px;left:9px;font-size:.78rem;font-weight:700;color:var(--muted)}
 .bench-chip .bench-name{font-weight:900;font-size:2rem;color:var(--text);line-height:1.15;white-space:nowrap}
@@ -529,10 +529,10 @@ tr:last-child td{border-bottom:none}
 .bench-chip .rest-long{color:var(--accent-dark);font-weight:800}
 .bench-resting{margin-top:14px;padding-top:12px;border-top:1px dashed var(--border)}
 .card h2.bench-resting-title{margin:0 0 10px}
-/* 제목 옆 작은 회색 글자 (쉬는 사람 · 휴식 공통) */
+/* 제목 옆 작은 회색 글자 (대기 중 · 휴식 공통) */
 .h2-sub{font-size:.8rem;font-weight:600;color:var(--muted)}
-/* 휴식 중: 남녀 색 대신 회색으로 위쪽 쉬는 사람과 구분. 흐리게 하지는 않아서 눌러 복귀할 수 있어 보이게 */
-/* 쉬는 사람 · 휴식 칸은 모두 눌러지는 버튼 (쉬는 사람 → 휴식으로 빼기, 휴식 → 복귀) */
+/* 휴식 중: 남녀 색 대신 회색으로 위쪽 대기 중과 구분. 흐리게 하지는 않아서 눌러 복귀할 수 있어 보이게 */
+/* 대기 중 · 휴식 칸은 모두 눌러지는 버튼 (대기 중 → 휴식으로 빼기, 휴식 → 복귀) */
 button.bench-chip{font:inherit;color:inherit;cursor:pointer;transition:transform .12s ease, filter .12s ease}
 button.bench-chip:hover,button.bench-chip:focus-visible{filter:brightness(.95)}
 button.bench-chip:active{transform:scale(.96)}
@@ -625,7 +625,7 @@ button.court-add-tile:hover,button.court-add-tile:focus-visible{background:var(-
 }
 
 /* ---------- 사람 카드 공통 양식 ----------
-   대기 코트(코트 카드 안 이름칸) · 쉬는 사람 · 경기 만들기 창의 네모는 항상 같은 모양으로 맞춘다.
+   대기 코트(코트 카드 안 이름칸) · 대기 중 · 경기 만들기 창의 네모는 항상 같은 모양으로 맞춘다.
    (참석자 선택 창은 경기 수·시간이 없는 다른 양식이라 제외) */
 .name-chip.with-meta,
 .bench-chip,
@@ -642,7 +642,7 @@ button.court-add-tile:hover,button.court-add-tile:focus-visible{background:var(-
 .name-chip .chip-meta,.bench-chip .bench-wait,.player-tile .tile-meta{position:absolute;top:5px;right:9px;font-size:.78rem;font-weight:700;color:var(--muted);white-space:nowrap;opacity:1}
 .name-chip .chip-meta.chip-long,.bench-chip .rest-long,.player-tile .tile-meta.tile-long{color:var(--accent-dark);font-weight:800}
 .name-chip .chip-meta.chip-playing,.player-tile .tile-meta.tile-playing{color:var(--danger);font-weight:800}
-/* 고른 사람(경기 만들기)과 휴식 중(쉬는 사람)은 공통 양식 위에 표시만 덧붙인다 */
+/* 고른 사람(경기 만들기)과 휴식 중(대기 중)은 공통 양식 위에 표시만 덧붙인다 */
 .player-grid:not(.attend-grid) .player-tile.selected{border:3.5px solid var(--primary-light)}
 .bench-chip.resting,.bench-chip.resting.male,.bench-chip.resting.female{background:#eceff1;border:2.5px solid #b0b8bf}
 

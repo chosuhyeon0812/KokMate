@@ -98,7 +98,7 @@ function Bench() {
   const bench = availablePlayers(state).sort(fairnessCompare);
   const restingPlayers = attending.filter(p => p.resting);
   const resting = restingPlayers.length;
-  // 쉬는 사람 칸을 누르면 휴식으로 뺀다. 잘못 눌렀으면 되돌리기로 원래 차례 그대로 돌아온다.
+  // 대기 중 칸을 누르면 휴식으로 뺀다. 잘못 눌렀으면 되돌리기로 원래 차례 그대로 돌아온다.
   const rest = p => {
     const since = p.restSince;
     actions.toggleRest(p.id);
@@ -108,10 +108,10 @@ function Bench() {
   return (
     <div className="card">
       <div className="section-row">
-        <h2 className="mb0">쉬는 사람 <span className="h2-sub">{bench.length}명 · 누르면 휴식</span></h2>
+        <h2 className="mb0">대기 중 <span className="h2-sub">{bench.length}명 · 누르면 휴식</span></h2>
       </div>
       {attending.length === 0 ? <EmptyHint>"참석자 선택"에서 오늘 온 사람을 먼저 체크하세요.</EmptyHint> :
-        bench.length === 0 ? <EmptyHint>지금 쉬는 사람이 없어요.</EmptyHint> : (
+        bench.length === 0 ? <EmptyHint>지금 대기 중인 사람이 없어요.</EmptyHint> : (
           <div className="bench">
             {bench.map(p => {
               const long = p.restSince && Date.now() - p.restSince >= LONG_REST_MS;
@@ -129,7 +129,7 @@ function Bench() {
       {/* 휴식이 0명이어도 자리를 보여줘서, 여기로 빠진다는 걸 알 수 있게 한다. */}
       {attending.length > 0 && (
         <div className="bench-resting">
-          {/* 위 '쉬는 사람' 제목과 같은 글자 크기·굵기 */}
+          {/* 위 '대기 중' 제목과 같은 글자 크기·굵기 */}
           <h2 className="bench-resting-title">휴식 <span className="h2-sub">{resting}명 · 누르면 복귀</span></h2>
           {resting > 0 && <div className="bench">
             {restingPlayers.map(p => (

@@ -110,7 +110,7 @@ function Bench() {
       <div className="section-row">
         <h2 className="mb0">쉬는 사람 <span className="muted" style={{ fontSize: '.8rem', fontWeight: 600 }}>{bench.length}명 · 누르면 휴식</span></h2>
       </div>
-      {attending.length === 0 ? <EmptyHint>"오늘 참석자 선택"에서 오늘 온 사람을 먼저 체크하세요.</EmptyHint> :
+      {attending.length === 0 ? <EmptyHint>"참석자 선택"에서 오늘 온 사람을 먼저 체크하세요.</EmptyHint> :
         bench.length === 0 ? <EmptyHint>지금 쉬는 사람이 없어요.</EmptyHint> : (
           <div className="bench">
             {bench.map(p => {

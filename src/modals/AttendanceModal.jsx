@@ -42,7 +42,7 @@ export default function AttendanceModal() {
 
   return (
     <>
-      <h3>오늘 참석자 선택 <span className="muted" style={{ fontSize: '.85rem', fontWeight: 700 }}>{checked.size}명 선택</span></h3>
+      <h3>참석자 선택 <span className="muted" style={{ fontSize: '.85rem', fontWeight: 700 }}>{checked.size}명 선택</span></h3>
       <p className="muted" style={{ marginTop: -6, fontSize: '.82rem' }}>오늘 온 사람을 눌러 선택하세요. 선택한 사람만 오늘 경기에 들어가요.</p>
       {state.players.length === 0 ? <EmptyHint>아직 등록된 참가자가 없어요. 먼저 "회원" 화면에서 회원을 등록해 주세요.</EmptyHint> : (
         <>

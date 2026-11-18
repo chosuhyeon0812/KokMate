@@ -43,7 +43,7 @@ export default function BulkAddModal() {
     if (ok.length === 0) { warn('추가할 사람이 없어요. 형식을 확인해 주세요.'); return; }
     actions.addPlayers(ok);
     closeModal();
-    toast(`${ok.length}명을 등록했어요. "오늘 참석자 선택"에서 오늘 온 사람을 체크하세요.`);
+    toast(`${ok.length}명을 등록했어요. "참석자 선택"에서 오늘 온 사람을 체크하세요.`);
   };
 
   return (

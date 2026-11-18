@@ -50,9 +50,15 @@ export default function Home() {
         )}
         {/* 참석자를 고르기 전엔 큰 버튼, 고른 뒤엔 오늘 몇 명 왔는지와 지금 어디에 있는지를 한 줄로. 누르면 참석자 바꾸기. */}
         {attending.length === 0 ? (
-          <div className="session-row">
-            <button className="btn btn-primary" onClick={openAttendance}>오늘 참석자 선택</button>
-          </div>
+          <button type="button" className="attend-summary start" onClick={openAttendance}>
+            <span className="attend-start-ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <circle cx="9" cy="8" r="3.2" /><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5" /><path d="M17 8v6M14 11h6" />
+              </svg>
+            </span>
+            <span className="attend-summary-main">참석자 선택</span>
+            <span className="attend-summary-edit">›</span>
+          </button>
         ) : (
           <button type="button" className="attend-summary" onClick={openAttendance}>
             <span className="attend-summary-main">참석 <strong>{attending.length}</strong>명</span>

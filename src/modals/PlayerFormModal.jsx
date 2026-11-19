@@ -1,4 +1,4 @@
-/* 참가자 추가/수정 모달. 수정일 때는 오늘 상태(참석·휴식)를 바로 바꾸거나 삭제할 수도 있다. */
+/* 회원 추가/수정 모달. 수정일 때는 오늘 상태(참석·휴식)를 바로 바꾸거나 삭제할 수도 있다. */
 import { useState } from 'react';
 import { useAppState } from '../store';
 import { useUI } from '../ui';
@@ -37,7 +37,7 @@ export default function PlayerFormModal({ playerId }) {
 
   return (
     <>
-      <h3>{player ? '참가자 수정' : '참가자 추가'}</h3>
+      <h3>{player ? '회원 수정' : '회원 추가'}</h3>
       {player && (
         <div className="today-status">
           <span className="field-label">오늘 상태 (누르면 바로 바뀌어요)</span>

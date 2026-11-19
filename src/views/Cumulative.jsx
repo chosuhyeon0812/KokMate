@@ -38,8 +38,10 @@ export default function Cumulative() {
   // 출석순이면 출석왕, 경기순이면 경기왕
   const top = sortBy === 'attend' ? topAttend : topGames;
   const kings = top > 0 ? list.filter(r => r[sortBy] === top).sort(byName) : [];
-  // "지난달 출석왕", "2026년 9월 출석 순위"처럼 쓰는 이름
-  const periodName = range.tag || range.title;
+  // 기간 이름은 날짜로 ("2026년 10월 출석 순위"). "이번 주·지난달" 같은 말은 안 쓴다.
+  const periodName = range.title;
+  // 출석왕 줄은 짧게: 올해 안의 달이면 연도는 뺀다 (2026년 10월 → 10월)
+  const kingName = period === 'month' && range.from.slice(0, 4) === today.slice(0, 4) ? range.title.replace(/^\d+년 /, '') : range.title;
   // 출석순이면 출석·경기 수가 둘 다 같아야, 경기순이면 경기·출석이 둘 다 같아야 같은 순위
   const ranks = rankOf(sorted, (a, b) => a.attend === b.attend && a.games === b.games);
 
@@ -50,7 +52,7 @@ export default function Cumulative() {
     try {
       const result = await shareRanking({
         title: `${periodName} ${sortBy === 'attend' ? '출석' : '경기'} 순위`,
-        subtitle: `${period === 'all' ? today : range.title} · 모임 ${sessions.length}번`,
+        subtitle: `모임 ${sessions.length}번 · ${today}`,
         columns: ['출석', '경기수'],
         rows: shown.map(r => ({ rank: r.rank, name: r.name, level: r.level, gender: r.gender, values: [`${r.attend}번`, r.games] })),
         filename: `콕메이트-${periodName.replace(/[ ~]+/g, '')}-순위-${today}.png`,
@@ -64,7 +66,7 @@ export default function Cumulative() {
   return (
     <div className="card">
       <div className="section-row">
-        <h2 className="mb0">누적 기록 <span className="h2-sub">{periodName} 모임 {sessions.length}번</span></h2>
+        <h2 className="mb0">누적 기록 <span className="h2-sub">모임 {sessions.length}번</span></h2>
         <div className="pill-toggle">
           {PERIODS.map(([k, label]) => <button key={k} className={period === k ? 'on' : ''} onClick={() => pickPeriod(k)}>{label}</button>)}
         </div>
@@ -83,7 +85,7 @@ export default function Cumulative() {
       {state.sessionHistory.length === 0 ? <EmptyHint>아직 저장된 모임이 없어요. 모임이 끝나면 "모임 종료"를 눌러 저장하세요.</EmptyHint> : (
         <>
           {kings.length > 0 && (
-            <div className="attend-king">👑 {periodName} {sortBy === 'attend' ? '출석왕' : '경기왕'} <b>{kings.map(r => r.name).join(', ')}</b> <span className="muted">({top}{sortBy === 'attend' ? '번' : '경기'})</span></div>
+            <div className="attend-king">👑 {kingName} {sortBy === 'attend' ? '출석왕' : '경기왕'} <b>{kings.map(r => r.name).join(', ')}</b> <span className="muted">({top}{sortBy === 'attend' ? '번' : '경기'})</span></div>
           )}
           <div className="section-row" style={{ marginBottom: 8 }}>
             <div className="pill-toggle">

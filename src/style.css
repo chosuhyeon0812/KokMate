@@ -265,7 +265,6 @@ tr:last-child td{border-bottom:none}
 .bench-chip .role-text.guest,.role-text.guest{color:#4a1fa8}
 .guest-tag{display:inline-flex;align-items:center;justify-content:center;width:1.7em;height:1.7em;margin-left:5px;border-radius:50%;font-size:.56em;font-weight:900;letter-spacing:0;line-height:1;vertical-align:.25em;background:linear-gradient(145deg,#6b2fd6,#3d128f);color:#fff;border:2.5px solid #fff;box-shadow:0 0 0 1.5px rgba(61,18,143,.35),0 2px 4px rgba(40,10,110,.4);text-shadow:0 1px 0 rgba(0,0,0,.15);flex-shrink:0}
 .form-grid .field-note{color:var(--muted);font-size:.8rem}
-.badge-level{background:var(--primary-pale-2);color:var(--primary-dark);font-weight:800}
 .badge-lose{background:var(--danger-pale);color:var(--danger);font-weight:700}
 
 .row-actions{display:flex;gap:6px;flex-wrap:wrap}
@@ -949,3 +948,5 @@ tbody td:first-child,.shuttle-table td.name-edit{font-weight:800}
 .member-table th:nth-child(2){width:22%}
 .member-table th:nth-child(3){width:18%}
 .member-table td.absent-long{color:var(--danger);font-weight:700}
+/* 급수는 역할 칸처럼 동그라미 없이 굵은 글자만 */
+.member-table td.member-level{font-weight:900;color:var(--primary-dark)}

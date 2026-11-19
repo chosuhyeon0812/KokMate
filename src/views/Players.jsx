@@ -40,7 +40,7 @@ export default function Players() {
   return (
     <div className="card">
       <div className="section-row">
-        <h2 className="mb0">참가자 ({filterActive ? `${filtered.length}/${state.players.length}` : state.players.length}명)</h2>
+        <h2 className="mb0">회원 ({filterActive ? `${filtered.length}/${state.players.length}` : state.players.length}명)</h2>
         <div className="row-actions">
           {/* 이름 검색: '+ 추가' 옆 같은 높이의 작은 둥근 칸 */}
           {state.players.length > 0 && (
@@ -49,7 +49,7 @@ export default function Players() {
               <input type="search" aria-label="이름 검색" value={filter.q} onChange={e => setFilter({ ...filter, q: e.target.value })} />
             </label>
           )}
-          <button type="button" className="add-pill" aria-label="참가자 추가" onClick={() => openModal(<PlayerFormModal />)}>
+          <button type="button" className="add-pill" aria-label="회원 추가" onClick={() => openModal(<PlayerFormModal />)}>
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
             추가
           </button>
@@ -63,8 +63,8 @@ export default function Players() {
           {filterActive && <button className="btn btn-ghost btn-sm" onClick={() => setFilter(EMPTY_FILTER)}>{q ? '검색·필터 초기화' : '필터 초기화'}</button>}
         </div>
       )}
-      {state.players.length === 0 ? <EmptyHint>아직 등록된 참가자가 없어요. 오른쪽 위 ‘추가’로 시작하세요.</EmptyHint> :
-        filtered.length === 0 ? <EmptyHint>{q ? `"${q}"(이)가 들어간 참가자가 없어요.` : '조건에 맞는 참가자가 없어요.'}</EmptyHint> : (
+      {state.players.length === 0 ? <EmptyHint>아직 등록된 회원이 없어요. 오른쪽 위 ‘추가’로 시작하세요.</EmptyHint> :
+        filtered.length === 0 ? <EmptyHint>{q ? `"${q}"(이)가 들어간 회원이 없어요.` : '조건에 맞는 회원이 없어요.'}</EmptyHint> : (
           // 표로 한 줄에 한 명. 남녀는 셔틀콕·순위표처럼 이름 앞 점으로. 누르면 수정 창.
           // 최근 참석이 오래됐거나 기록이 없으면 누적 기록처럼 빨간색.
           <div style={{ overflowX: 'auto' }}>
@@ -75,7 +75,7 @@ export default function Players() {
                   <tr key={p.id} className="clickable-row" onClick={() => openModal(<PlayerFormModal playerId={p.id} />)}>
                     <td><span className={`gender-dot ${p.gender === 'M' ? 'male' : 'female'}`} />{p.name}</td>
                     <td>{roleOf(p) !== 'member' && <span className={`role-text ${roleOf(p)}`}>{roleLabel(roleOf(p))}</span>}</td>
-                    <td><span className="badge badge-level">{p.level}</span></td>
+                    <td className="member-level">{p.level}</td>
                     <td className={days == null || days >= LONG_ABSENT_DAYS ? 'absent-long' : ''}>{agoLabel(days)}</td>
                   </tr>
                 ); })}

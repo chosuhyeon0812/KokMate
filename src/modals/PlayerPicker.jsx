@@ -138,7 +138,7 @@ export default function PlayerPicker({ mode, presetCourt, idx, waitingId, gameId
   const pickedOutsiders = selection.filter(isOutsider);
   const nextOutsider = OUTSIDERS.find(o => !selection.includes(o));
   const outsiderTiles = pickedOutsiders.concat(!full && nextOutsider ? [nextOutsider] : []);
-  const grid = pool.length === 0 ? <EmptyHint>고를 수 있는 참가자가 없어요.</EmptyHint> : (
+  const grid = pool.length === 0 ? <EmptyHint>고를 수 있는 참석자가 없어요.</EmptyHint> : (
     <div className="player-grid">
       {outsiderTiles.map(o => (
         <button key={o} type="button" aria-pressed={selection.includes(o)} className={`player-tile outsider${selection.includes(o) ? ' selected' : ''}`} onClick={() => pick(o)}>

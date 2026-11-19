@@ -52,7 +52,7 @@ export default function AttendanceModal() {
           </label>
         )}
       </div>
-      {state.players.length === 0 ? <EmptyHint>아직 등록된 참가자가 없어요. 먼저 "회원" 화면에서 회원을 등록해 주세요.</EmptyHint> : (
+      {state.players.length === 0 ? <EmptyHint>아직 등록된 회원이 없어요. 먼저 "회원" 화면에서 회원을 등록해 주세요.</EmptyHint> : (
         <>
           <div className="gender-seg">
             {[['F', '여자'], ['M', '남자']].map(([g, label]) => (

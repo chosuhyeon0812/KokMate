@@ -1,22 +1,16 @@
-/* 누적 기록: 저장된 지난 모임들로 회원별 출석 횟수, 경기 수, 마지막 참석일을 모아 보여준다. */
+/* 누적 기록: 저장된 지난 모임들로 회원별 출석 횟수, 경기 수, 최근 참석일을 모아 보여준다. */
 import { useState } from 'react';
 import { useAppState } from '../store';
 import { useUI } from '../ui';
 import { EmptyHint, ShareButton } from '../components/cards';
 import PlayerFormModal from '../modals/PlayerFormModal';
 import { todayStr } from '../lib/utils';
-import { cumulativeRows } from '../lib/cumulative';
+import { cumulativeRows, agoLabel, LONG_ABSENT_DAYS } from '../lib/cumulative';
 import { shareRanking, rankOf } from '../lib/shareImage';
 
 const PERIODS = [['week', '주간'], ['month', '월간'], ['year', '연간'], ['all', '전체']];
 const BACK_LABEL = { month: '이번 달로', year: '올해로' };
 const SORTS = [['attend', '출석순'], ['games', '경기순']];
-const LONG_ABSENT_DAYS = 30; // 이만큼 안 나왔으면 빨간색으로
-
-function agoLabel(days) {
-  if (days == null) return '기록 없음';
-  return days === 0 ? '오늘' : days === 1 ? '어제' : `${days}일 전`;
-}
 
 export default function Cumulative() {
   const state = useAppState();
@@ -99,7 +93,7 @@ export default function Cumulative() {
           </div>
           {sorted.length === 0 ? <EmptyHint>이 기간에는 출석 기록이 없어요.</EmptyHint> : <div style={{ overflowX: 'auto' }}>
             <table className="rank-table">
-              <thead><tr><th>순위</th><th>이름</th><th>출석</th><th>경기수</th><th>마지막 참석</th></tr></thead>
+              <thead><tr><th>순위</th><th>이름</th><th>출석</th><th>경기수</th><th>최근 참석</th></tr></thead>
               <tbody>
                 {sorted.map((r, i) => (
                   <tr key={r.key} className="clickable-row" onClick={() => openModal(<PlayerFormModal playerId={r.key} />)}>
@@ -114,7 +108,7 @@ export default function Cumulative() {
             </table>
           </div>}
           <div className="muted mt8" style={{ fontSize: '.78rem' }}>
-            "모임 종료"로 저장된 모임만 세요. 그 기간에 안 온 사람은 안 나와요. 마지막 참석이 {LONG_ABSENT_DAYS}일 넘었거나 기록이 없으면 빨간색이에요.
+            "모임 종료"로 저장된 모임만 세요. 그 기간에 안 온 사람은 안 나와요. 최근 참석이 {LONG_ABSENT_DAYS}일 넘었거나 기록이 없으면 빨간색이에요.
           </div>
         </>
       )}

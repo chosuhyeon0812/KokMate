@@ -258,16 +258,13 @@ tr:last-child td{border-bottom:none}
 .badge-active::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--success);display:inline-block}
 .badge-playing{background:var(--primary-pale);color:var(--primary)}
 .badge-playing::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--primary);display:inline-block;animation:dotPulse 1.4s infinite}
-.badge-role-owner{background:#fff1dc;color:#a85a00;border:1px solid #f3c27a}
-/* 회원 카드 왼쪽 위 역할: 배지 없이 색 글자만 */
+/* 회원 표 역할 칸: 배지 없이 색 글자만 */
 .role-text{font-weight:900}
 .bench-chip .role-text.owner,.role-text.owner{color:#a85a00}
 .bench-chip .role-text.staff,.role-text.staff{color:var(--primary-dark)}
 .bench-chip .role-text.guest,.role-text.guest{color:#4a1fa8}
-.badge-role-guest{background:#efe8ff;color:#4a1fa8;border:1px solid #c6b2f5}
 .guest-tag{display:inline-flex;align-items:center;justify-content:center;width:1.7em;height:1.7em;margin-left:5px;border-radius:50%;font-size:.56em;font-weight:900;letter-spacing:0;line-height:1;vertical-align:.25em;background:linear-gradient(145deg,#6b2fd6,#3d128f);color:#fff;border:2.5px solid #fff;box-shadow:0 0 0 1.5px rgba(61,18,143,.35),0 2px 4px rgba(40,10,110,.4);text-shadow:0 1px 0 rgba(0,0,0,.15);flex-shrink:0}
 .form-grid .field-note{color:var(--muted);font-size:.8rem}
-.badge-role-staff{background:var(--primary-pale);color:var(--primary);border:1px solid var(--primary-light)}
 .badge-level{background:var(--primary-pale-2);color:var(--primary-dark);font-weight:800}
 .badge-lose{background:var(--danger-pale);color:var(--danger);font-weight:700}
 
@@ -415,18 +412,20 @@ tr:last-child td{border-bottom:none}
 .attend-bulk{display:flex;align-items:center;gap:4px;color:var(--border)}
 .attend-bulk button{border:none;background:none;padding:6px 4px;font:inherit;font-size:.88rem;font-weight:700;color:var(--primary-light);cursor:pointer}
 .attend-bulk button:hover{text-decoration:underline}
-/* 참석자 칸: 안 고른 사람은 흰 바탕+연한 남녀색 테두리, 고른 사람은 남녀색으로 꽉 채움 */
-.attend-grid .player-tile{border-width:2px}
-.attend-grid .player-tile.female{border-color:#f2bfd7}
-.attend-grid .player-tile.male{border-color:#b7d2f0}
-.attend-grid .player-tile.female.selected{background:#d9488b;border-color:#d9488b}
-.attend-grid .player-tile.male.selected{background:#3a7bd5;border-color:#3a7bd5}
+/* 참석자 칸: 안 고른 사람도 사람 카드처럼 쨍한 파랑·분홍, 고른 사람은 경기 만들기처럼 더 진하게 + 흰 글씨 + 바깥 테두리 */
+.attend-grid{padding:8px;gap:12px}
+.attend-grid .player-tile.male{background:#7db3f5;border:2.5px solid #5a9be8}
+.attend-grid .player-tile.female{background:#f79cc4;border:2.5px solid #ec77ab}
+.attend-grid .player-tile .tile-name{color:#111}
+.attend-grid .player-tile.male.selected{background:#2563b8;border:3px solid #fff;box-shadow:0 0 0 4px #1d4f99,0 6px 14px rgba(0,0,0,.25)}
+.attend-grid .player-tile.female.selected{background:#c4306f;border:3px solid #fff;box-shadow:0 0 0 4px #a3245c,0 6px 14px rgba(0,0,0,.25)}
 .attend-grid .player-tile.selected .tile-name{color:#fff}
 .player-tile .tile-level{font-weight:900;color:#4a5f66}
-.attend-grid .player-tile.selected .tile-level{color:rgba(255,255,255,.8)}
+.attend-grid .player-tile .tile-level{color:#2b2b2b}
+.attend-grid .player-tile.selected .tile-level{color:rgba(255,255,255,.85)}
 .attend-grid .player-tile .attend-check{top:5px;right:6px;width:18px;height:18px;line-height:18px;border-radius:50%;background:#fff;font-size:.7rem;text-align:center}
-.attend-grid .player-tile.female .attend-check{color:#d9488b}
-.attend-grid .player-tile.male .attend-check{color:#3a7bd5}
+.attend-grid .player-tile.female .attend-check{color:#c4306f}
+.attend-grid .player-tile.male .attend-check{color:#2563b8}
 .attend-check{color:#2563a8}
 .attend-check{position:absolute;top:4px;right:6px;font-size:.8rem;font-weight:800;color:var(--primary)}
 .player-tile.disabled:hover{transform:none;box-shadow:none;border-color:var(--border)}
@@ -655,7 +654,7 @@ button.court-add-tile:hover,button.court-add-tile:focus-visible{background:var(-
   .modal-actions .btn{flex:1}
   .player-grid{max-height:none;overflow:visible;grid-template-columns:repeat(2,1fr)}
   .bench{grid-template-columns:repeat(2,1fr)}
-  .attend-grid{grid-template-columns:repeat(3,1fr);gap:8px}
+  .attend-grid{grid-template-columns:repeat(3,1fr);gap:10px}
 
   /* 선택칸 4개 + VS 를 한 줄에 */
 
@@ -942,9 +941,11 @@ tbody td:first-child,.shuttle-table td.name-edit{font-weight:800}
 @media (prefers-reduced-motion:reduce){.player-grid:not(.attend-grid) .player-tile.selected{animation:none}}
 /* 굵어진 바깥선·커진 칸이 목록 가장자리나 옆 칸과 겹치지 않게 여백·간격 */
 .player-grid:not(.attend-grid){padding:10px;gap:14px}
-
-/* 회원 화면: 바둑판 대신 한 줄에 한 명 (색은 .bench-chip 그대로) */
-.member-list{display:flex;flex-direction:column;gap:6px}
-.member-list .bench-chip{flex-direction:row;justify-content:space-between;gap:10px;width:100%;min-width:0;min-height:0;padding:10px 16px;border-radius:12px;font:inherit;text-align:left;cursor:pointer}
-.member-list .bench-chip .bench-name{font-size:1.25rem;overflow:hidden;text-overflow:ellipsis}
-.member-list .bench-chip .bench-games{position:static;font-size:.85rem;white-space:nowrap}
+/* 회원 표: 맨 위 '이름 · 역할 · 급수' 글자는 크고 진하게 */
+.member-table th{font-size:1rem;font-weight:900;color:var(--text)}
+.member-table td{white-space:nowrap}
+/* 폰 폭에 맞춰 칸을 고르게 나눈다: 이름 넓게, 역할·급수는 적당히, 나머지는 최근 참석 */
+.member-table th:nth-child(1){width:32%}
+.member-table th:nth-child(2){width:22%}
+.member-table th:nth-child(3){width:18%}
+.member-table td.absent-long{color:var(--danger);font-weight:700}

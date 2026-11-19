@@ -1,8 +1,16 @@
-/* 누적 기록 계산: 저장된 지난 모임들로 회원별 출석 횟수, 경기 수, 마지막 참석일을 모은다. (화면은 views/Cumulative.jsx) */
+/* 누적 기록 계산: 저장된 지난 모임들로 회원별 출석 횟수, 경기 수, 최근 참석일을 모은다. (화면은 views/Cumulative.jsx) */
 
 export function daysBetween(from, to) {
   const t = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d).getTime(); };
   return Math.round((t(to) - t(from)) / 86400000);
+}
+
+export const LONG_ABSENT_DAYS = 30; // 이만큼 안 나왔으면 빨간색으로
+
+// 최근 참석일이 며칠 전인지 글로 (누적 기록 · 회원 화면)
+export function agoLabel(days) {
+  if (days == null) return '기록 없음';
+  return days === 0 ? '오늘' : days === 1 ? '어제' : `${days}일 전`;
 }
 
 // 기록 속 참가자가 지금 명단의 누구인지 찾는다. 예전 기록에는 id가 없어서 같은 이름으로 맞춘다.
@@ -65,7 +73,7 @@ export function cumulativeRows(state, period, today, offset = 0) {
     key: p.id, name: p.name, level: p.level, gender: p.gender,
     attend: addPrior ? p.priorAttend || 0 : 0, games: 0, last: null,
   }]));
-  // 마지막 참석일은 기간과 상관없이 전체 기록에서 찾는다.
+  // 최근 참석일은 기간과 상관없이 전체 기록에서 찾는다.
   state.sessionHistory.forEach(s => s.participants.forEach(p => {
     const r = rows.get(memberId(state, p));
     if (!r) return;

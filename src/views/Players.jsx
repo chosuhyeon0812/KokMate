@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useAppState } from '../store';
 import { useUI } from '../ui';
-import { sortByName, LEVEL_OPTIONS, ROLE_OPTIONS, roleOf, roleLabel } from '../lib/utils';
+import { sortByName, LEVEL_OPTIONS, ROLE_OPTIONS, roleOf, roleLabel, todayStr } from '../lib/utils';
 import { EmptyHint } from '../components/cards';
 import PlayerFormModal from '../modals/PlayerFormModal';
+import { cumulativeRows, agoLabel, LONG_ABSENT_DAYS } from '../lib/cumulative';
 
 const EMPTY_FILTER = { q: '', gender: '', level: '', role: '' };
 // 탭을 옮겨 다녀도 검색어·필터가 유지되도록 컴포넌트 밖에 기억해 둔다.
@@ -23,6 +24,8 @@ export default function Players() {
     (!filter.role || roleOf(p) === filter.role)
   );
   const filterActive = q || filter.gender || filter.level || filter.role;
+  // 최근 참석: 누적 기록과 같은 계산 (지난 모임 기록에서 가장 최근 날)
+  const lastSeen = new Map(cumulativeRows(state, 'all', todayStr()).rows.map(r => [r.key, r.days]));
 
   const filterSelect = (key, label, options) => (
     <div className="field">
@@ -62,14 +65,22 @@ export default function Players() {
       )}
       {state.players.length === 0 ? <EmptyHint>아직 등록된 참가자가 없어요. 오른쪽 위 ‘추가’로 시작하세요.</EmptyHint> :
         filtered.length === 0 ? <EmptyHint>{q ? `"${q}"(이)가 들어간 참가자가 없어요.` : '조건에 맞는 참가자가 없어요.'}</EmptyHint> : (
-          // 한 줄에 한 명: 이름 / 급수, 오른쪽 끝에 역할(일반 회원은 비움). 색은 '대기 중' 칸과 같은 파랑·분홍, 누르면 수정 창.
-          <div className="member-list">
-            {filtered.map(p => (
-              <button type="button" key={p.id} className={`bench-chip ${p.gender === 'M' ? 'male' : 'female'}`} onClick={() => openModal(<PlayerFormModal playerId={p.id} />)}>
-                <span className="bench-name">{p.name} <span className="bench-level">/ {p.level}</span></span>
-                {roleOf(p) !== 'member' && <span className={`bench-games role-text ${roleOf(p)}`}>{roleLabel(roleOf(p))}</span>}
-              </button>
-            ))}
+          // 표로 한 줄에 한 명. 남녀는 셔틀콕·순위표처럼 이름 앞 점으로. 누르면 수정 창.
+          // 최근 참석이 오래됐거나 기록이 없으면 누적 기록처럼 빨간색.
+          <div style={{ overflowX: 'auto' }}>
+            <table className="member-table">
+              <thead><tr><th>이름</th><th>역할</th><th>급수</th><th>최근 참석</th></tr></thead>
+              <tbody>
+                {filtered.map(p => { const days = lastSeen.get(p.id); return (
+                  <tr key={p.id} className="clickable-row" onClick={() => openModal(<PlayerFormModal playerId={p.id} />)}>
+                    <td><span className={`gender-dot ${p.gender === 'M' ? 'male' : 'female'}`} />{p.name}</td>
+                    <td>{roleOf(p) !== 'member' && <span className={`role-text ${roleOf(p)}`}>{roleLabel(roleOf(p))}</span>}</td>
+                    <td><span className="badge badge-level">{p.level}</span></td>
+                    <td className={days == null || days >= LONG_ABSENT_DAYS ? 'absent-long' : ''}>{agoLabel(days)}</td>
+                  </tr>
+                ); })}
+              </tbody>
+            </table>
           </div>
         )}
     </div>

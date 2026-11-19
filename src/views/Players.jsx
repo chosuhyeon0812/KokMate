@@ -62,12 +62,12 @@ export default function Players() {
       )}
       {state.players.length === 0 ? <EmptyHint>아직 등록된 참가자가 없어요. 오른쪽 위 ‘추가’로 시작하세요.</EmptyHint> :
         filtered.length === 0 ? <EmptyHint>{q ? `"${q}"(이)가 들어간 참가자가 없어요.` : '조건에 맞는 참가자가 없어요.'}</EmptyHint> : (
-          // 매칭 화면 '대기 중' 칸과 같은 파랑·분홍 네모. 왼쪽 위에 역할(일반 회원은 비움), 누르면 수정 창.
-          <div className="bench member-grid">
+          // 한 줄에 한 명: 이름 / 급수, 오른쪽 끝에 역할(일반 회원은 비움). 색은 '대기 중' 칸과 같은 파랑·분홍, 누르면 수정 창.
+          <div className="member-list">
             {filtered.map(p => (
               <button type="button" key={p.id} className={`bench-chip ${p.gender === 'M' ? 'male' : 'female'}`} onClick={() => openModal(<PlayerFormModal playerId={p.id} />)}>
-                {roleOf(p) !== 'member' && <span className={`bench-games role-text ${roleOf(p)}`}>{roleLabel(roleOf(p))}</span>}
                 <span className="bench-name">{p.name} <span className="bench-level">/ {p.level}</span></span>
+                {roleOf(p) !== 'member' && <span className={`bench-games role-text ${roleOf(p)}`}>{roleLabel(roleOf(p))}</span>}
               </button>
             ))}
           </div>

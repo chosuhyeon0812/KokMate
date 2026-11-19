@@ -42,8 +42,16 @@ export default function AttendanceModal() {
 
   return (
     <>
-      <h3>참석자 선택 <span className="muted" style={{ fontSize: '.85rem', fontWeight: 700 }}>{checked.size}명 선택</span></h3>
-      <p className="muted" style={{ marginTop: -6, fontSize: '.82rem' }}>오늘 온 사람을 눌러 선택하세요. 선택한 사람만 오늘 경기에 들어가요.</p>
+      {/* 제목 오른쪽에 회원 화면과 같은 작은 둥근 검색칸 */}
+      <div className="attend-head">
+        <h3>참석자 선택 <span className="muted" style={{ fontSize: '.85rem', fontWeight: 700 }}>{checked.size}명 선택</span></h3>
+        {state.players.length > 0 && (
+          <label className="search-pill">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5" /><path d="M16 16l4 4" /></svg>
+            <input type="search" aria-label="이름 검색" value={query} onChange={e => setQuery(e.target.value)} />
+          </label>
+        )}
+      </div>
       {state.players.length === 0 ? <EmptyHint>아직 등록된 참가자가 없어요. 먼저 "회원" 화면에서 회원을 등록해 주세요.</EmptyHint> : (
         <>
           <div className="gender-seg">
@@ -54,7 +62,6 @@ export default function AttendanceModal() {
               </button>
             ))}
           </div>
-          <input type="search" className="attend-search" placeholder="🔍  이름 검색" value={query} onChange={e => setQuery(e.target.value)} />
           <div className="attend-bar">
             <div className="sort-chips">
               {[['name', 'ㄱㄴㄷ 순'], ['low', '급수 낮은 순'], ['high', '급수 높은 순']].map(([k, label]) => (

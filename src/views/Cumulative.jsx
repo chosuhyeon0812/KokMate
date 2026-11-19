@@ -8,7 +8,8 @@ import { todayStr } from '../lib/utils';
 import { cumulativeRows } from '../lib/cumulative';
 import { shareRanking, rankOf } from '../lib/shareImage';
 
-const PERIODS = [['month', '이번 달'], ['year', '올해'], ['all', '전체']];
+const PERIODS = [['week', '주간'], ['month', '월간'], ['year', '연간'], ['all', '전체']];
+const BACK_LABEL = { month: '이번 달로', year: '올해로' };
 const SORTS = [['attend', '출석순'], ['games', '경기순']];
 const LONG_ABSENT_DAYS = 30; // 이만큼 안 나왔으면 빨간색으로
 
@@ -21,36 +22,44 @@ export default function Cumulative() {
   const state = useAppState();
   const { toast, warn, openModal } = useUI();
   const [period, setPeriod] = useState('month');
+  const [offset, setOffset] = useState(0); // 0 = 이번 주·달·해, -1 = 지난번 ...
   const [sortBy, setSortBy] = useState('attend');
   const today = todayStr();
-  const { sessions, rows: list } = cumulativeRows(state, period, today);
+  const { range, sessions, rows: list } = cumulativeRows(state, period, today, offset);
+  // 가장 오래된 모임보다 앞으로는 못 가고, 이번 주·달·해보다 뒤로도 못 간다.
+  const firstDate = state.sessionHistory.reduce((m, s) => (!m || s.date < m ? s.date : m), null);
+  const canPrev = firstDate != null && firstDate < range.from;
+  const canNext = offset < 0;
+  const pickPeriod = k => { setPeriod(k); setOffset(0); };
 
   const byName = (a, b) => a.name.localeCompare(b.name, 'ko');
   const sorters = {
     attend: (a, b) => b.attend - a.attend || b.games - a.games || byName(a, b),
     games: (a, b) => b.games - a.games || b.attend - a.attend || byName(a, b),
   };
-  const sorted = list.slice().sort(sorters[sortBy]);
+  // 그 기간에 한 번도 안 온 사람(0번)은 표에서 뺀다.
+  const sorted = list.filter(r => r.attend > 0).sort(sorters[sortBy]);
   const topAttend = Math.max(0, ...list.map(r => r.attend));
   const topGames = Math.max(0, ...list.map(r => r.games));
   // 출석순이면 출석왕, 경기순이면 경기왕
   const top = sortBy === 'attend' ? topAttend : topGames;
   const kings = top > 0 ? list.filter(r => r[sortBy] === top).sort(byName) : [];
-  const periodName = PERIODS.find(([k]) => k === period)[1];
+  // "지난달 출석왕", "2026년 9월 출석 순위"처럼 쓰는 이름
+  const periodName = range.tag || range.title;
   // 출석순이면 출석·경기 수가 둘 다 같아야, 경기순이면 경기·출석이 둘 다 같아야 같은 순위
   const ranks = rankOf(sorted, (a, b) => a.attend === b.attend && a.games === b.games);
 
-  // 지금 보고 있는 기간·정렬 그대로 사진으로 만든다. 그 기간에 한 번도 안 온 사람은 뺀다.
+  // 지금 보고 있는 기간·정렬 그대로 사진으로 만든다.
   const shareCumulativeImage = async () => {
-    const shown = sorted.map((r, i) => ({ ...r, rank: ranks[i] })).filter(r => r.attend > 0);
+    const shown = sorted.map((r, i) => ({ ...r, rank: ranks[i] }));
     if (shown.length === 0) { warn(`${periodName} 출석 기록이 없어요.`); return; }
     try {
       const result = await shareRanking({
         title: `${periodName} ${sortBy === 'attend' ? '출석' : '경기'} 순위`,
-        subtitle: `${today} · ${periodName} 모임 ${sessions.length}번`,
+        subtitle: `${period === 'all' ? today : range.title} · 모임 ${sessions.length}번`,
         columns: ['출석', '경기수'],
         rows: shown.map(r => ({ rank: r.rank, name: r.name, level: r.level, gender: r.gender, values: [`${r.attend}번`, r.games] })),
-        filename: `콕메이트-${periodName}-순위-${today}.png`,
+        filename: `콕메이트-${periodName.replace(/[ ~]+/g, '')}-순위-${today}.png`,
       });
       if (result === 'saved') toast('사진을 저장했어요.');
     } catch (e) {
@@ -63,9 +72,20 @@ export default function Cumulative() {
       <div className="section-row">
         <h2 className="mb0">누적 기록 <span className="h2-sub">{periodName} 모임 {sessions.length}번</span></h2>
         <div className="pill-toggle">
-          {PERIODS.map(([k, label]) => <button key={k} className={period === k ? 'on' : ''} onClick={() => setPeriod(k)}>{label}</button>)}
+          {PERIODS.map(([k, label]) => <button key={k} className={period === k ? 'on' : ''} onClick={() => pickPeriod(k)}>{label}</button>)}
         </div>
       </div>
+      {period !== 'all' && (
+        <div className="cal-head">
+          <button type="button" className="cal-nav" aria-label="이전" disabled={!canPrev} onClick={() => setOffset(o => o - 1)}>‹</button>
+          <div className="period-title">
+            <div className="cal-title">{range.title}</div>
+            {/* 날짜만 보여주고 "이번 주/지난달/올해" 같은 작은 글씨는 안 붙인다. 주간은 "이번 주로 ↩"도 없다 */}
+            {!range.tag && period !== 'week' && <button type="button" className="period-back" onClick={() => setOffset(0)}>{BACK_LABEL[period]} ↩</button>}
+          </div>
+          <button type="button" className="cal-nav" aria-label="다음" disabled={!canNext} onClick={() => setOffset(o => o + 1)}>›</button>
+        </div>
+      )}
       {state.sessionHistory.length === 0 ? <EmptyHint>아직 저장된 모임이 없어요. 모임이 끝나면 "모임 종료"를 눌러 저장하세요.</EmptyHint> : (
         <>
           {kings.length > 0 && (
@@ -77,7 +97,7 @@ export default function Cumulative() {
             </div>
             <ShareButton onClick={shareCumulativeImage} />
           </div>
-          <div style={{ overflowX: 'auto' }}>
+          {sorted.length === 0 ? <EmptyHint>이 기간에는 출석 기록이 없어요.</EmptyHint> : <div style={{ overflowX: 'auto' }}>
             <table className="rank-table">
               <thead><tr><th>순위</th><th>이름</th><th>출석</th><th>경기수</th><th>마지막 참석</th></tr></thead>
               <tbody>
@@ -92,9 +112,9 @@ export default function Cumulative() {
                 ))}
               </tbody>
             </table>
-          </div>
+          </div>}
           <div className="muted mt8" style={{ fontSize: '.78rem' }}>
-            "모임 종료"로 저장된 모임만 세요. 마지막 참석이 {LONG_ABSENT_DAYS}일 넘었거나 기록이 없으면 빨간색이에요.
+            "모임 종료"로 저장된 모임만 세요. 그 기간에 안 온 사람은 안 나와요. 마지막 참석이 {LONG_ABSENT_DAYS}일 넘었거나 기록이 없으면 빨간색이에요.
           </div>
         </>
       )}

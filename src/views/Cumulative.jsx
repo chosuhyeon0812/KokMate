@@ -4,7 +4,7 @@ import { useAppState } from '../store';
 import { useUI } from '../ui';
 import { EmptyHint, ShareButton } from '../components/cards';
 import PlayerFormModal from '../modals/PlayerFormModal';
-import { todayStr } from '../lib/utils';
+import { todayStr, dateLabel } from '../lib/utils';
 import { cumulativeRows, agoLabel, LONG_ABSENT_DAYS } from '../lib/cumulative';
 import { shareRanking, rankOf } from '../lib/shareImage';
 
@@ -52,8 +52,8 @@ export default function Cumulative() {
     try {
       const result = await shareRanking({
         title: `${periodName} ${sortBy === 'attend' ? '출석' : '경기'} 순위`,
-        subtitle: `모임 ${sessions.length}번 · ${today}`,
-        columns: ['출석', '경기수'],
+        subtitle: `모임 ${sessions.length}번 · ${dateLabel(today)} 기준`,
+        columns: ['출석', '경기 수'],
         rows: shown.map(r => ({ rank: r.rank, name: r.name, level: r.level, gender: r.gender, values: [`${r.attend}번`, r.games] })),
         filename: `콕메이트-${periodName.replace(/[ ~]+/g, '')}-순위-${today}.png`,
       });
@@ -82,7 +82,7 @@ export default function Cumulative() {
           <button type="button" className="cal-nav" aria-label="다음" disabled={!canNext} onClick={() => setOffset(o => o + 1)}>›</button>
         </div>
       )}
-      {state.sessionHistory.length === 0 ? <EmptyHint>아직 저장된 모임이 없어요. 모임이 끝나면 "모임 종료"를 눌러 저장하세요.</EmptyHint> : (
+      {state.sessionHistory.length === 0 ? <EmptyHint>아직 저장된 모임이 없어요. 모임이 끝나면 "매칭" 화면의 "모임 종료"를 눌러 저장하세요.</EmptyHint> : (
         <>
           {kings.length > 0 && (
             <div className="attend-king">👑 {kingName} {sortBy === 'attend' ? '출석왕' : '경기왕'} <b>{kings.map(r => r.name).join(', ')}</b> <span className="muted">({top}{sortBy === 'attend' ? '번' : '경기'})</span></div>
@@ -95,7 +95,7 @@ export default function Cumulative() {
           </div>
           {sorted.length === 0 ? <EmptyHint>이 기간에는 출석 기록이 없어요.</EmptyHint> : <div style={{ overflowX: 'auto' }}>
             <table className="rank-table">
-              <thead><tr><th>순위</th><th>이름</th><th>출석</th><th>경기수</th><th>최근 참석</th></tr></thead>
+              <thead><tr><th>순위</th><th>이름</th><th>출석</th><th>경기 수</th><th>최근 참석</th></tr></thead>
               <tbody>
                 {sorted.map((r, i) => (
                   <tr key={r.key} className="clickable-row" onClick={() => openModal(<PlayerFormModal playerId={r.key} />)}>

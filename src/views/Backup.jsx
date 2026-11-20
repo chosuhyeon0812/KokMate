@@ -13,7 +13,7 @@ function backupFile() {
   // 불러온 뒤에도 "마지막 백업" 시각이 맞게 나오도록 파일 안에도 넣어둔다.
   const data = { app: BACKUP_APP, version: 1, exportedAt: now, state: { ...getState(), lastBackupAt: now } };
   const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
-  return new File([blob], `배드민턴-백업-${todayStr()}.json`, { type: 'application/json' });
+  return new File([blob], `콕메이트-백업-${todayStr()}.json`, { type: 'application/json' });
 }
 
 function markBackedUp() {

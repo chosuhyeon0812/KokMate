@@ -4,7 +4,7 @@ import * as actions from '../actions';
 import { StatusBadge, EmptyHint, RankLabel, RankName, ShareButton } from '../components/cards';
 import PlayerFormModal from '../modals/PlayerFormModal';
 import { playingPlayerIds, shortWait, LONG_REST_MS } from '../lib/selectors';
-import { todayStr } from '../lib/utils';
+import { todayStr, dateLabel } from '../lib/utils';
 import { shareRanking, rankOf } from '../lib/shareImage';
 
 export default function Stats() {
@@ -28,7 +28,7 @@ export default function Stats() {
     const doneGames = state.games.filter(g => g.status === 'done').length;
     try {
       const result = await shareRanking({
-        title: '오늘 경기 순위', subtitle: `${todayStr()} · 오늘 경기 ${doneGames}판`, columns: ['경기수'],
+        title: '오늘 경기 순위', subtitle: `${dateLabel(todayStr())} · 경기 ${doneGames}번`, columns: ['경기 수'],
         rows: list.map((p, i) => ({ rank: ranks[i], name: p.name, level: p.level, gender: p.gender, values: [p.totalGames] })),
         filename: `콕메이트-오늘경기-${todayStr()}.png`,
       });
@@ -57,7 +57,7 @@ export default function Stats() {
         <>
           <div style={{ overflowX: 'auto' }}>
             <table className="rank-table">
-              <thead><tr><th>순위</th><th>이름</th><th>경기수</th><th>대기 시간</th><th>상태</th></tr></thead>
+              <thead><tr><th>순위</th><th>이름</th><th>경기 수</th><th>대기 시간</th><th>상태</th></tr></thead>
               <tbody>
                 {sorted.map((p, i) => {
                   const isMin = p.active && p.totalGames === minGames;

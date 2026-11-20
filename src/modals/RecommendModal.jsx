@@ -21,7 +21,7 @@ export default function RecommendModal() {
       {state.lastShortfall && (
         <EmptyHint style={{ borderColor: 'var(--danger)', background: 'var(--danger-pale)', color: 'var(--danger)', marginBottom: 10 }}>{state.lastShortfall}</EmptyHint>
       )}
-      {state.pendingRecs.length === 0 ? <EmptyHint>‘추천 받기’를 누르면 추천 조합이 나와요.</EmptyHint> :
+      {state.pendingRecs.length === 0 ? <EmptyHint>"추천 받기"를 누르면 추천 조합이 나와요.</EmptyHint> :
         state.pendingRecs.map((r, idx) => <RecCard key={r.court} rec={r} idx={idx} />)}
       <div className="modal-actions"><button className="btn btn-ghost" onClick={closeModal}>닫기</button></div>
     </>

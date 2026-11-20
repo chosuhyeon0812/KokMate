@@ -63,7 +63,7 @@ export default function Players() {
           {filterActive && <button className="btn btn-ghost btn-sm" onClick={() => setFilter(EMPTY_FILTER)}>{q ? '검색·필터 초기화' : '필터 초기화'}</button>}
         </div>
       )}
-      {state.players.length === 0 ? <EmptyHint>아직 등록된 회원이 없어요. 오른쪽 위 ‘추가’로 시작하세요.</EmptyHint> :
+      {state.players.length === 0 ? <EmptyHint>아직 등록된 회원이 없어요. 오른쪽 위 "추가"로 시작하세요.</EmptyHint> :
         filtered.length === 0 ? <EmptyHint>{q ? `"${q}"(이)가 들어간 회원이 없어요.` : '조건에 맞는 회원이 없어요.'}</EmptyHint> : (
           // 표로 한 줄에 한 명. 남녀는 셔틀콕·순위표처럼 이름 앞 점으로. 누르면 수정 창.
           // 최근 참석이 오래됐거나 기록이 없으면 누적 기록처럼 빨간색.

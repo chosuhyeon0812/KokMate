@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAppState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
-import { timeStr, durationStr } from '../lib/utils';
+import { timeStr, durationStr, dateLabel } from '../lib/utils';
 import { playerName } from '../lib/selectors';
 import { EmptyHint, NameChips, OutsiderChips, RankLabel, RankName, ShareButton } from '../components/cards';
 import { shareRanking, rankOf } from '../lib/shareImage';
@@ -16,17 +16,11 @@ function Memos({ memos }) {
 function SummaryGrid({ totalGames, usedCourts, participants, style }) {
   return (
     <div className="summary-grid" style={style}>
-      <div className="summary-box"><div className="num">{totalGames}</div><div className="lbl">총 경기 수</div></div>
+      <div className="summary-box"><div className="num">{totalGames}</div><div className="lbl">경기 수</div></div>
       <div className="summary-box"><div className="num">{usedCourts}</div><div className="lbl">사용 코트</div></div>
-      <div className="summary-box"><div className="num">{participants}</div><div className="lbl">참가 인원</div></div>
+      <div className="summary-box"><div className="num">{participants}</div><div className="lbl">참석 인원</div></div>
     </div>
   );
-}
-
-// "2026-10-19" → "10월 19일 (일)"
-function dateLabel(date) {
-  const [y, m, d] = date.split('-').map(Number);
-  return `${m}월 ${d}일 (${'일월화수목금토'[new Date(y, m - 1, d).getDay()]})`;
 }
 
 // 지난 모임 달력: 한 달씩 넘겨 보고, 모임이 있던 날(초록 동그라미)을 누르면 아래에서 그날 기록이 펼쳐진다.
@@ -82,7 +76,7 @@ export function SessionHistoryCard() {
     const [, m, d] = s.date.split('-').map(Number);
     try {
       const result = await shareRanking({
-        title: `${m}월 ${d}일 경기 순위`, subtitle: `${dateLabel(s.date)} · 경기 ${s.totalGames}판 · ${list.length}명`, columns: ['경기수'],
+        title: `${m}월 ${d}일 경기 순위`, subtitle: `${dateLabel(s.date)} · 경기 ${s.totalGames}번 · ${list.length}명`, columns: ['경기 수'],
         rows: list.map((p, i) => ({ rank: ranks[i], name: p.name, level: p.level, gender: p.gender, values: [p.totalGames] })),
         filename: `콕메이트-경기순위-${s.date}.png`,
       });
@@ -122,11 +116,11 @@ export function SessionHistoryCard() {
         <details className="history-item fold-item" key={`${s.id}-${picked === s.date}`} open={picked === s.date}>
           <summary>
             <div className="history-head"><span>{dateLabel(s.date)}</span></div>
-            <div className="fold-line"><span>코트 <b>{s.usedCourts}</b>개</span><span>경기 <b>{s.totalGames}</b>번</span><span>인원 <b>{s.participants.length}</b>명</span>{s.memos.length > 0 && <span>📝</span>}</div>
+            <div className="fold-line"><span>코트 <b>{s.usedCourts}</b>개</span><span>경기 <b>{s.totalGames}</b>번</span><span>참석 <b>{s.participants.length}</b>명</span>{s.memos.length > 0 && <span>📝</span>}</div>
           </summary>
           <div style={{ overflowX: 'auto', marginTop: 8 }}>
             <table className="rank-table">
-              <thead><tr><th>순위</th><th>이름</th><th>경기수</th></tr></thead>
+              <thead><tr><th>순위</th><th>이름</th><th>경기 수</th></tr></thead>
               <tbody>
                 {list.map((p, i) => (
                   <tr key={i}><td className="rank-cell"><RankLabel rank={ranks[i]} /></td><td><RankName person={p} /></td><td>{p.totalGames}</td></tr>

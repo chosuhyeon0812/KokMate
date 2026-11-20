@@ -27,7 +27,7 @@ export default function Shuttles() {
       {players.length === 0 ? <EmptyHint>"매칭" 화면에서 오늘 참석자를 먼저 선택하세요.</EmptyHint> : (
         <>
           <div className="summary-grid">
-            <div className="summary-box"><div className="num">{doneCount} / {players.length}</div></div>
+            <div className="summary-box"><div className="num">{doneCount} / {players.length}</div><div className="lbl">콕 제출</div></div>
           </div>
           <div style={{ overflowX: 'auto' }}>
             <table className="shuttle-table">

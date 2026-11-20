@@ -27,6 +27,12 @@ export function todayStr(ts) {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
+// "2026-10-19" → "10월 19일 (일)"
+export function dateLabel(date) {
+  const [y, m, d] = date.split('-').map(Number);
+  return `${m}월 ${d}일 (${'일월화수목금토'[new Date(y, m - 1, d).getDay()]})`;
+}
+
 export function timeStr(ts) {
   const d = new Date(ts);
   const pad = n => String(n).padStart(2, '0');

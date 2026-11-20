@@ -49,8 +49,8 @@ export default function Menu() {
   const [greeting] = useState(pickGreeting);
   const items = [
     { key: 'shuttles', tone: 'orange', title: '셔틀콕' },
-    { key: 'records', tone: 'purple', title: '경기 기록' },
-    { key: 'players', tone: 'green', title: '회원 관리' },
+    { key: 'records', tone: 'purple', title: '기록' },
+    { key: 'players', tone: 'green', title: '회원' },
   ];
 
   return (

@@ -28,7 +28,7 @@ export default function Players() {
   const lastSeen = new Map(cumulativeRows(state, 'all', todayStr()).rows.map(r => [r.key, r.days]));
 
   const filterSelect = (key, label, options) => (
-    <div className="field">
+    <div className={filter[key] ? 'field picked' : 'field'}>
       <label>{label}</label>
       <select value={filter[key]} onChange={e => setFilter({ ...filter, [key]: e.target.value })}>
         <option value="">전체</option>
@@ -56,7 +56,7 @@ export default function Players() {
         </div>
       </div>
       {state.players.length > 0 && (
-        <div className="settings-grid" style={{ marginBottom: 14 }}>
+        <div className="settings-grid member-filters" style={{ marginBottom: 14 }}>
           {filterSelect('gender', '성별', [['M', '남성'], ['F', '여성']])}
           {filterSelect('level', '급수', LEVEL_OPTIONS.map(l => [l, l]))}
           {filterSelect('role', '역할', ROLE_OPTIONS)}

@@ -274,6 +274,21 @@ export function sessionDate(state) {
   return state.games.length ? state.games[0].date : null;
 }
 
+// 일요일은 1부(1시 ~ 3시 반)와 2부(4시 ~ 6시 반)가 이어서 열린다. 둘 다 친 사람은 출석 2회로 센다. (경기 시작 시각 기준, 4시 전에 시작한 경기는 1부)
+const PART2_FROM = 16 * 60, PART2_TO = 18 * 60 + 30;
+function attendCount(games, id) {
+  let part1 = false, part2 = false;
+  games.forEach(g => {
+    if (!g.teamA.includes(id) && !g.teamB.includes(id)) return;
+    const t = new Date(g.startTime);
+    if (t.getDay() !== 0) return;
+    const min = t.getHours() * 60 + t.getMinutes();
+    if (min < PART2_FROM) part1 = true;
+    else if (min < PART2_TO) part2 = true;
+  });
+  return part1 && part2 ? 2 : 1;
+}
+
 function endSessionIn(d) {
   const todaysGames = sessionDoneGames(d);
   d.sessionHistory.unshift({
@@ -282,7 +297,7 @@ function endSessionIn(d) {
     usedCourts: new Set(todaysGames.map(g => g.court)).size,
     participants: d.players
       .filter(p => p.totalGames > 0)
-      .map(p => ({ id: p.id, name: p.name, gender: p.gender, level: p.level, totalGames: p.totalGames, wins: p.wins, losses: p.losses })),
+      .map(p => ({ id: p.id, name: p.name, gender: p.gender, level: p.level, totalGames: p.totalGames, wins: p.wins, losses: p.losses, attend: attendCount(todaysGames, p.id) })),
     memos: todaysGames.filter(g => g.memo).map(g => `${g.court}번 코트 · ${g.memo}`),
   });
   clearSessionData(d);

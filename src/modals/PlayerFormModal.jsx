@@ -1,4 +1,4 @@
-/* 회원 추가/수정 모달. 수정일 때는 오늘 상태(참석·휴식)를 바로 바꾸거나 삭제할 수도 있다. */
+/* 회원 추가/수정 모달. 수정일 때는 삭제도 할 수 있다. */
 import { useState } from 'react';
 import { useAppState } from '../store';
 import { useUI } from '../ui';
@@ -13,7 +13,6 @@ export default function PlayerFormModal({ playerId }) {
   const [name, setName] = useState(player ? player.name : '');
   const [gender, setGender] = useState(player ? player.gender : 'M');
   const [level, setLevel] = useState(player ? player.level : 'A');
-  const [memo, setMemo] = useState(player && player.memo ? player.memo : '');
   const [role, setRole] = useState(player ? roleOf(player) : 'member');
   // 같은 이름(띄어쓰기 무시)인 다른 회원. 동명이인일 수도 있어서 막지는 않고 알려만 준다.
   const sameName = state.players.find(p => p.id !== playerId && name.trim() && p.name.replace(/\s/g, '') === name.replace(/\s/g, ''));
@@ -21,7 +20,7 @@ export default function PlayerFormModal({ playerId }) {
 
   const save = () => {
     if (!name.trim()) { warn('이름을 적어 주세요.'); return; }
-    actions.savePlayer(player ? player.id : null, { name: name.trim(), gender, level, role, memo: memo.trim() });
+    actions.savePlayer(player ? player.id : null, { name: name.trim(), gender, level, role });
     closeModal();
     toast('저장했어요.');
   };
@@ -37,23 +36,8 @@ export default function PlayerFormModal({ playerId }) {
 
   return (
     <>
-      <h3>{player ? '회원 수정' : '회원 추가'}</h3>
-      {player && (
-        <div className="today-status">
-          <span className="field-label">오늘 상태 (누르면 바로 바뀌어요)</span>
-          <div className="pill-toggle">
-            <button className={player.active ? 'on' : ''} onClick={() => !player.active && actions.toggleActive(player.id)}>참석</button>
-            <button className={!player.active ? 'on' : ''} onClick={() => player.active && actions.toggleActive(player.id)}>불참</button>
-          </div>
-          {player.active && (
-            <div className="pill-toggle">
-              <button className={!player.resting ? 'on' : ''} onClick={() => player.resting && actions.toggleRest(player.id)}>경기 가능</button>
-              <button className={player.resting ? 'on' : ''} onClick={() => !player.resting && actions.toggleRest(player.id)}>휴식</button>
-            </div>
-          )}
-        </div>
-      )}
-      <div className="form-grid">
+      <h3 className={player ? 'edit-title' : ''}>{player ? '✏️ 회원 수정' : '회원 추가'}</h3>
+      <div className={player ? 'form-grid edit-form' : 'form-grid'}>
         <label>이름 <input type="text" autoFocus={!player} value={name} onChange={e => setName(e.target.value)} placeholder="이름 입력" />
           {sameName && <span className="field-warn">⚠ {sameName.name} 님이 이미 있어요 ({sameName.gender === 'M' ? '남성' : '여성'} / {sameName.level})</span>}
         </label>
@@ -74,7 +58,6 @@ export default function PlayerFormModal({ playerId }) {
           </select>
           {role === 'guest' && <span className="field-note">모임 종료 시 명단에서 빠져요 (기록은 남음). 자주 오면 일반 회원으로!</span>}
         </label>
-        <label>특이사항 <input type="text" value={memo} onChange={e => setMemo(e.target.value)} placeholder="예: 발목 부상 (선택)" /></label>
       </div>
       <div className="modal-actions">
         {player && <button className="btn btn-danger" style={{ marginRight: 'auto' }} onClick={remove}>삭제</button>}

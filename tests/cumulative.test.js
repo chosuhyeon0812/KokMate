@@ -76,11 +76,27 @@ describe('누적 기록', () => {
     expect(rows.map(r => r.name)).not.toContain('홍길동');
   });
 
-  test('지운 게스트가 회원과 이름이 같아도 그 회원 기록에 섞이지 않는다', () => {
+  test('지운 게스트가 회원과 이름이 같아도 급수가 다르면 그 회원 기록에 섞이지 않는다', () => {
     const state = stateWith();
-    state.sessionHistory.push({ date: '2026-10-15', participants: [{ id: 'g2', name: '김민수', totalGames: 9 }] });
+    state.players[0].level = 'A';
+    state.sessionHistory.push({ date: '2026-10-15', participants: [{ id: 'g2', name: '김민수', level: 'D', totalGames: 9 }] });
     const r = row(cumulativeRows(state, 'month', TODAY).rows, '김민수');
     expect(r).toMatchObject({ attend: 2, games: 7 });
+  });
+
+  test('지운 게스트를 이름 · 급수 그대로 다시 등록하면 지난 기록이 붙는다', () => {
+    const state = stateWith();
+    state.players.push({ id: 'k2', name: '경혜', level: 'C' });
+    state.sessionHistory.push({ date: '2026-10-15', participants: [{ id: 'k1', name: '경혜', level: 'C', totalGames: 3 }] });
+    const r = row(cumulativeRows(state, 'month', TODAY).rows, '경혜');
+    expect(r).toMatchObject({ attend: 1, games: 3 });
+  });
+
+  test('일요일 1부 · 2부를 둘 다 친 기록(attend: 2)은 출석 2회로 센다', () => {
+    const state = stateWith();
+    state.sessionHistory.push({ date: '2026-10-18', participants: [{ id: 'b', name: '이서연', totalGames: 6, attend: 2 }] });
+    const r = row(cumulativeRows(state, 'month', TODAY).rows, '이서연');
+    expect(r).toMatchObject({ attend: 3, games: 8 });
   });
 
   test('한 번도 안 온 회원도 0번으로 나오고, 마지막 참석일은 없다', () => {

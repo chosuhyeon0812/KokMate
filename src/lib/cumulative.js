@@ -15,7 +15,7 @@ export function agoLabel(days) {
 
 // 기록 속 참가자가 지금 명단의 누구인지 찾는다. 예전 기록에는 id가 없어서 같은 이름으로 맞춘다.
 // 명단에서 삭제한 사람(그날만 온 레슨자·게스트 등)은 null 이라 누적 기록에서 뺀다.
-function memberId(state, p) {
+export function memberId(state, p) {
   if (p.id && state.players.some(x => x.id === p.id)) return p.id;
   // 지워졌다가 다시 등록된 사람(게스트였다가 회원이 된 경우 등)은 이름과 급수가 둘 다 같아야 같은 사람으로 본다.
   // id가 없는 예전 기록은 이름만으로 찾는다.
@@ -90,4 +90,13 @@ export function cumulativeRows(state, period, today, offset = 0) {
   const list = [...rows.values()];
   list.forEach(r => { r.days = r.last ? daysBetween(r.last, today) : null; });
   return { range, sessions, rows: list };
+}
+
+// 한 회원이 온 날: { 'YYYY-MM-DD': 출석 횟수 } (같은 날 모임이 둘이면 더한다, 일요일 1 · 2부는 2)
+export function attendDates(state, playerId) {
+  const out = {};
+  state.sessionHistory.forEach(s => s.participants.forEach(p => {
+    if (memberId(state, p) === playerId) out[s.date] = (out[s.date] || 0) + (p.attend || 1);
+  }));
+  return out;
 }

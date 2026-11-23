@@ -4,6 +4,7 @@ import { useAppState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
 import { LEVEL_OPTIONS, ROLE_OPTIONS, roleOf } from '../lib/utils';
+import AttendStamps from '../components/AttendStamps';
 import { playerById, playingPlayerIds, waitingPlayerIds } from '../lib/selectors';
 
 export default function PlayerFormModal({ playerId }) {
@@ -59,6 +60,7 @@ export default function PlayerFormModal({ playerId }) {
           {role === 'guest' && <span className="field-note">모임 종료 시 명단에서 빠져요 (기록은 남음). 자주 오면 일반 회원으로!</span>}
         </label>
       </div>
+      {player && <AttendStamps state={state} playerId={player.id} />}
       <div className="modal-actions">
         {player && <button className="btn btn-danger" style={{ marginRight: 'auto' }} onClick={remove}>삭제</button>}
         <button className="btn btn-ghost" onClick={closeModal}>취소</button>

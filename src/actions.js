@@ -337,6 +337,14 @@ export function endStaleSession() {
   return true;
 }
 
+// 지난 모임에서 한 사람의 출석을 1회 ↔ 2회로 바꾼다. (일요일 1 · 2부를 둘 다 쳤는데 자동으로 못 센 날 등)
+export function toggleSessionAttend(sessionId, index) {
+  update(d => {
+    const p = d.sessionHistory.find(s => s.id === sessionId).participants[index];
+    p.attend = p.attend === 2 ? 1 : 2;
+  });
+}
+
 export function deleteSessionRecord(id) {
   update(d => { d.sessionHistory = d.sessionHistory.filter(s => s.id !== id); });
 }

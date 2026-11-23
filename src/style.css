@@ -959,3 +959,16 @@ tbody td:first-child,.shuttle-table td.name-edit{font-weight:800}
 .member-filters .field select{border:2px solid var(--primary-light);background-color:var(--primary-pale);color:var(--text);font-weight:700;min-width:6.5rem}
 .member-filters .field.picked select{background-color:var(--primary);border-color:var(--primary);color:#fff}
 .member-filters .field select option{color:var(--text);background:#fff}
+
+/* 지난 모임 순위표의 출석 2회 체크 (누르면 1회 ↔ 2회) */
+.twice-check{width:1.9rem;height:1.9rem;border:2px solid var(--accent-light);border-radius:8px;background:#fff;color:#fff;font-weight:900;font-size:1.05rem;line-height:1;cursor:pointer;padding:0}
+.twice-check.on{background:var(--accent);border-color:var(--accent)}
+
+/* 회원 창 출석 도장판 */
+.stamp-board{margin-top:16px;padding:12px;border:1.5px solid var(--accent-light);border-radius:14px;background:#fff}
+.stamp-board .cal-title{font-size:1rem}
+.stamp-total{color:var(--accent-dark);margin-left:4px}
+.stamp-d{position:relative;min-height:42px}
+.stamp-d.stamped{color:var(--text)}
+.stamp-d .stamp{display:inline-flex;align-items:center;justify-content:center;gap:1px;min-width:1.5rem;height:1.5rem;padding:0 4px;margin-top:2px;border-radius:999px;background:var(--accent);color:#fff;font-size:.85rem;font-weight:900;line-height:1}
+.stamp-d .stamp small{font-size:.7rem}

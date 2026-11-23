@@ -111,19 +111,21 @@ export function SessionHistoryCard() {
       </div>
       <MonthCalendar year={year} month={month} byDate={byDate} selected={picked} onPick={d => setPicked(p => (p === d ? null : d))} />
       {inMonth.length === 0 && <EmptyHint>이 달에는 저장된 모임이 없어요.</EmptyHint>}
-      {shown.map(s => { const { list, ranks } = rankingOf(s); return (
+      {shown.map(s => { const { list, ranks } = rankingOf(s); const sunday = isSunday(s.date); return (
         // 모임이 쌓이면 길어지므로 한 줄 요약으로 접어두고, 누르면 참가자별 경기 수와 메모가 펼쳐진다. 달력에서 고른 날은 펼친 채로.
         <details className="history-item fold-item" key={`${s.id}-${picked === s.date}`} open={picked === s.date}>
           <summary>
             <div className="history-head"><span>{dateLabel(s.date)}</span></div>
-            <div className="fold-line"><span>코트 <b>{s.usedCourts}</b>개</span><span>경기 <b>{s.totalGames}</b>번</span><span>참석 <b>{s.participants.length}</b>명</span>{s.memos.length > 0 && <span>📝</span>}</div>
+            <div className="fold-line"><span>코트 <b>{s.usedCourts}</b>개</span><span>경기 <b>{s.totalGames}</b>번</span><span>참석 <b>{s.participants.length}</b>명</span>{s.participants.some(p => p.attend === 2) && <span>2회 <b>{s.participants.filter(p => p.attend === 2).length}</b>명</span>}{s.memos.length > 0 && <span>📝</span>}</div>
           </summary>
           <div style={{ overflowX: 'auto', marginTop: 8 }}>
             <table className="rank-table">
-              <thead><tr><th>순위</th><th>이름</th><th>경기 수</th></tr></thead>
+              <thead><tr><th>순위</th><th>이름</th><th>경기 수</th>{sunday && <th>2회</th>}</tr></thead>
               <tbody>
                 {list.map((p, i) => (
-                  <tr key={i}><td className="rank-cell"><RankLabel rank={ranks[i]} /></td><td><RankName person={p} /></td><td>{p.totalGames}</td></tr>
+                  <tr key={i}><td className="rank-cell"><RankLabel rank={ranks[i]} /></td><td><RankName person={p} /></td><td>{p.totalGames}</td>
+                    {sunday && <td><button type="button" className={`twice-check${p.attend === 2 ? ' on' : ''}`} aria-label={`${p.name} 출석 2회`} aria-pressed={p.attend === 2}
+                      onClick={() => actions.toggleSessionAttend(s.id, s.participants.indexOf(p))}>{p.attend === 2 ? '✓' : ''}</button></td>}</tr>
                 ))}
               </tbody>
             </table>
@@ -138,6 +140,9 @@ export function SessionHistoryCard() {
     </div>
   );
 }
+
+// 일요일만 1 · 2부가 있어서 출석 2회 칸을 보여준다
+const isSunday = date => { const [y, m, d] = date.split('-').map(Number); return new Date(y, m - 1, d).getDay() === 0; };
 
 export default function History() {
   const state = useAppState();

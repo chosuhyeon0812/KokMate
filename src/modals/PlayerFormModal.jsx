@@ -15,6 +15,7 @@ export default function PlayerFormModal({ playerId }) {
   const [gender, setGender] = useState(player ? player.gender : 'M');
   const [level, setLevel] = useState(player ? player.level : 'A');
   const [role, setRole] = useState(player ? roleOf(player) : 'member');
+  const [tab, setTab] = useState('edit'); // 수정할 때만: 'edit' 회원 수정 | 'stamps' 출석부
   // 같은 이름(띄어쓰기 무시)인 다른 회원. 동명이인일 수도 있어서 막지는 않고 알려만 준다.
   const sameName = state.players.find(p => p.id !== playerId && name.trim() && p.name.replace(/\s/g, '') === name.replace(/\s/g, ''));
   if (playerId && !player) return null;
@@ -37,7 +38,19 @@ export default function PlayerFormModal({ playerId }) {
 
   return (
     <>
-      <h3 className={player ? 'edit-title' : ''}>{player ? '✏️ 회원 수정' : '회원 추가'}</h3>
+      <h3 className={player ? 'edit-title' : ''}>{player ? `${player.name} 님` : '회원 추가'}</h3>
+      {player && (
+        <div className="line-tabs" role="tablist">
+          <button role="tab" aria-selected={tab === 'edit'} className={tab === 'edit' ? 'on' : ''} onClick={() => setTab('edit')}>회원 수정</button>
+          <button role="tab" aria-selected={tab === 'stamps'} className={tab === 'stamps' ? 'on' : ''} onClick={() => setTab('stamps')}>출석부</button>
+        </div>
+      )}
+      {player && tab === 'stamps' ? (
+        <>
+          <AttendStamps state={state} playerId={player.id} />
+          <div className="modal-actions"><button className="btn btn-ghost" onClick={closeModal}>닫기</button></div>
+        </>
+      ) : (<>
       <div className={player ? 'form-grid edit-form' : 'form-grid'}>
         <label>이름 <input type="text" autoFocus={!player} value={name} onChange={e => setName(e.target.value)} placeholder="이름 입력" />
           {sameName && <span className="field-warn">⚠ {sameName.name} 님이 이미 있어요 ({sameName.gender === 'M' ? '남성' : '여성'} / {sameName.level})</span>}
@@ -57,15 +70,15 @@ export default function PlayerFormModal({ playerId }) {
           <select value={role} onChange={e => setRole(e.target.value)}>
             {ROLE_OPTIONS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
           </select>
-          {role === 'guest' && <span className="field-note">모임 종료 시 명단에서 빠져요 (기록은 남음). 자주 오면 일반 회원으로!</span>}
         </label>
+        {role === 'guest' && <span className="field-note">모임 종료 시 명단에서 빠져요 (기록은 남음). 자주 오면 일반 회원으로!</span>}
       </div>
-      {player && <AttendStamps state={state} playerId={player.id} />}
       <div className="modal-actions">
         {player && <button className="btn btn-danger" style={{ marginRight: 'auto' }} onClick={remove}>삭제</button>}
         <button className="btn btn-ghost" onClick={closeModal}>취소</button>
         <button className="btn btn-primary" onClick={save}>{player ? '저장' : '추가'}</button>
       </div>
+      </>)}
     </>
   );
 }

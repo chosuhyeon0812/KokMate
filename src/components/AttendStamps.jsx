@@ -1,4 +1,4 @@
-/* 회원 창의 출석 도장판: 한 달 달력에 온 날마다 ✓ 도장 (일요일 1 · 2부 둘 다면 2) */
+/* 회원 창의 출석부: 한 달 달력에 온 날마다 ✓ 도장 (일요일 1 · 2부 둘 다면 ✓✓) */
 import { useState } from 'react';
 import { todayStr } from '../lib/utils';
 import { attendDates } from '../lib/cumulative';
@@ -32,7 +32,7 @@ export default function AttendStamps({ state, playerId }) {
           return (
             <div key={date} className={`cal-d stamp-d${n ? ' stamped' : ''}`} aria-label={n ? `${month}월 ${d}일 출석 ${n}회` : undefined}>
               <span className="cal-num">{d}</span>
-              {n > 0 && <span className="stamp">✓{n > 1 && <small>{n}</small>}</span>}
+              {n > 0 && <span className="stamp">{'✓'.repeat(Math.min(n, 3))}</span>}
             </div>
           );
         })}

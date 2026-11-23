@@ -329,7 +329,7 @@ tr:last-child td{border-bottom:none}
 .ask-message{white-space:pre-line;font-size:1rem;line-height:1.6;color:var(--text);margin:0 0 4px}
 .modal-box{
   background:#fff;border-radius:18px;padding:22px;max-width:30rem;width:100%;
-  max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-lg);
+  max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow-y:auto;box-shadow:var(--shadow-lg);
   animation:popIn .28s var(--ease) both;
   border-top:4px solid var(--primary);
 }
@@ -651,7 +651,7 @@ button.court-add-tile:hover,button.court-add-tile:focus-visible{background:var(-
 
   /* 선택 창: 화면을 거의 다 쓰고, 버튼은 항상 아래에 보이게 */
   .modal-root{padding:8px;align-items:flex-end}
-  .modal-box,.modal-box.wide{max-width:100%;max-height:94vh;padding:16px 14px 0;border-radius:18px}
+  .modal-box,.modal-box.wide{max-width:100%;max-height:calc(100vh - 16px);max-height:calc(100dvh - 16px);padding:16px 14px 0;border-radius:18px}
   .modal-actions{position:sticky;bottom:0;background:#fff;margin:14px -14px 0;padding:12px 14px;border-top:1px solid var(--border)}
   .modal-actions .btn{flex:1}
   .player-grid{max-height:none;overflow:visible;grid-template-columns:repeat(2,1fr)}
@@ -964,11 +964,16 @@ tbody td:first-child,.shuttle-table td.name-edit{font-weight:800}
 .twice-check{width:1.9rem;height:1.9rem;border:2px solid var(--accent-light);border-radius:8px;background:#fff;color:#fff;font-weight:900;font-size:1.05rem;line-height:1;cursor:pointer;padding:0}
 .twice-check.on{background:var(--accent);border-color:var(--accent)}
 
-/* 회원 창 출석 도장판 */
-.stamp-board{margin-top:16px;padding:12px;border:1.5px solid var(--accent-light);border-radius:14px;background:#fff}
+/* 회원 창 출석부 */
+.stamp-board{margin-top:4px;padding:12px;border:1.5px solid var(--accent-light);border-radius:14px;background:#fff}
 .stamp-board .cal-title{font-size:1rem}
 .stamp-total{color:var(--accent-dark);margin-left:4px}
 .stamp-d{position:relative;min-height:42px}
 .stamp-d.stamped{color:var(--text)}
-.stamp-d .stamp{display:inline-flex;align-items:center;justify-content:center;gap:1px;min-width:1.5rem;height:1.5rem;padding:0 4px;margin-top:2px;border-radius:999px;background:var(--accent);color:#fff;font-size:.85rem;font-weight:900;line-height:1}
-.stamp-d .stamp small{font-size:.7rem}
+.stamp-d .stamp{display:inline-flex;align-items:center;justify-content:center;gap:1px;min-width:1.5rem;height:1.5rem;padding:0 4px;margin-top:2px;border-radius:999px;background:var(--accent);color:#fff;font-size:.85rem;font-weight:900;line-height:1;letter-spacing:-2px}
+
+/* 회원 창 탭: 글자 아래 밑줄만 (알약 토글보다 가볍게) */
+.line-tabs{display:flex;border-bottom:1.5px solid var(--border);margin:-4px 0 14px}
+.line-tabs button{flex:1;border:none;background:none;font:inherit;font-size:1rem;font-weight:700;color:var(--muted);padding:10px 0 9px;margin-bottom:-1.5px;border-bottom:3px solid transparent;cursor:pointer}
+.line-tabs button.on{color:var(--accent-dark);font-weight:900;border-bottom-color:var(--accent)}
+.form-grid.edit-form{gap:12px;padding:12px}

@@ -978,3 +978,12 @@ tbody td:first-child,.shuttle-table td.name-edit{font-weight:800}
 .line-tabs button{flex:1;border:none;background:none;font:inherit;font-size:1rem;font-weight:700;color:var(--muted);padding:10px 0 9px;margin-bottom:-1.5px;border-bottom:3px solid transparent;cursor:pointer}
 .line-tabs button.on{color:var(--accent-dark);font-weight:900;border-bottom-color:var(--accent)}
 .form-grid.edit-form{gap:12px;padding:12px}
+
+/* 백업 불러오기 전 내용 보기 */
+.backup-preview{margin-top:10px;display:flex;flex-direction:column;gap:8px}
+.backup-preview summary{cursor:pointer;font-weight:800;color:var(--primary-dark);padding:6px 0}
+.backup-preview details{max-height:60vh;overflow:auto}
+.backup-session{padding:8px 0;border-bottom:1px solid var(--border)}
+.backup-session-head{font-size:.95rem;margin-bottom:4px}
+.backup-session-names{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:.9rem;color:var(--text)}
+.backup-session-names em{font-style:normal;font-weight:800;color:var(--accent-dark)}

@@ -2,7 +2,7 @@
 import { useRef, useState } from 'react';
 import { useAppState, getState, replaceState, update } from '../store';
 import { useUI } from '../ui';
-import { todayStr, timeStr } from '../lib/utils';
+import { todayStr, timeStr, dateLabel, sortByName, roleLabel, roleOf } from '../lib/utils';
 import { syncEnabled, useSync } from '../lib/sync';
 import TeamCard from '../components/TeamCard';
 
@@ -12,7 +12,7 @@ function backupFile() {
   const now = Date.now();
   // 불러온 뒤에도 "마지막 백업" 시각이 맞게 나오도록 파일 안에도 넣어둔다.
   const data = { app: BACKUP_APP, version: 1, exportedAt: now, state: { ...getState(), lastBackupAt: now } };
-  const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   return new File([blob], `콕메이트-백업-${todayStr()}.json`, { type: 'application/json' });
 }
 
@@ -32,6 +32,37 @@ function parseBackup(text) {
 
 function dateTimeStr(ts) {
   return `${todayStr(ts)} ${timeStr(ts)}`;
+}
+
+// 백업 파일 내용 보기: 불러오기 전에 회원 명단과 날짜별 모임(누가 왔는지)을 표로 확인한다.
+function BackupPreview({ state }) {
+  const sessions = (state.sessionHistory || []).slice().sort((a, b) => b.date.localeCompare(a.date));
+  return (
+    <div className="backup-preview">
+      <details>
+        <summary>회원 {state.players.length}명 보기</summary>
+        <table className="member-table">
+          <thead><tr><th>이름</th><th>역할</th><th>급수</th></tr></thead>
+          <tbody>
+            {sortByName(state.players).map(p => (
+              <tr key={p.id}><td><span className={`gender-dot ${p.gender === 'M' ? 'male' : 'female'}`} />{p.name}</td><td>{roleOf(p) !== 'member' && roleLabel(roleOf(p))}</td><td>{p.level}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </details>
+      <details>
+        <summary>지난 모임 {sessions.length}개 보기</summary>
+        {sessions.map(x => (
+          <div className="backup-session" key={x.id || x.date}>
+            <div className="backup-session-head"><b>{dateLabel(x.date)}</b> · 경기 {x.totalGames}번 · {x.participants.length}명</div>
+            <div className="backup-session-names">
+              {x.participants.map((p, i) => <span key={i}>{p.name}{p.attend === 2 && <em> 2회</em>}</span>)}
+            </div>
+          </div>
+        ))}
+      </details>
+    </div>
+  );
 }
 
 export default function Backup() {
@@ -107,6 +138,7 @@ export default function Backup() {
             <div className="backup-confirm-title">이 백업으로 바꿀까요?</div>
             <div>백업한 때: <b>{dateTimeStr(pending.exportedAt)}</b></div>
             <div>회원 {s.players.length}명 · 오늘 경기 {s.games.length}개 · 지난 모임 {(s.sessionHistory || []).length}개</div>
+            <BackupPreview state={s} />
             <div className="row-actions" style={{ marginTop: 10 }}>
               <button className="btn btn-ghost" onClick={() => setPending(null)}>취소</button>
               <button className="btn btn-danger" onClick={restore}>이 백업으로 바꾸기</button>

@@ -3,6 +3,9 @@ import { useState } from 'react';
 import { todayStr } from '../lib/utils';
 import { attendDates } from '../lib/cumulative';
 
+// 보통 모임 여는 요일 (일 · 월 · 수 · 금). 이 요일인데 안 온 날은 연하게 칠해서 빠진 날이 보이게 한다.
+const MEET_DAYS = [0, 1, 3, 5];
+
 export default function AttendStamps({ state, playerId }) {
   const today = todayStr();
   const [ym, setYm] = useState(today.slice(0, 7));
@@ -29,8 +32,9 @@ export default function AttendStamps({ state, playerId }) {
           if (!d) return <div key={`e${i}`} />;
           const date = `${ym}-${pad(d)}`;
           const n = dates[date];
+          const missed = !n && date <= today && MEET_DAYS.includes((first + d - 1) % 7);
           return (
-            <div key={date} className={`cal-d stamp-d${n ? ' stamped' : ''}`} aria-label={n ? `${month}월 ${d}일 출석 ${n}회` : undefined}>
+            <div key={date} className={`cal-d stamp-d${n ? ' stamped' : ''}${missed ? ' missed' : ''}`} aria-label={n ? `${month}월 ${d}일 출석 ${n}회` : undefined}>
               <span className="cal-num">{d}</span>
               {n > 0 && <span className="stamp">{'✓'.repeat(Math.min(n, 3))}</span>}
             </div>

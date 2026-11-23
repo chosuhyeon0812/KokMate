@@ -533,7 +533,7 @@ tr:last-child td{border-bottom:none}
 .bench{display:grid;grid-template-columns:repeat(auto-fill,minmax(10rem,1fr));gap:10px}
 /* 대기 중 카드: 이름·급수는 크고 진하게, 경기 수는 왼쪽 위, 쉰 시간은 오른쪽 위 모서리에 작게 */
 .bench-chip{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:8.25rem;min-height:5.5rem;padding:24px 14px 10px;border:1px solid var(--border);border-radius:14px;background:#fff}
-.bench-chip .bench-games{position:absolute;top:5px;left:9px;font-size:.78rem;font-weight:700;color:var(--muted)}
+.bench-chip .bench-games{position:absolute;top:5px;left:9px;font-size:.84rem;font-weight:800;color:#3f5648}
 .bench-chip .bench-name{font-weight:900;font-size:2rem;color:var(--text);line-height:1.15;white-space:nowrap}
 .bench-chip .bench-wait{position:absolute;top:5px;right:9px;font-size:.78rem;font-weight:700;color:var(--muted)}
 /* 남자는 파랑, 여자는 분홍 카드로 한눈에 구분 */
@@ -562,7 +562,7 @@ button.cal-d{border:none;background:var(--primary-pale);color:var(--primary-dark
 button.cal-d:hover,button.cal-d:focus-visible{background:var(--primary-pale-2)}
 button.cal-d.on{background:var(--primary);color:#fff}
 .cal-num{font-size:1rem;line-height:1.1}
-.cal-games{font-size:.66rem;font-weight:800;opacity:.85;white-space:nowrap}
+.cal-games{font-size:.74rem;font-weight:800;white-space:nowrap}
 /* 제목 옆 작은 회색 글자 (대기 중 · 휴식 공통) */
 .h2-sub{font-size:.8rem;font-weight:600;color:var(--muted)}
 /* 휴식 중: 남녀 색 대신 회색으로 위쪽 대기 중과 구분. 흐리게 하지는 않아서 눌러 복귀할 수 있어 보이게 */
@@ -592,7 +592,7 @@ button.court-add-tile:hover,button.court-add-tile:focus-visible{background:var(-
 .add-pill:active{transform:scale(.96)}
 /* 제목 옆 ⓘ 안내 말풍선 */
 .info-tip{position:relative;display:inline-flex;vertical-align:middle;margin-left:6px}
-.info-tip-btn{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;padding:0;border:none;border-radius:50%;background:none;color:#9fb3a7;cursor:pointer;transition:color .15s ease, background-color .15s ease}
+.info-tip-btn{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;padding:0;border:none;border-radius:50%;background:none;color:var(--primary);cursor:pointer;transition:color .15s ease, background-color .15s ease}
 .info-tip-btn:hover,.info-tip.open .info-tip-btn{color:var(--primary-dark);background:var(--primary-pale)}
 .info-tip-bubble{position:absolute;top:calc(100% + 8px);left:-10px;z-index:20;width:max-content;max-width:min(16rem,70vw);padding:9px 12px;border-radius:12px;background:var(--text);color:#fff;font-size:.85rem;font-weight:600;line-height:1.45;box-shadow:var(--shadow);opacity:0;visibility:hidden;transform:translateY(-3px);transition:opacity .15s ease, transform .15s ease, visibility .15s}
 .info-tip.right .info-tip-bubble{left:auto;right:-6px}
@@ -679,7 +679,7 @@ button.court-add-tile:hover,button.court-add-tile:focus-visible{background:var(-
 .name-chip.with-meta .chip-name,.bench-chip .bench-name,.player-grid:not(.attend-grid) .player-tile .tile-name{font-size:1.7rem;font-weight:900;line-height:1.15;white-space:nowrap;margin:0;color:var(--text)}
 .name-chip .chip-level,.bench-chip .bench-level,.player-tile .tile-level{font-weight:900;color:#4a5f66}
 .name-chip .chip-games,.bench-chip .bench-games,.player-tile .tile-games{position:absolute;top:5px;left:9px;font-size:.78rem;font-weight:700;color:var(--muted)}
-.name-chip .chip-meta,.bench-chip .bench-wait,.player-tile .tile-meta{position:absolute;top:5px;right:9px;font-size:.78rem;font-weight:700;color:var(--muted);white-space:nowrap;opacity:1}
+.name-chip .chip-meta,.bench-chip .bench-wait,.player-tile .tile-meta{position:absolute;top:5px;right:9px;font-size:.84rem;font-weight:800;color:#3f5648;white-space:nowrap;opacity:1}
 .name-chip .chip-meta.chip-long,.bench-chip .rest-long,.player-tile .tile-meta.tile-long{color:var(--accent-dark);font-weight:800}
 .name-chip .chip-meta.chip-playing,.player-tile .tile-meta.tile-playing{color:var(--danger);font-weight:800}
 /* 고른 사람(경기 만들기)과 휴식 중(대기 중)은 공통 양식 위에 표시만 덧붙인다 */
@@ -970,6 +970,7 @@ tbody td:first-child,.shuttle-table td.name-edit{font-weight:800}
 .stamp-total{color:var(--accent-dark);margin-left:4px}
 .stamp-d{position:relative;min-height:42px}
 .stamp-d.stamped{color:var(--text)}
+.stamp-d.missed{background:#f1f4f2;color:#7d8f84}
 .stamp-d .stamp{display:inline-flex;align-items:center;justify-content:center;gap:1px;min-width:1.5rem;height:1.5rem;padding:0 4px;margin-top:2px;border-radius:999px;background:var(--accent);color:#fff;font-size:.85rem;font-weight:900;line-height:1;letter-spacing:-2px}
 
 /* 회원 창 탭: 글자 아래 밑줄만 (알약 토글보다 가볍게) */

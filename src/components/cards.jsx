@@ -2,15 +2,14 @@ import { useState } from 'react';
 import { useAppState, getState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
-import { starStr, isGuest } from '../lib/utils';
+import { isGuest } from '../lib/utils';
 
 // 진행 중 코트의 경과 시간: 막 시작하면 '0분', 그 뒤로 '7분', '12분', '1시간 5분'
 function elapsedLabel(startTs) {
   const mins = Math.max(0, Math.floor((Date.now() - startTs) / 60000));
   return mins < 60 ? `${mins}분` : `${Math.floor(mins / 60)}시간 ${mins % 60}분`;
 }
-import { playerName, playerById, playingPlayerIds, activeGameOnCourt, waitingDuration, freeCourts, waitLabel, LONG_REST_MS } from '../lib/selectors';
-import { starsFor } from '../lib/matching';
+import { playerName, playerById, playingPlayerIds, activeGameOnCourt, waitingDuration, freeCourts, waitLabel, LONG_REST_MS, teamSize } from '../lib/selectors';
 import { useEndGame } from '../modals/EndGameModal';
 import PlayerPicker from '../modals/PlayerPicker';
 
@@ -36,9 +35,9 @@ export function NameChips({ ids, label, meta = false, live = false }) {
   });
 }
 
-// 모임 밖 사람(레슨자 등)을 끼워 친 경기는 앱에 없는 자리를 노란 '외부' 칸으로 채워 4칸을 맞춘다.
-export function OutsiderChips({ count, meta = false }) {
-  return Array.from({ length: Math.max(0, 4 - count) }, (_, i) => (
+// 모임 밖 사람(레슨자 등)을 끼워 친 경기는 앱에 없는 자리를 노란 '외부' 칸으로 채워 칸 수(복식 4, 단식 2)를 맞춘다.
+export function OutsiderChips({ count, size = 4, meta = false }) {
+  return Array.from({ length: Math.max(0, size - count) }, (_, i) => (
     <span key={`outsider-${i}`} className={`name-chip outsider${meta ? ' with-meta' : ''}`}>
       <span className="chip-name">외부</span>
     </span>
@@ -62,12 +61,12 @@ export function RankName({ person }) {
 }
 
 // 팀은 코트에서 가위바위보로 정하니까 VS 없이 4명을 한 묶음으로 보여준다.
-export function TeamLine({ teamA, teamB, label, style, live, meta = true }) {
+export function TeamLine({ teamA, teamB, size = 4, label, style, live, meta = true }) {
   const ids = teamA.concat(teamB);
   return (
     <div className="team-line four" style={style}>
       <NameChips ids={ids} label={label} meta={meta} live={live} />
-      <OutsiderChips count={ids.length} meta={meta} />
+      <OutsiderChips count={ids.length} size={size} meta={meta} />
     </div>
   );
 }
@@ -153,38 +152,9 @@ export function LiveCourtCard({ game: g }) {
           <button type="button" className="court-end" aria-label={`${g.court}번 코트 경기 종료`} onClick={() => endGame(g)}>종료</button>
         </span>
       </div>
-      <TeamLine teamA={g.teamA} teamB={g.teamB} label={id => playerName(state, id)} live />
+      <TeamLine teamA={g.teamA} teamB={g.teamB} size={teamSize(g)} label={id => playerName(state, id)} live />
       <div className="card-actions">
         <button className="btn btn-accent btn-sm btn-block" onClick={() => openModal(<LiveGameMenu gameId={g.id} />)}>경기 관리</button>
-      </div>
-    </div>
-  );
-}
-
-export function RecCard({ rec: r, idx }) {
-  const state = useAppState();
-  const { openModal, toast, warn } = useUI();
-  const st = starsFor(r.score);
-
-  const start = () => {
-    if (activeGameOnCourt(state, r.court)) { warn('그 코트는 이미 경기 중이에요.'); return; }
-    actions.startRecommendation(idx);
-    toast(`${r.court}번 코트 경기를 시작했어요.`);
-  };
-
-  return (
-    <div className="rec-card">
-      <div className="section-row" style={{ marginBottom: 6 }}>
-        <strong style={{ color: 'var(--accent-dark)' }}>추천 · {r.court}번 코트</strong>
-        <div className="row-actions">
-          <button className="btn btn-outline btn-sm" onClick={() => openModal(<PlayerPicker mode="edit" idx={idx} />, { wide: true })}>수정</button>
-          <button className="btn btn-danger btn-sm" onClick={() => actions.deleteRec(idx)}>삭제</button>
-          <button className="btn btn-primary btn-sm" onClick={start}>이 조합으로 경기 시작</button>
-        </div>
-      </div>
-      <TeamLine teamA={r.teamA} teamB={r.teamB} label={id => playerName(state, id)} />
-      <div className="rec-score">
-        추천 기준 · 경기수균형 {starStr(5)} · 급수균형 {starStr(st.level)} · 파트너중복방지 {starStr(st.partner)} · 상대중복방지 {starStr(st.opponent)}
       </div>
     </div>
   );
@@ -211,7 +181,7 @@ export function WaitingCard({ match: w, no }) {
     <div className="court-card">
       {/* 진행 중 코트처럼: 오른쪽 위 ✕로 빼고, 아래는 큰 시작 버튼 + 작은 수정 */}
       <div className="court-title"><span><span className="wait-no">대기 {no}</span></span><button type="button" className="court-remove" aria-label={`대기 ${no}번 삭제`} title="대기 코트 빼기" onClick={() => actions.deleteWaitingMatch(w.id)}>✕</button></div>
-      <TeamLine teamA={w.teamA} teamB={w.teamB} label={id => playerName(state, id)} />
+      <TeamLine teamA={w.teamA} teamB={w.teamB} size={teamSize(w)} label={id => playerName(state, id)} />
       {hasPlaying && <div className="muted center" style={{ fontSize: '.72rem', marginTop: 2 }}>"경기 중" 선수가 있어요. 그 경기가 끝난 뒤 넣어 주세요.</div>}
       {/* 빈 코트가 여러 개면 번호 버튼만 한 줄로 모아서, 코트가 많아도 카드가 길어지지 않게 한다. */}
       {free.length > 1 && (

@@ -17,8 +17,8 @@ export function game(id, court, ids, extra = {}) {
 }
 
 export function setup(partial) {
-  replaceState({ players: [], games: [], waitingMatches: [], pendingRecs: [], sessionHistory: [],
-    settings: { courts: [1, 2] }, lastShortfall: '', formerNames: {}, ...partial });
+  replaceState({ players: [], games: [], waitingMatches: [], sessionHistory: [],
+    settings: { courts: [1, 2] }, formerNames: {}, ...partial });
   return getState();
 }
 

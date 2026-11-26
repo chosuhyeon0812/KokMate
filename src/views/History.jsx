@@ -3,7 +3,7 @@ import { useAppState } from '../store';
 import { useUI } from '../ui';
 import * as actions from '../actions';
 import { timeStr, durationStr, dateLabel } from '../lib/utils';
-import { playerName } from '../lib/selectors';
+import { playerName, teamSize } from '../lib/selectors';
 import { EmptyHint, NameChips, OutsiderChips, RankLabel, RankName, ShareButton } from '../components/cards';
 import { shareRanking, rankOf } from '../lib/shareImage';
 import Stats from './Stats';
@@ -181,7 +181,7 @@ export default function History() {
             </div>
             <div className="team-line four">
               <NameChips ids={g.teamA.concat(g.teamB)} label={id => playerName(state, id)} />
-              <OutsiderChips count={g.teamA.length + g.teamB.length} />
+              <OutsiderChips count={g.teamA.length + g.teamB.length} size={teamSize(g)} />
             </div>
             {/* 예전에 승패를 기록했던 경기만 결과를 보여준다 */}
             {g.winner && (

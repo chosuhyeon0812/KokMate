@@ -1,11 +1,9 @@
 /* 홈 화면: 브랜드 가이드보드에서 사람이 들고 있는 휴대폰 화면처럼
    로고 · 인사말 · 제일 큰 '매칭 시작하기' 버튼 · 메뉴 카드(누르면 그 화면으로 들어간다). */
 import { useState } from 'react';
-import { useAppState } from '../store';
 import { useUI } from '../ui';
 import Mascot from '../components/Mascot';
 import Icon from '../components/Icons';
-import RecommendModal from '../modals/RecommendModal';
 import { useSync } from '../lib/sync';
 
 // 메뉴 카드 아이콘은 아래 탭 줄과 같은 선 그림 (components/Icons)
@@ -42,10 +40,8 @@ function todayLabel(d = new Date()) {
 }
 
 export default function Menu() {
-  const state = useAppState();
-  const { switchView, openModal } = useUI();
+  const { switchView } = useUI();
   const { team } = useSync();
-  const hasRecs = state.pendingRecs.length > 0;
   const [greeting] = useState(pickGreeting);
   const items = [
     { key: 'shuttles', tone: 'orange', title: '셔틀콕' },
@@ -60,9 +56,8 @@ export default function Menu() {
           <Mascot size={58} lineColor="#0f3d24" />
           <span className="menu-wordmark"><b>Kok</b>Mate</span>
         </div>
-        {/* 예전 위쪽 초록 머리줄에 있던 버튼들. 자동 추천은 잘 안 써서 숨겨둔 기능이라 추천이 남아 있으면 작은 점으로 알려준다 */}
+        {/* 예전 위쪽 초록 머리줄에 있던 버튼들 */}
         <div className="menu-actions">
-          <button type="button" className="round-btn sparkle-btn" title="자동 추천" aria-label="자동 추천" onClick={() => openModal(<RecommendModal />, { wide: true })}><Icon name="sparkle" size={20} />{hasRecs && <span className="sparkle-dot" />}</button>
           <button type="button" className="round-btn" title="설정" aria-label="설정" onClick={() => switchView('settings')}><Icon name="settings" size={20} /></button>
           <button type="button" className="round-btn" title="사용법" aria-label="사용법" onClick={() => switchView('help')}>?</button>
         </div>

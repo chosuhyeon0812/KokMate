@@ -11,6 +11,10 @@ export function playerName(state, id) {
   return state.formerNames?.[id] || '(삭제됨)';
 }
 
+// 단식은 고르는 창에서 2칸으로 짠 경기. 외부를 끼운 복식과 사람 수로는 구별이 안 돼서 종목으로 따로 표시한다.
+export const SINGLES = '단식';
+export const teamSize = g => (g.gameType === SINGLES ? 2 : 4);
+
 export function deriveGameType(state, teamA, teamB) {
   if (teamA.length + teamB.length < 4) return '외부 인원 포함';
   const genders = teamA.concat(teamB).map(id => playerById(state, id)?.gender);

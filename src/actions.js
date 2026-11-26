@@ -1,13 +1,17 @@
 /* 상태를 바꾸는 동작들. 입력 검증과 안내 메시지(toast)는 화면 쪽에서 처리한다. */
 import { update, getState } from './store';
 import { uid, todayStr, isGuest } from './lib/utils';
-import { playerById, deriveGameType } from './lib/selectors';
-import { generateRecommendations, scoreSplit } from './lib/matching';
+import { playerById, deriveGameType, SINGLES } from './lib/selectors';
 
-// 고르는 창의 4칸에서 빈 칸을 빼고 둘로 나눈다. 모임 밖 사람(레슨자 등)을 끼워 치면 1~3명만 들어온다.
+// 고르는 창의 칸(복식 4칸, 단식 2칸)에서 빈 칸을 빼고 둘로 나눈다. 모임 밖 사람(레슨자 등)을 끼워 치면 그만큼 적게 들어온다.
 function splitTeams(selection) {
+  if (selection.length === 2) return [selection.slice(0, 1).filter(Boolean), selection.slice(1).filter(Boolean)];
   const ids = selection.filter(Boolean);
   return [ids.slice(0, 2), ids.slice(2, 4)];
+}
+
+function gameTypeOf(d, selection, teamA, teamB) {
+  return selection.length === 2 ? SINGLES : deriveGameType(d, teamA, teamB);
 }
 
 function startGameIn(d, court, teamA, teamB, gameType) {
@@ -16,15 +20,12 @@ function startGameIn(d, court, teamA, teamB, gameType) {
     teamA, teamB, scoreA: null, scoreB: null, winner: null,
     startTime: Date.now(), endTime: null, memo: '', date: todayStr(), status: 'progress',
   });
-  d.pendingRecs = d.pendingRecs.filter(r => r.court !== court);
 }
 
 function clearSessionData(d) {
   d.players.forEach(p => { p.totalGames = 0; p.wins = 0; p.losses = 0; p.resting = false; p.shuttleDone = false; p.shuttleNote = ''; p.restSince = p.active ? Date.now() : null; });
   d.games = [];
-  d.pendingRecs = [];
   d.waitingMatches = [];
-  d.lastShortfall = '';
   d.formerNames = {}; // 지난 모임 기록에는 이름이 따로 저장되므로 더는 필요 없다
 }
 
@@ -36,7 +37,7 @@ function clearForNextSession(d) {
   d.settings.courts = [];
 }
 
-/* ---------- 설정 / 추천 ---------- */
+/* ---------- 설정 ---------- */
 
 export function addCourt(court) {
   update(d => { d.settings.courts = d.settings.courts.concat(court).sort((a, b) => a - b); });
@@ -44,49 +45,16 @@ export function addCourt(court) {
 
 // 비어 있는 코트만 뺄 수 있다. (경기 중인 코트 카드에는 빼기 버튼이 없음)
 export function removeCourt(court) {
-  update(d => {
-    d.settings.courts = d.settings.courts.filter(c => c !== court);
-    d.pendingRecs = d.pendingRecs.filter(r => r.court !== court); // 없어진 코트의 추천은 지운다
-  });
-}
-
-export function recommend() {
-  update(d => {
-    const { assignments, shortfall } = generateRecommendations(d);
-    d.pendingRecs = assignments;
-    d.lastShortfall = shortfall;
-  });
-}
-
-// 추천은 언제든 다시 받을 수 있으니 확인 없이 바로 지운다.
-export function deleteRec(idx) {
-  update(d => { d.pendingRecs.splice(idx, 1); });
-}
-
-export function clearRecs() {
-  update(d => { d.pendingRecs = []; d.lastShortfall = ''; });
-}
-
-export function updateRec(idx, selection) {
-  update(d => {
-    const r = d.pendingRecs[idx];
-    [r.teamA, r.teamB] = splitTeams(selection);
-    r.score = scoreSplit(d, r.teamA, r.teamB);
-    r.gameType = deriveGameType(d, r.teamA, r.teamB);
-  });
-}
-
-export function startRecommendation(idx) {
-  update(d => {
-    const r = d.pendingRecs[idx];
-    startGameIn(d, r.court, r.teamA, r.teamB, r.gameType);
-  });
+  update(d => { d.settings.courts = d.settings.courts.filter(c => c !== court); });
 }
 
 /* ---------- 경기 ---------- */
 
 export function startGame(court, selection) {
-  update(d => startGameIn(d, court, ...splitTeams(selection)));
+  update(d => {
+    const [teamA, teamB] = splitTeams(selection);
+    startGameIn(d, court, teamA, teamB, gameTypeOf(d, selection, teamA, teamB));
+  });
 }
 
 // 끝난 경기 결과를 참가자 경기 수/승패에 반영(sign=1)하거나 취소(sign=-1)한다.
@@ -146,7 +114,7 @@ export function updateGamePlayers(gameId, selection) {
   update(d => {
     const g = d.games.find(x => x.id === gameId);
     [g.teamA, g.teamB] = splitTeams(selection);
-    g.gameType = deriveGameType(d, g.teamA, g.teamB);
+    g.gameType = gameTypeOf(d, selection, g.teamA, g.teamB);
   });
 }
 
@@ -162,7 +130,7 @@ export function deleteGame(gameId) {
 export function addWaitingMatch(selection) {
   update(d => {
     const [teamA, teamB] = splitTeams(selection);
-    d.waitingMatches.push({ id: uid('w'), teamA, teamB, gameType: deriveGameType(d, teamA, teamB) });
+    d.waitingMatches.push({ id: uid('w'), teamA, teamB, gameType: gameTypeOf(d, selection, teamA, teamB) });
   });
 }
 
@@ -170,7 +138,7 @@ export function updateWaitingMatch(id, selection) {
   update(d => {
     const w = d.waitingMatches.find(x => x.id === id);
     [w.teamA, w.teamB] = splitTeams(selection);
-    w.gameType = deriveGameType(d, w.teamA, w.teamB);
+    w.gameType = gameTypeOf(d, selection, w.teamA, w.teamB);
   });
 }
 
@@ -208,7 +176,6 @@ export function deletePlayer(id) {
   update(d => {
     d.formerNames[id] = playerById(d, id).name;
     d.players = d.players.filter(p => p.id !== id);
-    d.pendingRecs = d.pendingRecs.filter(r => !r.teamA.concat(r.teamB).includes(id));
   });
 }
 

@@ -49,10 +49,6 @@ export function sortByName(players) {
   return players.slice().sort((a, b) => a.name.localeCompare(b.name, 'ko'));
 }
 
-export function starStr(n) {
-  return '★'.repeat(n) + '☆'.repeat(5 - n);
-}
-
 export function genderLabel(g) {
   return g === 'M' ? '남' : '여';
 }

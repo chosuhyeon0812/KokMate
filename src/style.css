@@ -226,21 +226,6 @@ main{max-width:58rem;margin:0 auto;padding:18px 14px 60px}
 .game-menu{display:flex;flex-direction:column;gap:10px;margin:4px 0 6px}
 .game-menu .btn{width:100%;padding:15px;font-size:1.08rem}
 
-.rec-card{
-  border:1px solid var(--accent-light);
-  background:linear-gradient(160deg,#fffaf0,#fff3dc 130%);
-  border-radius:13px;padding:13px 15px;margin-bottom:11px;position:relative;overflow:hidden;
-  animation:popIn .35s var(--ease) both;
-  transition:transform .25s var(--ease), box-shadow .25s ease;
-}
-.rec-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(201,134,15,.18)}
-.rec-card::before{
-  content:"";
-  position:absolute; top:0; left:0; bottom:0; width:5px;
-  background:var(--grad-accent);
-}
-.rec-card{padding-left:19px}
-.rec-score{font-size:.72rem;color:var(--accent-dark);margin-top:7px}
 .stars{letter-spacing:1px}
 
 table{width:100%;border-collapse:collapse;font-size:.85rem}
@@ -471,10 +456,6 @@ tr:last-child td{border-bottom:none}
 .field-label{font-size:.78rem;color:var(--muted);margin:4px 0 6px}
 .pick-notes{display:flex;flex-direction:column;gap:5px;margin:0 0 12px;font-size:.92rem;color:var(--muted)}
 .pick-notes .warn{color:var(--danger);font-weight:700}
-.sparkle-btn{position:relative}
-.sparkle-btn:hover{animation:sparkle 1.2s ease-in-out infinite}
-@keyframes sparkle{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(1.12) rotate(-8deg)}}
-.sparkle-dot{position:absolute;top:2px;right:2px;width:9px;height:9px;border-radius:50%;background:var(--accent-light);box-shadow:0 0 0 2px var(--primary)}
 /* 사용법 */
 .help-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
 .help-step{display:flex;gap:14px;align-items:flex-start;padding:14px;border-radius:14px;background:var(--primary-pale)}
@@ -830,7 +811,6 @@ main{padding-bottom:calc(60px + env(safe-area-inset-bottom))}
 .round-btn{position:relative;width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:var(--surface);box-shadow:var(--shadow);color:var(--primary-dark);font:inherit;font-size:1rem;font-weight:800;cursor:pointer;display:grid;place-items:center}
 .round-btn:active{transform:scale(.92)}
 .menu-team{display:inline-block;margin:2px 2px 0;padding:4px 12px;border-radius:20px;background:var(--primary-pale-2);color:var(--primary-dark);font-size:.86rem;font-weight:800}
-.round-btn .sparkle-dot{box-shadow:0 0 0 2px #fff}
 /* 머리줄이 없어져서, 아이폰 홈 화면 앱에서는 시계 줄 아래부터 그린다 */
 main{padding-top:calc(18px + env(safe-area-inset-top))}
 @media (max-width:640px){main{padding-top:calc(12px + env(safe-area-inset-top))}}
@@ -896,7 +876,7 @@ th,td{padding:11px 9px}
 
 .court-card{border-radius:20px}
 .court-title{font-size:.98rem;font-weight:800}
-.history-item,.rec-card{border-radius:18px}
+.history-item{border-radius:18px}
 .fold-item summary .history-head{font-size:1rem;font-weight:800}
 .summary-box{border-radius:18px}
 .summary-box .num{font-weight:900}
@@ -987,3 +967,10 @@ tbody td:first-child,.shuttle-table td.name-edit{font-weight:800}
 .backup-session-head{font-size:.95rem;margin-bottom:4px}
 .backup-session-names{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:.9rem;color:var(--text)}
 .backup-session-names em{font-style:normal;font-weight:800;color:var(--accent-dark)}
+/* 고르는 창의 복식/단식 스위치 (성별 스위치 모양을 빌려 쓰고, 켜진 쪽은 초록으로 채워 눈에 띄게) */
+.pick-type{background:#e3ebe6;margin-bottom:12px}
+.pick-type button{padding:12px 8px;font-size:1.25rem;font-weight:900;color:#3d5246}
+.pick-type button.on{background:var(--primary);color:#fff;box-shadow:0 2px 6px rgba(26,168,82,.35)}
+.pick-title{flex-wrap:nowrap}
+.pick-rec{flex:none;width:44px;height:44px;border:none;border-radius:50%;background:#fff6d6;font-size:1.5rem;line-height:1;cursor:pointer;display:grid;place-items:center}
+.pick-rec:active{transform:scale(.9)}

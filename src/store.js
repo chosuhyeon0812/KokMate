@@ -7,10 +7,8 @@ function defaultState() {
     players: [],
     settings: { courts: [] }, // 오늘 쓰는 코트 번호들 (예: [3, 5, 6])
     games: [],
-    pendingRecs: [], // [{court, teamA:[ids], teamB:[ids], score:{levelDiff,partnerRepeat,opponentRepeat}}]
     waitingMatches: [], // [{id, teamA:[ids], teamB:[ids], gameType}] - 코트 미배정, 다음 경기 대기용
     sessionHistory: [], // [{id, date, endedAt, totalGames, usedCourts, participants:[{id,name,gender,level,totalGames,wins,losses,attend}], memos:[...]}]
-    lastShortfall: '',
     formerNames: {}, // {id: 이름} - 이번 모임 중에 삭제한 참가자. 오늘 경기 기록에 이름을 계속 보여주려고 둔다.
   };
 }

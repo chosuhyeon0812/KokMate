@@ -66,7 +66,7 @@ function JoinedTeam({ team, status }) {
       {editing ? (
         <form className="team-info-row editing" onSubmit={e => { e.preventDefault(); saveName(); }}>
           <span className="team-info-label">팀 이름</span>
-          <input type="text" value={newName} onChange={e => setNewName(e.target.value)} placeholder="팀 이름" autoFocus maxLength={30} />
+          <input type="text" value={newName} onChange={e => setNewName(e.target.value)} placeholder="팀 이름" autoFocus maxLength={20} />
           <button type="button" className="team-info-icon" aria-label="취소" onClick={() => { setEditing(false); setNewName(team.name); }}>✕</button>
           <button type="submit" className="team-info-icon save" aria-label="저장">✓</button>
         </form>
@@ -113,7 +113,7 @@ export function NoTeam({ initialCode }) {
       await createTeam(name.trim());
       toast('팀을 만들었어요. 팀 코드를 팀원에게 보내주세요.');
     } catch (e) {
-      warn('팀을 만들지 못했어요. 인터넷 연결을 확인해 주세요.');
+      warn(e.friendly ? e.message : '팀을 만들지 못했어요. 인터넷 연결을 확인해 주세요.');
     } finally {
       setBusy(false);
     }
@@ -162,7 +162,7 @@ export function NoTeam({ initialCode }) {
       <p className="muted backup-desc">팀을 만들면 이 기기의 데이터가 팀 데이터가 되고, 팀 코드로 참여한 기기끼리 경기·회원·콕 기록이 자동으로 맞춰져요. 인터넷이 없을 때 바꾼 내용은 연결되면 올라가요.</p>
       {mode === 'create' ? (
         <div className="team-form">
-          <input type="text" placeholder="팀 이름 (예: 신도림 배드민턴)" value={name} onChange={e => setName(e.target.value)} autoFocus />
+          <input type="text" placeholder="팀 이름 (예: 신도림 배드민턴)" value={name} onChange={e => setName(e.target.value)} autoFocus maxLength={20} />
           <div className="row-actions">
             <button className="btn btn-ghost" onClick={() => setMode(null)}>취소</button>
             <button className="btn btn-primary" disabled={busy} onClick={create}>{busy ? '만드는 중…' : '이 기기 데이터로 팀 만들기'}</button>

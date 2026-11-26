@@ -51,9 +51,19 @@ function nameOf(row) {
   return (row.state && row.state.teamName) || row.name;
 }
 
+// 서버 함수가 한도에 걸려 낸 오류는 한국어 안내로 바꾼다. (supabase/schema.sql 참고)
+const SERVER_ERRORS = {
+  'state too large': '팀 데이터가 너무 커서 저장하지 못했어요. 설정에서 백업 파일을 만들고 오래된 지난 모임 기록을 지워 주세요.',
+  'too many new teams': '지금은 팀을 만들 수 없어요. 잠시 뒤에 다시 시도해 주세요.',
+  'team name too long': '팀 이름은 20자까지 쓸 수 있어요.',
+};
+
 async function rpc(fn, args) {
   const { data, error } = await client.rpc(fn, args);
-  if (error) throw error;
+  if (error) {
+    const key = Object.keys(SERVER_ERRORS).find(k => error.message && error.message.includes(k));
+    throw key ? Object.assign(new Error(SERVER_ERRORS[key]), { friendly: true }) : error;
+  }
   return data;
 }
 
